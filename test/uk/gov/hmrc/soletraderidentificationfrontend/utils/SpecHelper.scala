@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.soletraderidentificationfrontend.controllers
+package uk.gov.hmrc.soletraderidentificationfrontend.utils
 
-import javax.inject.{Inject, Singleton}
-
-import play.api.mvc._
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import org.scalatestplus.play.PlaySpec
+import play.api.{Configuration, Environment, Mode}
+import uk.gov.hmrc.play.bootstrap.config.{RunMode, ServicesConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.hello_world
 
-import scala.concurrent.Future
+trait SpecHelper extends PlaySpec {
+  private val env: Environment = Environment.simple()
+  private val configuration: Configuration = Configuration.load(env)
+  private val serviceConfig: ServicesConfig = new ServicesConfig(configuration, new RunMode(configuration, Mode.Dev))
 
-@Singleton
-class HelloWorldController @Inject()(mcc: MessagesControllerComponents)
-                                    (implicit appConfig: AppConfig) extends FrontendController(mcc) {
-
-  val show: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Ok(hello_world()))
-  }
-
+  implicit val appConfig: AppConfig = new AppConfig(serviceConfig)
 }
