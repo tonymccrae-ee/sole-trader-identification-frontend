@@ -4,9 +4,9 @@ import sbt._
 object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "govuk-template" % "5.55.0-play-26",
-    "uk.gov.hmrc" %% "play-ui" % "8.10.0-play-26",
-    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.8.0"
+    "uk.gov.hmrc" %% "bootstrap-play-26" % "1.8.0",
+    "uk.gov.hmrc" %% "play-frontend-govuk" % "0.48.0-play-26",
+    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.13.0-play-26"
   )
 
   def commonTestDependencies(scope: Configuration): Seq[ModuleID] = Seq(
