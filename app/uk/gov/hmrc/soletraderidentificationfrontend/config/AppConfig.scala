@@ -17,7 +17,6 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
@@ -33,5 +32,10 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   val reportAProblemPartialUrl: String = s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
   val reportAProblemNonJSUrl: String = s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
+
+  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
+  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
+  lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
+  lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
 }
