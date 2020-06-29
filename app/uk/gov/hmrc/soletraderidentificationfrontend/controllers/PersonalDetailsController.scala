@@ -31,7 +31,7 @@ class PersonalDetailsController @Inject()(mcc: MessagesControllerComponents,
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(submit)))
+      Future.successful(Ok(view(routes.PersonalDetailsController.submit())))
   }
 
   val submit: Action[AnyContent] = Action { implicit request => NotImplemented }
