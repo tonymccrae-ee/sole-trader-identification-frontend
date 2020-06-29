@@ -4,4 +4,8 @@ GET        /assets/*file          controllers.Assets.versioned(path="/public", f
 
 GET        /hello-world           uk.gov.hmrc.soletraderidentificationfrontend.controllers.HelloWorldController.show
 
+GET        /personal-details-page uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.show
+
+POST       /personal-details-page uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.submit
+
 ->         /govuk-frontend        govuk.Routes
