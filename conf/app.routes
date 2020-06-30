@@ -8,4 +8,8 @@ GET        /personal-details      uk.gov.hmrc.soletraderidentificationfrontend.c
 
 POST       /personal-details      uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.submit
 
+GET        /sa-utr                uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.show
+
+POST       /sa-utr                uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.submit
+
 ->         /govuk-frontend        govuk.Routes

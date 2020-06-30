@@ -37,4 +37,13 @@ object MessageLookup {
     val form_field_3_hint = "For example, 27 3 2007"
   }
 
+  object SaUtr {
+    val title = "What is John Smith’s Unique Taxpayer Reference?"
+    val line_1 = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’."
+    val line_2 = "John Smith does not have a Unique Taxpayer Reference"
+    val details_line_1 = "Your UTR helps us identify your business"
+    val details_line_2 = "I cannot find the UTR"
+    val details_line_3 = "The business does not have a UTR"
+  }
+
 }

@@ -23,17 +23,17 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.tools.Stubs.stubMessagesControllerComponents
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.SpecHelper
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.personal_details_page
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.sa_utr_page
 
-class PersonalDetailsControllerSpec extends SpecHelper with GuiceOneAppPerSuite {
+class SaUtrControllerSpec extends SpecHelper with GuiceOneAppPerSuite {
 
-  private val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/personal-details")
+  private val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest("GET", "/sa-utr")
 
-  private val testView = app.injector.instanceOf[personal_details_page]
+  private val testView = app.injector.instanceOf[sa_utr_page]
 
-  object TestController extends PersonalDetailsController(stubMessagesControllerComponents(), testView)
+  object TestController extends SaUtrController(stubMessagesControllerComponents(), testView)
 
-  "GET /personal-details" should {
+  "GET /sa-utr" should {
     val result = TestController.show(fakeRequest)
 
     "return 200" in {

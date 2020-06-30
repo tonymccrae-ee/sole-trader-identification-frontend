@@ -19,3 +19,11 @@ personal-details.field_1 = First name
 personal-details.field_2 = Last name
 personal-details.field_3 = Date of birth
 personal-details.field_3_hint = For example, 27 3 2007
+
+## SA-UTR Page
+sa-utr.title = What is {0}’s Unique Taxpayer Reference?
+sa-utr.line_1 = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
+sa-utr.line_2 = {0} does not have a Unique Taxpayer Reference
+sa-utr.details.line_1 = Your UTR helps us identify your business
+sa-utr.details.line_2 = I cannot find the UTR
+sa-utr.details.line_3 = The business does not have a UTR
