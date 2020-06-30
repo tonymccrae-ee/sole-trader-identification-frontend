@@ -25,7 +25,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.utils.{ComponentSpecHelper, 
 class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
 
   "GET /personal-details-page" should {
-    lazy val result = get("/personal-details-page")
+    lazy val result = get("/personal-details")
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "return OK" in {
@@ -53,7 +53,7 @@ class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
   }
 
   "POST /personal-details-page" should {
-    lazy val result = post("/personal-details-page")("")
+    lazy val result = post("/personal-details")("")
 
     "return NotImplemented" in {
       result must have(httpStatus(NOT_IMPLEMENTED))
