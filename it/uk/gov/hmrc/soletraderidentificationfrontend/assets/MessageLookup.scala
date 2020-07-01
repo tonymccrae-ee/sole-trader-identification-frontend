@@ -37,6 +37,13 @@ object MessageLookup {
     val form_field_3_hint = "For example, 27 3 2007"
   }
 
+  object EnterNino {
+    val title = "What is your National Insurance number?"
+    val heading = "What is John Smith’s National Insurance number?"
+    val line_2 = "John Smith does not have a National Insurance number"
+    val form_field_1 = "It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’."
+  }
+
   object SaUtr {
     val title = "What is John Smith’s Unique Taxpayer Reference?"
     val line_1 = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’."
