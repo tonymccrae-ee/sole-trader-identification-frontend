@@ -19,13 +19,13 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{PersonalDetails => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{SaUtr => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{ComponentSpecHelper, ViewSpec}
 
-class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
+class SaUtrControllerISpec extends ComponentSpecHelper with ViewSpec {
 
-  "GET /personal-details" should {
-    lazy val result = get("/personal-details")
+  "GET /sa-utr" should {
+    lazy val result = get("/sa-utr")
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "return OK" in {
@@ -37,27 +37,26 @@ class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
     }
 
     "have a view with the correct heading" in {
-      doc.getH1Elements.text mustBe messages.heading
+      doc.getH1Elements.text mustBe messages.title
     }
 
     "have a view with the correct first line" in {
-      doc.getParagraphs.text() mustBe messages.line_1
+      doc.getParagraphs.get(0).text() mustBe messages.line_1
     }
 
-    "have a view with correct labels in the form" in {
-      doc.getLabelElement.get(0).text() mustBe messages.form_field_1
-      doc.getLabelElement.get(1).text() mustBe messages.form_field_2
-      doc.getLegendElement.get(1).text() mustBe messages.form_field_3
-      doc.getSpan("date-of-birth-hint").text() mustBe messages.form_field_3_hint
+    "have a view with correct details element" in {
+      doc.getSpan("details-summary-text").text() mustBe messages.line_2
+      doc.getParagraphs.get(1).text() mustBe messages.details_line_1
+      doc.getParagraphs.get(2).text() mustBe messages.details_line_2
+      doc.getParagraphs.get(3).text() mustBe messages.details_line_3
     }
   }
 
-  "POST /personal-details" should {
-    lazy val result = post("/personal-details")("")
+  "POST /sa-utr" should {
+    lazy val result = post("/sa-utr")("")
 
-    "redirect to the Enter Nino page" in {
-      result must have(httpStatus(SEE_OTHER),redirectUri(routes.EnterNinoController.show().url))
-
+    "return NotImplemented" in {
+      result must have(httpStatus(NOT_IMPLEMENTED))
     }
   }
 }

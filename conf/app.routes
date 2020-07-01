@@ -12,4 +12,8 @@ GET        /national-insurance-number      uk.gov.hmrc.soletraderidentificationf
 
 POST       /national-insurance-number      uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.submit
 
+GET        /sa-utr                uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.show
+
+POST       /sa-utr                uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.submit
+
 ->         /govuk-frontend        govuk.Routes

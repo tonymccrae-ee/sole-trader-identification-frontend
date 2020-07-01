@@ -26,3 +26,11 @@ enter-nino.heading = What is {0}’s National Insurance number?
 enter-nino.line_1 = It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
 enter-nino.line_2 = {0} does not have a National Insurance number
 
+
+## SA-UTR Page
+sa-utr.title = What is {0}’s Unique Taxpayer Reference?
+sa-utr.line_1 = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
+sa-utr.line_2 = {0} does not have a Unique Taxpayer Reference
+sa-utr.details.line_1 = Your UTR helps us identify your business
+sa-utr.details.line_2 = I cannot find the UTR
+sa-utr.details.line_3 = The business does not have a UTR
