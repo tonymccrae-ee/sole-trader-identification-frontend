@@ -20,23 +20,21 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.personal_details_page
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.enter_nino_page
 
 import scala.concurrent.Future
 
 @Singleton
-class PersonalDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                          view: personal_details_page)
-                                         (implicit val config: AppConfig) extends FrontendController(mcc) {
+class EnterNinoController @Inject()(mcc: MessagesControllerComponents,
+                                    view: enter_nino_page)
+                                   (implicit val config: AppConfig) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.PersonalDetailsController.submit())))
+      val name = "John Smith"  // TODO this will be pre-pop data
+      Future.successful(Ok(view(routes.EnterNinoController.submit(),name)))
   }
 
-  val submit: Action[AnyContent] = Action.async {
-    implicit request =>
-      Future.successful(Redirect(routes.EnterNinoController.show()))
-  }
+  val submit: Action[AnyContent] = Action { implicit request => NotImplemented }
 
 }

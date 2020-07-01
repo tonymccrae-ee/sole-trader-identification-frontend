@@ -19,3 +19,10 @@ personal-details.field_1 = First name
 personal-details.field_2 = Last name
 personal-details.field_3 = Date of birth
 personal-details.field_3_hint = For example, 27 3 2007
+
+## Enter Nino Page
+enter-nino.title = What is your National Insurance number?
+enter-nino.heading = What is {0}’s National Insurance number?
+enter-nino.line_1 = It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
+enter-nino.line_2 = {0} does not have a National Insurance number
+

@@ -19,13 +19,13 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{PersonalDetails => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{EnterNino => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{ComponentSpecHelper, ViewSpec}
 
-class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
+class EnterNinoControllerISpec extends ComponentSpecHelper with ViewSpec {
 
-  "GET /personal-details-page" should {
-    lazy val result = get("/personal-details")
+  "GET /national-insurance-number" should {
+    lazy val result = get("/national-insurance-number")
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "return OK" in {
@@ -41,23 +41,19 @@ class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
     }
 
     "have a view with the correct first line" in {
-      doc.getParagraphs.text() mustBe messages.line_1
+      doc.getParagraphs.text() mustBe messages.line_2
     }
 
     "have a view with correct labels in the form" in {
       doc.getLabelElement.get(0).text() mustBe messages.form_field_1
-      doc.getLabelElement.get(1).text() mustBe messages.form_field_2
-      doc.getLegendElement.get(1).text() mustBe messages.form_field_3
-      doc.getSpan("date-of-birth-hint").text() mustBe messages.form_field_3_hint
     }
   }
 
-  "POST /personal-details-page" should {
-    lazy val result = post("/personal-details")("")
+  "POST /national-insurance-number" should {
+    lazy val result = post("/national-insurance-number")("")
 
-    "redirect to the Enter Nino page" in {
-      result must have(httpStatus(SEE_OTHER),redirectUri(routes.EnterNinoController.show().url))
-
+    "return NotImplemented" in {
+      result must have(httpStatus(NOT_IMPLEMENTED))
     }
   }
 }
