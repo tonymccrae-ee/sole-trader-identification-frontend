@@ -8,4 +8,8 @@ GET        /personal-details      uk.gov.hmrc.soletraderidentificationfrontend.c
 
 POST       /personal-details      uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.submit
 
+GET        /national-insurance-number      uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.show
+
+POST       /national-insurance-number      uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.submit
+
 ->         /govuk-frontend        govuk.Routes
