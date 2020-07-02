@@ -21,10 +21,10 @@ object MessageLookup {
   val suffix = " - Use software to send Income Tax updates - GOV.UK"
 
   object Base {
-    val continue = "Continue"
-    val yes = "Yes"
-    val no = "No"
-    val acceptAndContinue = "Accept and continue"
+    val confirmAndContinue = "Confirm and continue"
+    val change = "Change"
+    val saveAndContinue = "Save and continue"
+    val saveAndComeBack = "Save and come back later"
   }
 
   object PersonalDetails {
@@ -46,11 +46,23 @@ object MessageLookup {
 
   object SaUtr {
     val title = "What is John Smith’s Unique Taxpayer Reference?"
+    val heading = "What is John Smith’s Unique Taxpayer Reference?"
     val line_1 = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’."
     val line_2 = "John Smith does not have a Unique Taxpayer Reference"
     val details_line_1 = "Your UTR helps us identify your business"
     val details_line_2 = "I cannot find the UTR"
     val details_line_3 = "The business does not have a UTR"
+  }
+
+  object CheckYourAnswers {
+    val title = "Check your answers"
+    val heading = "Check your answers"
+    val firstName = "First name"
+    val lastName = "Last name"
+    val dob = "Date of birth"
+    val nino = "National insurance number"
+    val sautr = "Unique taxpayers reference number"
+    val noSautr = "The business does not have a UTR"
   }
 
 }

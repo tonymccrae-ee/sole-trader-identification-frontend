@@ -1,0 +1,111 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => Routes}
+
+@this(layout: govuk_template,
+        govUkHeader: GovukHeader,
+        govukFieldset: GovukFieldset,
+        govukButton: GovukButton,
+        govukSummaryList: GovukSummaryList,
+        formWithCSRF: FormWithCSRF)
+
+
+@(formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(title = messages("check-your-answers.title")) {
+
+    @govukFieldset(Fieldset(
+        legend = Some(Legend(
+            content = Text(Messages("check-your-answers.heading")),
+            classes = "govuk-fieldset__legend--xl",
+            isPageHeading = true
+        )),
+        html = html
+    ))
+
+}
+
+@html = {
+    @govukSummaryList(SummaryList(
+        classes = "govuk-!-margin-bottom-9",
+        rows = Seq(
+            SummaryListRow(
+                key = Key(content = Text(Messages("check-your-answers.first_name"))),
+                value = Value(content = Text("John")),
+                actions = Some(Actions(items = Seq(
+                    ActionItem(
+                        href = Routes.PersonalDetailsController.show().url,
+                        content = Text("Change"),
+                        visuallyHiddenText = Some(Messages("check-your-answers.first_name"))
+                    )
+                )))
+            ),
+            SummaryListRow(
+                key = Key(content = Text(Messages("check-your-answers.last_name"))),
+                value = Value(content = Text("Smith")),
+                actions = Some(Actions(items = Seq(
+                    ActionItem(
+                        href = Routes.PersonalDetailsController.show().url,
+                        content = Text("Change"),
+                        visuallyHiddenText = Some(Messages("check-your-answers.last_name"))
+                    )
+                )))
+            ),
+            SummaryListRow(
+                key = Key(content = Text(Messages("check-your-answers.dob"))),
+                value = Value(content = Text("5 January 1978")),
+                actions = Some(Actions(items = Seq(
+                    ActionItem(
+                        href = Routes.PersonalDetailsController.show().url,
+                        content = Text("Change"),
+                        visuallyHiddenText = Some(Messages("check-your-answers.dob"))
+                    )
+                )))
+            ),
+            SummaryListRow(
+                key = Key(content = Text(Messages("check-your-answers.nino"))),
+                value = Value(content = Text("AA 11 11 11 A")),
+                actions = Some(Actions(items = Seq(
+                    ActionItem(
+                        href = Routes.EnterNinoController.show().url,
+                        content = Text("Change"),
+                        visuallyHiddenText = Some(Messages("check-your-answers.nino"))
+                    )
+                )))
+            ),
+            SummaryListRow(
+                key = Key(content = Text(Messages("check-your-answers.sautr"))),
+                value = Value(content = Text("1234567890")),
+                actions = Some(Actions(items = Seq(
+                    ActionItem(
+                        href = Routes.SaUtrController.show().url,
+                        content = Text("Change"),
+                        visuallyHiddenText = Some(Messages("check-your-answers.sautr"))
+                    )
+                )))
+            )
+        )
+    ))
+    @formWithCSRF(action = formAction) {
+        @govukButton(Button(
+            classes = "govuk-!-margin-right-1",
+            content = Text(Messages("base.confirm_and_continue"))
+        ))
+    }
+}

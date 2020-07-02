@@ -1,19 +1,19 @@
 # microservice specific routes
 
-GET        /assets/*file          controllers.Assets.versioned(path="/public", file: Asset)
+GET        /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
-GET        /hello-world           uk.gov.hmrc.soletraderidentificationfrontend.controllers.HelloWorldController.show
+GET        /hello-world                     uk.gov.hmrc.soletraderidentificationfrontend.controllers.HelloWorldController.show
 
-GET        /personal-details      uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.show
+GET        /personal-details                uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.show
+POST       /personal-details                uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.submit
 
-POST       /personal-details      uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.submit
+GET        /national-insurance-number       uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.show
+POST       /national-insurance-number       uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.submit
 
-GET        /national-insurance-number      uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.show
+GET        /sa-utr                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.show
+POST       /sa-utr                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.submit
 
-POST       /national-insurance-number      uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.submit
+GET        /check-your-answers-business     uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show
+POST       /check-your-answers-business     uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit
 
-GET        /sa-utr                uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.show
-
-POST       /sa-utr                uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.submit
-
-->         /govuk-frontend        govuk.Routes
+->         /govuk-frontend                  govuk.Routes
