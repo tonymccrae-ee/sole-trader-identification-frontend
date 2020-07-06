@@ -44,11 +44,13 @@ trait ViewSpec {
 
     lazy val getErrorSummaryMessage: Elements = element.select("#error-summary-display ul")
 
-    lazy val getSubmitButton: Elements = element.select("button[type=submit]")
+    lazy val getSubmitButton: Elements = element.getElementsByClass("govuk-button")
 
     lazy val getHintText: String = element.select(s"""span[class=form-hint]""").text()
 
     lazy val getForm: Elements = element.select("form")
+
+    lazy val getSummaryListRows: Elements = element.getElementsByClass("govuk-summary-list__row")
 
     def getSpan(id: String): Elements = element.select(s"""span[id=$id]""")
 
@@ -60,6 +62,13 @@ trait ViewSpec {
 
     def getBulletPointList: Elements = element.select("ul[class=list list-bullet]")
 
+    def getSummaryListQuestion: String = element.getElementsByClass("govuk-summary-list__key").text
+
+    def getSummaryListAnswer: String = element.getElementsByClass("govuk-summary-list__value").text
+
+    def getSummaryListChangeLink: String = element.select("dd.govuk-summary-list__actions > a").attr("href")
+
+    def getSummaryListChangeText: String = element.select("dd.govuk-summary-list__actions > a").text
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =

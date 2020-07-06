@@ -20,29 +20,26 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.sa_utr_page
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
 import scala.concurrent.Future
 
 @Singleton
-class SaUtrController @Inject()(mcc: MessagesControllerComponents,
-                                view: sa_utr_page)
-                               (implicit val config: AppConfig) extends FrontendController(mcc) {
+class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
+                                           view: check_your_answers_page)
+                                          (implicit val config: AppConfig) extends FrontendController(mcc) {
 
-  val name = "John Smith"
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(
-        Ok(view(routes.SaUtrController.submit(), name))
+        Ok(view(routes.CheckYourAnswersController.submit()))
       )
   }
 
-  val submit: Action[AnyContent] = Action.async {
+  val submit: Action[AnyContent] = Action {
     implicit request =>
-      Future.successful(
-        Redirect(routes.CheckYourAnswersController.show())
-      )
+      NotImplemented
   }
 
 }

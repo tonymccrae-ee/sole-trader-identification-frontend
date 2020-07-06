@@ -37,7 +37,7 @@ class SaUtrControllerISpec extends ComponentSpecHelper with ViewSpec {
     }
 
     "have a view with the correct heading" in {
-      doc.getH1Elements.text mustBe messages.title
+      doc.getH1Elements.text mustBe messages.heading
     }
 
     "have a view with the correct first line" in {
@@ -55,8 +55,11 @@ class SaUtrControllerISpec extends ComponentSpecHelper with ViewSpec {
   "POST /sa-utr" should {
     lazy val result = post("/sa-utr")("")
 
-    "return NotImplemented" in {
-      result must have(httpStatus(NOT_IMPLEMENTED))
+    "redirect to Check Your Answers Page" in {
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.CheckYourAnswersController.show().url)
+      )
     }
   }
 }

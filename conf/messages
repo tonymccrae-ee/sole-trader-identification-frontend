@@ -4,12 +4,14 @@ getpagehelp.linkText = Get help with this page
 ## Base
 base.save_and_continue = Save and continue
 base.save_and_come_back = Save and come back later
+base.change = Change
+base.confirm_and_continue = Confirm and continue
 
 ## Footer Links
-footer.links.help_page.text=Help using GOV.UK
-footer.links.cookies.text=Cookies
-footer.links.privacy_policy.text=Privacy policy
-footer.links.terms_and_conditions.text=Terms and conditions
+footer.links.help_page.text = Help using GOV.UK
+footer.links.cookies.text = Cookies
+footer.links.privacy_policy.text = Privacy policy
+footer.links.terms_and_conditions.text = Terms and conditions
 
 ## Personal Details Page
 personal-details.title = Enter your details
@@ -34,3 +36,13 @@ sa-utr.line_2 = {0} does not have a Unique Taxpayer Reference
 sa-utr.details.line_1 = Your UTR helps us identify your business
 sa-utr.details.line_2 = I cannot find the UTR
 sa-utr.details.line_3 = The business does not have a UTR
+
+## Check Your Answers Page
+check-your-answers.title = Check your answers
+check-your-answers.heading = Check your answers
+check-your-answers.first_name = First name
+check-your-answers.last_name = Last name
+check-your-answers.dob = Date of birth
+check-your-answers.nino = National insurance number
+check-your-answers.sautr = Unique taxpayers reference number
+check-your-answers.no_sautr = The business does not have a UTR
