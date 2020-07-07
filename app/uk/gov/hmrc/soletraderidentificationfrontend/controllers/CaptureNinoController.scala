@@ -25,19 +25,19 @@ import uk.gov.hmrc.soletraderidentificationfrontend.views.html.enter_nino_page
 import scala.concurrent.Future
 
 @Singleton
-class EnterNinoController @Inject()(mcc: MessagesControllerComponents,
-                                    view: enter_nino_page)
-                                   (implicit val config: AppConfig) extends FrontendController(mcc) {
+class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
+                                      view: enter_nino_page)
+                                     (implicit val config: AppConfig) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       val name = "John Smith" // TODO this will be pre-pop data
-      Future.successful(Ok(view(routes.EnterNinoController.submit(), name)))
+      Future.successful(Ok(view(routes.CaptureNinoController.submit(), name)))
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(routes.SaUtrController.show()))
+      Future.successful(Redirect(routes.CaptureSautrController.show()))
   }
 
 }

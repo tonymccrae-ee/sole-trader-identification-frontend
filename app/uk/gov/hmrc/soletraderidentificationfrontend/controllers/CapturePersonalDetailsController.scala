@@ -25,18 +25,18 @@ import uk.gov.hmrc.soletraderidentificationfrontend.views.html.personal_details_
 import scala.concurrent.Future
 
 @Singleton
-class PersonalDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                          view: personal_details_page)
-                                         (implicit val config: AppConfig) extends FrontendController(mcc) {
+class CapturePersonalDetailsController @Inject()(mcc: MessagesControllerComponents,
+                                                 view: personal_details_page)
+                                                (implicit val config: AppConfig) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.PersonalDetailsController.submit())))
+      Future.successful(Ok(view(routes.CapturePersonalDetailsController.submit())))
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(routes.EnterNinoController.show()))
+      Future.successful(Redirect(routes.CaptureNinoController.show()))
   }
 
 }

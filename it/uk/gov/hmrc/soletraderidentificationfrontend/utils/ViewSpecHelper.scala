@@ -22,9 +22,9 @@ import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 
 import scala.collection.JavaConversions._
 
-trait ViewSpec {
+object ViewSpecHelper {
 
-  implicit class ElementTest(element: Element) {
+  implicit class ElementExtensions(element: Element) {
 
     lazy val content: Element = element.getElementsByTag("article").head
 

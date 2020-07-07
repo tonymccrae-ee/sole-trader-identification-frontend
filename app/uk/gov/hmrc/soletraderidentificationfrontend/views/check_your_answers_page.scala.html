@@ -50,7 +50,7 @@
                 value = Value(content = Text("John")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.PersonalDetailsController.show().url,
+                        href = Routes.CapturePersonalDetailsController.show().url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.first_name"))
                     )
@@ -61,7 +61,7 @@
                 value = Value(content = Text("Smith")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.PersonalDetailsController.show().url,
+                        href = Routes.CapturePersonalDetailsController.show().url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.last_name"))
                     )
@@ -72,7 +72,7 @@
                 value = Value(content = Text("5 January 1978")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.PersonalDetailsController.show().url,
+                        href = Routes.CapturePersonalDetailsController.show().url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.dob"))
                     )
@@ -83,7 +83,7 @@
                 value = Value(content = Text("AA 11 11 11 A")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.EnterNinoController.show().url,
+                        href = Routes.CaptureNinoController.show().url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.nino"))
                     )
@@ -94,7 +94,7 @@
                 value = Value(content = Text("1234567890")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.SaUtrController.show().url,
+                        href = Routes.CaptureSautrController.show().url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.sautr"))
                     )

@@ -25,16 +25,15 @@ import uk.gov.hmrc.soletraderidentificationfrontend.views.html.sa_utr_page
 import scala.concurrent.Future
 
 @Singleton
-class SaUtrController @Inject()(mcc: MessagesControllerComponents,
-                                view: sa_utr_page)
-                               (implicit val config: AppConfig) extends FrontendController(mcc) {
-
-  val name = "John Smith"
+class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
+                                       view: sa_utr_page)
+                                      (implicit val config: AppConfig) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
+      val name = "John Smith"
       Future.successful(
-        Ok(view(routes.SaUtrController.submit(), name))
+        Ok(view(routes.CaptureSautrController.submit(), name))
       )
   }
 
