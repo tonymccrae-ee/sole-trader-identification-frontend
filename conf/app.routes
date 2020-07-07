@@ -2,16 +2,14 @@
 
 GET        /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
-GET        /hello-world                     uk.gov.hmrc.soletraderidentificationfrontend.controllers.HelloWorldController.show
+GET        /personal-details                uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.show
+POST       /personal-details                uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.submit
 
-GET        /personal-details                uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.show
-POST       /personal-details                uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalDetailsController.submit
+GET        /national-insurance-number       uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show
+POST       /national-insurance-number       uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit
 
-GET        /national-insurance-number       uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.show
-POST       /national-insurance-number       uk.gov.hmrc.soletraderidentificationfrontend.controllers.EnterNinoController.submit
-
-GET        /sa-utr                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.show
-POST       /sa-utr                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.SaUtrController.submit
+GET        /sa-utr                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show
+POST       /sa-utr                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit
 
 GET        /check-your-answers-business     uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show
 POST       /check-your-answers-business     uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit

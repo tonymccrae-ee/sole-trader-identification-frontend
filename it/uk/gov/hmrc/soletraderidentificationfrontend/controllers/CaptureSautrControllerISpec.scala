@@ -16,39 +16,21 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{SaUtr => messages}
-import uk.gov.hmrc.soletraderidentificationfrontend.utils.{ComponentSpecHelper, ViewSpec}
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
+import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureSautrViewTests
 
-class SaUtrControllerISpec extends ComponentSpecHelper with ViewSpec {
+class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrViewTests {
 
   "GET /sa-utr" should {
     lazy val result = get("/sa-utr")
-    lazy val doc: Document = Jsoup.parse(result.body)
 
     "return OK" in {
-      result must have(httpStatus(OK))
+      result.status mustBe OK
     }
 
-    "have a view with the correct title" in {
-      doc.title mustBe messages.title
-    }
-
-    "have a view with the correct heading" in {
-      doc.getH1Elements.text mustBe messages.heading
-    }
-
-    "have a view with the correct first line" in {
-      doc.getParagraphs.get(0).text() mustBe messages.line_1
-    }
-
-    "have a view with correct details element" in {
-      doc.getSpan("details-summary-text").text() mustBe messages.line_2
-      doc.getParagraphs.get(1).text() mustBe messages.details_line_1
-      doc.getParagraphs.get(2).text() mustBe messages.details_line_2
-      doc.getParagraphs.get(3).text() mustBe messages.details_line_3
+    "return a view which" should {
+      testCaptureSautrView(result)
     }
   }
 

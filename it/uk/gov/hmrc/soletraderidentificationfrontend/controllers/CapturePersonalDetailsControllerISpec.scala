@@ -16,31 +16,32 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
-import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
+import uk.gov.hmrc.soletraderidentificationfrontend.views.CapturePersonalDetailsViewTests
 
+class CapturePersonalDetailsControllerISpec extends ComponentSpecHelper with CapturePersonalDetailsViewTests {
 
-class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests {
-
-  "GET /check-your-answers-business" should {
-    lazy val result: WSResponse = get("/check-your-answers-business")
+  "GET /personal-details" should {
+    lazy val result = get("/personal-details")
 
     "return OK" in {
       result.status mustBe OK
     }
 
     "return a view which" should {
-      testCheckYourAnswersView(result)
+      testCapturePersonalDetailsView(result)
     }
   }
 
-  "POST /check-your-answers-business" should {
-    lazy val result = post("/check-your-answers-business")("")
+  "POST /personal-details" should {
+    lazy val result = post("/personal-details")("")
 
-    "return NotImplemented" in {
-      result.status mustBe NOT_IMPLEMENTED
+    "redirect to the Capture Nino page" in {
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.CaptureNinoController.show().url)
+      )
     }
   }
 }

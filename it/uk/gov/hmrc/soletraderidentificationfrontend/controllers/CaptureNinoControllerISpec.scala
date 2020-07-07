@@ -16,20 +16,32 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import play.api.libs.ws.WSResponse
-import play.api.test.Helpers.OK
+import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
+import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureNinoViewTests
 
-class HelloWorldControllerISpec extends ComponentSpecHelper {
+class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoViewTests {
 
-  "GET /hello-world" should {
+  "GET /national-insurance-number" should {
+    lazy val result = get("/national-insurance-number")
+
     "return OK" in {
+      result.status mustBe OK
+    }
 
-      val result: WSResponse = get("/hello-world")
-
-      result must have(httpStatus(OK))
+    "return a view which" should {
+      testCaptureNinoView(result)
     }
   }
 
+  "POST /national-insurance-number" should {
+    lazy val result = post("/national-insurance-number")("")
 
+    "redirect to the capture sautr page" in {
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.CaptureSautrController.show().url)
+      )
+    }
+  }
 }

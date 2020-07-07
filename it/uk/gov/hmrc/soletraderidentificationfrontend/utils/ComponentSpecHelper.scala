@@ -16,16 +16,21 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.utils
 
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec}
+import org.scalatestplus.play.PortNumber
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
-import org.scalatestplus.play.{PlaySpec, PortNumber}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
 
-trait ComponentSpecHelper extends PlaySpec with CustomMatchers with WiremockHelper with BeforeAndAfterAll with BeforeAndAfterEach with GuiceOneServerPerSuite {
+trait ComponentSpecHelper extends WordSpec with MustMatchers
+  with CustomMatchers
+  with WiremockHelper
+  with BeforeAndAfterAll
+  with BeforeAndAfterEach
+  with GuiceOneServerPerSuite {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
