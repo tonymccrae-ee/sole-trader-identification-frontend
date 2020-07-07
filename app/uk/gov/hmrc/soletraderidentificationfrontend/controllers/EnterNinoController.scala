@@ -31,10 +31,13 @@ class EnterNinoController @Inject()(mcc: MessagesControllerComponents,
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      val name = "John Smith"  // TODO this will be pre-pop data
-      Future.successful(Ok(view(routes.EnterNinoController.submit(),name)))
+      val name = "John Smith" // TODO this will be pre-pop data
+      Future.successful(Ok(view(routes.EnterNinoController.submit(), name)))
   }
 
-  val submit: Action[AnyContent] = Action { implicit request => NotImplemented }
+  val submit: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(routes.SaUtrController.show()))
+  }
 
 }
