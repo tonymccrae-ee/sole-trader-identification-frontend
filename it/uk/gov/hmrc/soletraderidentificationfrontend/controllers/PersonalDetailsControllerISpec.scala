@@ -56,7 +56,7 @@ class PersonalDetailsControllerISpec extends ComponentSpecHelper with ViewSpec {
     lazy val result = post("/personal-details")("")
 
     "redirect to the Enter Nino page" in {
-      result must have(httpStatus(SEE_OTHER),redirectUri(routes.EnterNinoController.show().url))
+      result must have(httpStatus(SEE_OTHER), redirectUri(routes.EnterNinoController.show().url))
 
     }
   }

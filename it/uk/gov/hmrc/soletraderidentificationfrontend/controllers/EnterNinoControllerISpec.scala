@@ -53,7 +53,7 @@ class EnterNinoControllerISpec extends ComponentSpecHelper with ViewSpec {
     lazy val result = post("/national-insurance-number")("")
 
     "return NotImplemented" in {
-      result must have(httpStatus(NOT_IMPLEMENTED))
+      result must have(httpStatus(SEE_OTHER), redirectUri(routes.SaUtrController.show().url))
     }
   }
 }
