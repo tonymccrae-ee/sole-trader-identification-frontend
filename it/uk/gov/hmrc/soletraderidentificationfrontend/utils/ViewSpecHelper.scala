@@ -42,7 +42,11 @@ object ViewSpecHelper {
 
     lazy val getLegendElement: Elements = element.getElementsByTag("legend")
 
-    lazy val getErrorSummaryMessage: Elements = element.select("#error-summary-display ul")
+    lazy val getErrorSummaryTitle: Elements = element.getElementsByClass("govuk-error-summary__title")
+
+    lazy val getErrorSummaryBody: Elements = element.getElementsByClass("govuk-error-summary__body")
+
+    lazy val getFieldErrorMessage: Elements = element.getElementsByClass("govuk-error-message")
 
     lazy val getSubmitButton: Elements = element.getElementsByClass("govuk-button")
 
@@ -57,8 +61,6 @@ object ViewSpecHelper {
     def getLink(id: String): Elements = element.select(s"""a[id=$id]""")
 
     def getTextFieldInput(id: String): Elements = element.select(s"""input[id=$id]""")
-
-    def getFieldErrorMessage(id: String): Elements = element.select(s"""a[id=$id-error-summary]""")
 
     def getBulletPointList: Elements = element.select("ul[class=list list-bullet]")
 

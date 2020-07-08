@@ -37,7 +37,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
   }
 
   "POST /check-your-answers-business" should {
-    lazy val result = post("/check-your-answers-business")("")
+    lazy val result = post("/check-your-answers-business")()
 
     "return NotImplemented" in {
       result.status mustBe NOT_IMPLEMENTED

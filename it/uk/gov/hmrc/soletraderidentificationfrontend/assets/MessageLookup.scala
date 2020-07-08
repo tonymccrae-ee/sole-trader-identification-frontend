@@ -23,6 +23,11 @@ object MessageLookup {
     val change = "Change"
     val saveAndContinue = "Save and continue"
     val saveAndComeBack = "Save and come back later"
+
+    object Error {
+      val title = "There is a problem"
+      val error = "Error: "
+    }
   }
 
   object CapturePersonalDetails {
@@ -50,6 +55,10 @@ object MessageLookup {
     val details_line_1 = "Your UTR helps us identify your business"
     val details_line_2 = "I cannot find the UTR"
     val details_line_3 = "The business does not have a UTR"
+
+    object Error {
+      val invalidSautrEntered = "Enter a Unique Taxpayer Reference in the correct format"
+    }
   }
 
   object CheckYourAnswers {

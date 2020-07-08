@@ -19,6 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.utils
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec}
 import org.scalatestplus.play.PortNumber
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.http.HeaderNames
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
@@ -72,11 +73,12 @@ trait ComponentSpecHelper extends WordSpec with MustMatchers
     await(buildClient(uri).withHttpHeaders().get)
   }
 
-  def post[T](uri: String)(body: T)(implicit writes: Writes[T], ws: WSClient, portNumber: PortNumber): WSResponse = {
+  def post(uri: String)(form: (String, String)*): WSResponse = {
+    val formBody = (form map { case (k, v) => (k, Seq(v)) }).toMap
     await(
       buildClient(uri)
-        .withHttpHeaders("Content-Type" -> "application/json")
-        .post(writes.writes(body).toString())
+        .withHttpHeaders("Csrf-Token" -> "nocheck")
+        .post(formBody)
     )
   }
 
