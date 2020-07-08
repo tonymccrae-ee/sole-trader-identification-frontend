@@ -20,27 +20,33 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.sa_utr_page
+import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sautr_page
 
 import scala.concurrent.Future
 
 @Singleton
 class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
-                                       view: sa_utr_page)
+                                       view: capture_sautr_page)
                                       (implicit val config: AppConfig) extends FrontendController(mcc) {
+  val name = "John Smith"
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      val name = "John Smith"
       Future.successful(
-        Ok(view(routes.CaptureSautrController.submit(), name))
+        Ok(view(routes.CaptureSautrController.submit(), name, CaptureSautrForm.form))
       )
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Redirect(routes.CheckYourAnswersController.show())
+      CaptureSautrForm.form.bindFromRequest().fold(
+        formWithErrors => Future.successful(
+          BadRequest(view(routes.CaptureSautrController.submit(), name, formWithErrors))
+        ),
+        _ => Future.successful(
+          Redirect(routes.CheckYourAnswersController.show())
+        )
       )
   }
 

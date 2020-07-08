@@ -35,7 +35,7 @@ class CapturePersonalDetailsControllerISpec extends ComponentSpecHelper with Cap
   }
 
   "POST /personal-details" should {
-    lazy val result = post("/personal-details")("")
+    lazy val result = post("/personal-details")()
 
     "redirect to the Capture Nino page" in {
       result must have(

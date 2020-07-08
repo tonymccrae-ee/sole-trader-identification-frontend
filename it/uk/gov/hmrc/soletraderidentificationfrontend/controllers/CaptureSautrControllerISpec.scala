@@ -21,6 +21,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureSautrViewTests
 
 class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrViewTests {
+  val testSautr = "1234567890"
 
   "GET /sa-utr" should {
     lazy val result = get("/sa-utr")
@@ -34,14 +35,36 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     }
   }
 
-  "POST /sa-utr" should {
-    lazy val result = post("/sa-utr")("")
+  "POST /sa-utr" when {
+    "the sautr is correctly formatted" should {
+      lazy val result = post("/sa-utr")("sa-utr" -> testSautr)
 
-    "redirect to Check Your Answers Page" in {
-      result must have(
-        httpStatus(SEE_OTHER),
-        redirectUri(routes.CheckYourAnswersController.show().url)
-      )
+      "redirect to Check Your Answers Page" in {
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show().url)
+        )
+      }
+    }
+
+    "no sautr is submitted" should {
+      lazy val result = post("/sa-utr")("sa-utr" -> "")
+
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+
+      testCaptureSautrErrorMessages(result)
+    }
+
+    "an invalid sautr is submitted" should {
+      lazy val result = post("/sa-utr")("sa-utr" -> "123456789")
+
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+
+      testCaptureSautrErrorMessages(result)
     }
   }
 }

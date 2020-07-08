@@ -35,7 +35,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   }
 
   "POST /national-insurance-number" should {
-    lazy val result = post("/national-insurance-number")("")
+    lazy val result = post("/national-insurance-number")()
 
     "redirect to the capture sautr page" in {
       result must have(

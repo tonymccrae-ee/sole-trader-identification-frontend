@@ -1,5 +1,7 @@
 service.name = Register for VAT
 getpagehelp.linkText = Get help with this page
+error.summary.title = There is a problem
+error.title-prefix = 'Error: '
 
 ## Base
 base.save_and_continue = Save and continue
@@ -36,6 +38,7 @@ sa-utr.line_2 = {0} does not have a Unique Taxpayer Reference
 sa-utr.details.line_1 = Your UTR helps us identify your business
 sa-utr.details.line_2 = I cannot find the UTR
 sa-utr.details.line_3 = The business does not have a UTR
+sa-utr.error = Enter a Unique Taxpayer Reference in the correct format
 
 ## Check Your Answers Page
 check-your-answers.title = Check your answers
