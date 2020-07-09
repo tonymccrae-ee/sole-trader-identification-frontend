@@ -29,9 +29,9 @@
         errorSummary: errorSummary
 )
 
-@(formAction: Call, companyName: String, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(formAction: Call, personsName: String, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(title = title(messages("sa-utr.title", companyName), form)) {
+@layout(title = title(messages("sa-utr.title", personsName), form)) {
 
     @errorSummary(form.errors)
 
@@ -40,14 +40,14 @@
             form = form,
             id = "sa-utr",
             name = "sa-utr",
-            label = messages("sa-utr.title", companyName),
+            label = messages("sa-utr.title", personsName),
             isPageHeading = true,
             hint = Some(Html(s"""<p class="govuk-body">${messages("sa-utr.line_1")}</p>""")),
             classes = "govuk-input--width-20"
         )
         <details class="govuk-details">
             <summary class="govuk-details__summary">
-                <span class="govuk-details__summary-text" id="details-summary-text">@messages("sa-utr.line_2", companyName)</span>
+                <span class="govuk-details__summary-text" id="details-summary-text">@messages("sa-utr.line_2",personsName)</span>
             </summary>
             <div class="govuk-details__text">
                 <p>@messages("sa-utr.details.line_1")</p>

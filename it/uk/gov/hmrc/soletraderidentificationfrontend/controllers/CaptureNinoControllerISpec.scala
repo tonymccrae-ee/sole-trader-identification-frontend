@@ -35,7 +35,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   }
 
   "POST /national-insurance-number" should {
-    lazy val result = post("/national-insurance-number")()
+    lazy val result = post("/national-insurance-number")("nino" -> "AA111111A")
 
     "redirect to the capture sautr page" in {
       result must have(
@@ -44,4 +44,25 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
       )
     }
   }
+
+  "no nino is submitted" should {
+    lazy val result = post("/national-insurance-number")("nino" -> "")
+
+    "return a bad request" in {
+      result.status mustBe BAD_REQUEST
+    }
+
+    testCaptureNinoErrorMessages(result)
+  }
+
+  "an invalid nino is submitted" should {
+    lazy val result = post("/national-insurance-number")("nino" -> "AAAAAAAAAA")
+
+    "return a bad request" in {
+      result.status mustBe BAD_REQUEST
+    }
+
+    testCaptureNinoErrorMessages(result)
+  }
+
 }

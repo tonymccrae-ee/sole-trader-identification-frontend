@@ -37,20 +37,35 @@ trait CaptureNinoViewTests {
       doc.getH1Elements.text mustBe messages.heading
     }
 
-    "have the correct first line" in {
-      doc.getParagraphs.text mustBe messages.line_1
+    "have the correct hint text" in {
+      doc.getHintText mustBe messages.line_1
     }
 
     "have correct labels in the form" in {
       doc.getLabelElement.first.text mustBe messages.form_field_1
     }
 
+    "have the correct line 2" in {
+      doc.getParagraphs.last.text mustBe messages.line_2
+    }
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
 
     "have a save and come back later button" in {
       doc.getSubmitButton.get(1).text mustBe Base.saveAndComeBack
+    }
+  }
+  def testCaptureNinoErrorMessages(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "correctly display the error summary" in {
+      doc.getErrorSummaryTitle.text mustBe Base.Error.title
+      doc.getErrorSummaryBody.text mustBe messages.Error.invalidNinoEntered
+    }
+
+    "correctly display the field errors" in {
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidNinoEntered
     }
   }
 }
