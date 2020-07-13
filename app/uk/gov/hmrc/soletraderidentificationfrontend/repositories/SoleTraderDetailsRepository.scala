@@ -20,10 +20,10 @@ import javax.inject.Inject
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.play.json.JSONSerializationPack.Reader
+import reactivemongo.play.json._
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
-import reactivemongo.play.json._
-import SoleTraderDetailsRepository._
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -37,12 +37,24 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
 
   def retrieveNino(journeyId: String): Future[Option[String]] = retrieve[String](journeyId, ninoKey)
 
+  def retrieveSautr(journeyId: String): Future[Option[String]] = retrieve[String](journeyId, sautrKey)
+
+
   def storeNino(journeyId: String, nino: String): Future[Unit] =
     findAndUpdate(
       query = Json.obj(
         idKey -> journeyId
       ),
       update = Json.obj("$set" -> Json.obj(ninoKey -> nino)),
+      upsert = true
+    ).map(_ => ())
+
+  def storeSautr(journeyId: String, sautr: String): Future[Unit] =
+    findAndUpdate(
+      query = Json.obj(
+        idKey -> journeyId
+      ),
+      update = Json.obj("$set" -> Json.obj(sautrKey -> sautr)),
       upsert = true
     ).map(_ => ())
 
@@ -66,5 +78,6 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
 
 object SoleTraderDetailsRepository {
   val ninoKey = "nino"
+  val sautrKey = "sautr"
   val idKey = "_id"
 }

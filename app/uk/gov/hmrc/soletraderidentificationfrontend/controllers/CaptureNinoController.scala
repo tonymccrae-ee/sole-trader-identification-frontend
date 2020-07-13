@@ -46,7 +46,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
           BadRequest(view(routes.CaptureNinoController.submit(journeyId), name, formWithErrors))
         ),
         nino => ninoStorageService.storeNino(journeyId, nino).map {
-          _ => Redirect(routes.CaptureSautrController.show())
+          _ => Redirect(routes.CaptureSautrController.show(journeyId))
         }
       )
   }
