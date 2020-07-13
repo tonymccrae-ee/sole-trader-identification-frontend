@@ -89,7 +89,7 @@ trait CheckYourAnswersViewTests {
 
         sautrRow.getSummaryListQuestion mustBe messages.sautr
         sautrRow.getSummaryListAnswer mustBe "1234567890"
-        sautrRow.getSummaryListChangeLink mustBe routes.CaptureSautrController.show().url
+        sautrRow.getSummaryListChangeLink mustBe routes.CaptureSautrController.show("").url
         sautrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.sautr}"
       }
 

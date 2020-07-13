@@ -50,7 +50,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
       val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(routes.CaptureSautrController.show().url)
+        redirectUri(routes.CaptureSautrController.show("").url)
       )
     }
   }

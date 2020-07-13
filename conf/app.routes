@@ -8,8 +8,8 @@ POST        /personal-details                            uk.gov.hmrc.soletraderi
 GET         /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId)
 POST        /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId)
 
-GET         /sa-utr                                      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show
-POST        /sa-utr                                      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit
+GET         /sa-utr/:journeyId                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId)
+POST        /sa-utr/:journeyId                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId)
 
 GET         /check-your-answers-business                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show
 POST        /check-your-answers-business                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit

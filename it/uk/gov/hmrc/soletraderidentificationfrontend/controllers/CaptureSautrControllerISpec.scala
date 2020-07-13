@@ -17,14 +17,16 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureSautrViewTests
 
 class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrViewTests {
+  val testJourneyId = "testJourneyId"
   val testSautr = "1234567890"
 
   "GET /sa-utr" should {
-    lazy val result = get("/sa-utr")
+    lazy val result = get(s"/sa-utr/$testJourneyId")
 
     "return OK" in {
       result.status mustBe OK
@@ -39,7 +41,14 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     "the sautr is correctly formatted" should {
       lazy val result = post("/sa-utr")("sa-utr" -> testSautr)
 
+      "store the sautr in the database" in {
+        val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
+        val optSautr = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveSautr(testJourneyId))
+        optSautr mustBe Some(testSautr)
+      }
+
       "redirect to Check Your Answers Page" in {
+        val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CheckYourAnswersController.show().url)
@@ -48,7 +57,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     }
 
     "no sautr is submitted" should {
-      lazy val result = post("/sa-utr")("sa-utr" -> "")
+      lazy val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> "")
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -58,7 +67,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     }
 
     "an invalid sautr is submitted" should {
-      lazy val result = post("/sa-utr")("sa-utr" -> "123456789")
+      lazy val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> "123456789")
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST

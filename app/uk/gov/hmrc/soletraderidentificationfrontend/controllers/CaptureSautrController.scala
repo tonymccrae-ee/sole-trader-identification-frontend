@@ -17,36 +17,37 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
+import uk.gov.hmrc.soletraderidentificationfrontend.services.SautrStorageService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sautr_page
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
-                                       view: capture_sautr_page)
-                                      (implicit val config: AppConfig) extends FrontendController(mcc) {
+                                       view: capture_sautr_page,
+                                       sautrStorageService: SautrStorageService)
+                                      (implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
   val name = "John Smith"
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Ok(view(routes.CaptureSautrController.submit(), name, CaptureSautrForm.form))
+      Future.successful(Ok(view(routes.CaptureSautrController.submit(journeyId), name, CaptureSautrForm.form))
       )
   }
 
-  val submit: Action[AnyContent] = Action.async {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       CaptureSautrForm.form.bindFromRequest().fold(
         formWithErrors => Future.successful(
-          BadRequest(view(routes.CaptureSautrController.submit(), name, formWithErrors))
+          BadRequest(view(routes.CaptureSautrController.submit(journeyId), name, formWithErrors))
         ),
-        _ => Future.successful(
-          Redirect(routes.CheckYourAnswersController.show())
-        )
+        sautr => sautrStorageService.storeSautr(journeyId, sautr).map {
+          _ => Redirect(routes.CheckYourAnswersController.show())
+        }
       )
   }
 

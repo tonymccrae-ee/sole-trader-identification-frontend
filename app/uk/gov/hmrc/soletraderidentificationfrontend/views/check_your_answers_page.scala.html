@@ -94,7 +94,7 @@
                 value = Value(content = Text("1234567890")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.CaptureSautrController.show().url,
+                        href = Routes.CaptureSautrController.show("").url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.sautr"))
                     )
