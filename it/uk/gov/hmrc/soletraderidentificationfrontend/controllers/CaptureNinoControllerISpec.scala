@@ -40,14 +40,14 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   "POST /national-insurance-number" should {
     val testNino = "AA111111A"
 
-    lazy val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
-
     "store the NINO in the database" in {
+      val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
       val optNino = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveNino(testJourneyId))
       optNino mustBe Some(testNino)
     }
 
     "redirect to the capture sautr page" in {
+      val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
       result must have(
         httpStatus(SEE_OTHER),
         redirectUri(routes.CaptureSautrController.show().url)
