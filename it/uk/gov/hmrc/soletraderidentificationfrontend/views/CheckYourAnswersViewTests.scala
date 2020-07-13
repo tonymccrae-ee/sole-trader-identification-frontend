@@ -80,7 +80,7 @@ trait CheckYourAnswersViewTests {
 
         ninoRow.getSummaryListQuestion mustBe messages.nino
         ninoRow.getSummaryListAnswer mustBe "AA 11 11 11 A"
-        ninoRow.getSummaryListChangeLink mustBe routes.CaptureNinoController.show().url
+        ninoRow.getSummaryListChangeLink mustBe routes.CaptureNinoController.show("").url
         ninoRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.nino}"
       }
 

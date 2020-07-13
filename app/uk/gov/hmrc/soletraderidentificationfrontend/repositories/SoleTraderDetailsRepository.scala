@@ -17,12 +17,17 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.repositories
 
 import javax.inject.Inject
-import play.api.libs.json.Format
+import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
+import reactivemongo.play.json.JSONSerializationPack.Reader
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
+import reactivemongo.play.json._
+import SoleTraderDetailsRepository._
 
-class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMongoComponent)
+import scala.concurrent.{ExecutionContext, Future}
+
+class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMongoComponent)(implicit ec: ExecutionContext)
   extends ReactiveRepository[SoleTraderDetailsModel, String](
     collectionName = "sole-trader-details",
     mongo = reactiveMongoComponent.mongoConnector.db,
@@ -30,4 +35,36 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
     idFormat = implicitly[Format[String]]
   ) {
 
+  def retrieveNino(journeyId: String): Future[Option[String]] = retrieve[String](journeyId, ninoKey)
+
+  def storeNino(journeyId: String, nino: String): Future[Unit] =
+    findAndUpdate(
+      query = Json.obj(
+        idKey -> journeyId
+      ),
+      update = Json.obj("$set" -> Json.obj(ninoKey -> nino)),
+      upsert = true
+    ).map(_ => ())
+
+  private def retrieve[T](journeyId: String, key: String)(implicit reads: Reader[T]): Future[Option[T]] =
+    collection.find(
+      selector = Json.obj(
+        idKey -> journeyId
+      ),
+      projection = Some(
+        Json.obj(
+          idKey -> 0,
+          key -> 1
+        )
+      )
+    ).one[JsObject] map { doc =>
+      doc.flatMap { js =>
+        (js \ key).validateOpt[T].get
+      }
+    }
+}
+
+object SoleTraderDetailsRepository {
+  val ninoKey = "nino"
+  val idKey = "_id"
 }

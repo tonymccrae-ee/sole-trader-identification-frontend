@@ -17,13 +17,16 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureNinoViewTests
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoViewTests {
+  val testJourneyId = "testJourneyId"
 
   "GET /national-insurance-number" should {
-    lazy val result = get("/national-insurance-number")
+    lazy val result = get(s"/national-insurance-number/$testJourneyId")
 
     "return OK" in {
       result.status mustBe OK
@@ -35,7 +38,14 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   }
 
   "POST /national-insurance-number" should {
-    lazy val result = post("/national-insurance-number")("nino" -> "AA111111A")
+    val testNino = "AA111111A"
+
+    lazy val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
+
+    "store the NINO in the database" in {
+      val optNino = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveNino(testJourneyId))
+      optNino mustBe Some(testNino)
+    }
 
     "redirect to the capture sautr page" in {
       result must have(
@@ -46,7 +56,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   }
 
   "no nino is submitted" should {
-    lazy val result = post("/national-insurance-number")("nino" -> "")
+    lazy val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> "")
 
     "return a bad request" in {
       result.status mustBe BAD_REQUEST
@@ -56,7 +66,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   }
 
   "an invalid nino is submitted" should {
-    lazy val result = post("/national-insurance-number")("nino" -> "AAAAAAAAAA")
+    lazy val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> "AAAAAAAAAA")
 
     "return a bad request" in {
       result.status mustBe BAD_REQUEST
