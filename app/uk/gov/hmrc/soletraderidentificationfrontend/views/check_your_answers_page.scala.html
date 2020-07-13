@@ -83,7 +83,7 @@
                 value = Value(content = Text("AA 11 11 11 A")),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.CaptureNinoController.show().url,
+                        href = Routes.CaptureNinoController.show("").url,
                         content = Text("Change"),
                         visuallyHiddenText = Some(Messages("check-your-answers.nino"))
                     )

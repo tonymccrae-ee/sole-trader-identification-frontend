@@ -40,7 +40,7 @@ class CapturePersonalDetailsControllerISpec extends ComponentSpecHelper with Cap
     "redirect to the Capture Nino page" in {
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(routes.CaptureNinoController.show().url)
+        redirectUri(routes.CaptureNinoController.show("").url)
       )
     }
   }

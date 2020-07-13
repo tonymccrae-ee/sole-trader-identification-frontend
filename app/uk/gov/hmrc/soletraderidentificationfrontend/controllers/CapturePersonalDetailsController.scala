@@ -34,9 +34,10 @@ class CapturePersonalDetailsController @Inject()(mcc: MessagesControllerComponen
       Future.successful(Ok(view(routes.CapturePersonalDetailsController.submit())))
   }
 
+  val testJourneyId = "testId" //Todo this needs removing
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(routes.CaptureNinoController.show()))
+      Future.successful(Redirect(routes.CaptureNinoController.show(testJourneyId)))
   }
 
 }
