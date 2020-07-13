@@ -14,19 +14,19 @@
  * limitations under the License.
  *@
 
-@this(govukInput: GovukInput)
+@this(govukInput : GovukInput)
 
 @(
-        form: Form[_],
-        id: String,
-        name: String,
-        label: String,
-        isPageHeading: Boolean,
-        hint: Option[Html] = None,
-        classes: String = "",
-        stripWhitespace: Boolean = false,
-        autocomplete: Option[String] = None,
-        inputType: String = "text"
+    form: Form[_],
+    id: String,
+    name: String,
+    label: String,
+    isPageHeading: Boolean,
+    hint: Option[Html] = None,
+    classes: String = "",
+    stripWhitespace: Boolean = false,
+    autocomplete: Option[String] = None,
+    inputType: String = "text"
 )(implicit messages: Messages)
 
 @govukInput(Input(
@@ -36,7 +36,7 @@
     label = Label(
         content = Text(label),
         isPageHeading = isPageHeading,
-        classes = if(isPageHeading) "govuk-label--xl" else "govuk-visually-hidden"
+        classes = if(isPageHeading) "govuk-label--xl" else "govuk-label govuk-!-font-weight-bold"
     ),
     hint = hint.map(hintHtml => Hint(
         content = HtmlContent(hintHtml)

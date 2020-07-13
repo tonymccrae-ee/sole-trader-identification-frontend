@@ -28,6 +28,7 @@ object MessageLookup {
       val title = "There is a problem"
       val error = "Error: "
     }
+
   }
 
   object CapturePersonalDetails {
@@ -38,6 +39,24 @@ object MessageLookup {
     val form_field_2 = "Last name"
     val form_field_3 = "Date of birth"
     val form_field_3_hint = "For example, 27 3 2007"
+
+    object Error {
+      val noFirstNameEntered = "Enter your first name"
+      val noLastNameEntered = "Enter your last name"
+      val invalidFirstNameEntered = "First name must be 99 characters or fewer."
+      val invalidLastNameEntered = "Last name must be 99 characters or fewer."
+      val noDobEntered = "Enter your date of birth"
+      val noDayEntered = "Your date of birth must include a day"
+      val noMonthEntered = "Your date of birth must include a month"
+      val noYearEntered = "Your date of birth must include a year"
+      val noDayAndMonthEntered = "Your date of birth must include a day and month"
+      val noDayAndYearEntered = "Your date of birth must include a day and year"
+      val noMonthAndYearEntered = "Your date of birth must include a month and year"
+      val invalidDay = "Day (Enter a number between 1 and 31)"
+      val invalidMonth = "Month (Enter a number between 1 and 12)"
+      val invalidYear = "Year (The date must be in the past)"
+    }
+
   }
 
   object CaptureNino {
@@ -63,6 +82,7 @@ object MessageLookup {
     object Error {
       val invalidSautrEntered = "Enter a Unique Taxpayer Reference in the correct format"
     }
+
   }
 
   object CheckYourAnswers {
