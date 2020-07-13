@@ -20,24 +20,31 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.personal_details_page
+import uk.gov.hmrc.soletraderidentificationfrontend.forms.CapturePersonalDetailsForm
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_personal_details_page
 
 import scala.concurrent.Future
 
 @Singleton
 class CapturePersonalDetailsController @Inject()(mcc: MessagesControllerComponents,
-                                                 view: personal_details_page)
+                                                 view: capture_personal_details_page,
+                                                 personalDetailsForm: CapturePersonalDetailsForm)
                                                 (implicit val config: AppConfig) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CapturePersonalDetailsController.submit())))
+      Future.successful(Ok(view(routes.CapturePersonalDetailsController.submit(), personalDetailsForm.apply())))
   }
 
   val testJourneyId = "testId" //Todo this needs removing
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(routes.CaptureNinoController.show(testJourneyId)))
+      personalDetailsForm.apply().bindFromRequest().fold(
+        formWithErrors =>
+          Future.successful(BadRequest(view(routes.CapturePersonalDetailsController.submit(), formWithErrors))),
+        _ =>
+          Future.successful(Redirect(routes.CaptureNinoController.show(testJourneyId)))
+      )
   }
 
 }

@@ -42,7 +42,7 @@ trait CaptureNinoViewTests {
     }
 
     "have correct labels in the form" in {
-      doc.getLabelElement.first.text mustBe messages.form_field_1
+      doc.getSpan("nino-hint").text mustBe messages.form_field_1
     }
 
     "have the correct line 2" in {

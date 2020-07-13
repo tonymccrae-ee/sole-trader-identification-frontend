@@ -8,6 +8,13 @@ base.save_and_continue = Save and continue
 base.save_and_come_back = Save and come back later
 base.change = Change
 base.confirm_and_continue = Confirm and continue
+date.day = Day
+date.month = Month
+date.year = Year
+
+localDate.label.day = day
+localDate.label.month = month
+localDate.label.year = year
 
 ## Footer Links
 footer.links.help_page.text = Help using GOV.UK
@@ -50,3 +57,15 @@ check-your-answers.dob = Date of birth
 check-your-answers.nino = National insurance number
 check-your-answers.sautr = Unique taxpayers reference number
 check-your-answers.no_sautr = The business does not have a UTR
+
+## Errors
+error.no_entry_first_name = Enter your first name
+error.invalid_first_name = First name must be 99 characters or fewer.
+error.no_entry_last_name = Enter your last name
+error.invalid_last_name = Last name must be 99 characters or fewer.
+error.no_entry_dob = Enter your date of birth
+error.no_entry_dob_one_required = Your date of birth must include a {0}
+error.no_entry_dob_two_required = Your date of birth must include a {0} and {1}
+error.invalid_dob_day = Day (Enter a number between 1 and 31)
+error.invalid_dob_month = Month (Enter a number between 1 and 12)
+error.invalid_dob_year = Year (The date must be in the past)

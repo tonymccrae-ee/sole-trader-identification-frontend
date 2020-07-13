@@ -20,40 +20,26 @@
 @import uk.gov.hmrc.soletraderidentificationfrontend.views.helpers.TitleHelper.title
 
 @this(layout: govuk_template,
-      govUkHeader: GovukHeader,
-      govukInput : GovukInput,
-      govukFieldset : GovukFieldset,
-      govukDateInput : GovukDateInput,
-      govukButton : GovukButton,
-      formWithCSRF: FormWithCSRF,
-      inputText: inputText,
-      errorSummary: errorSummary)
+        govUkHeader: GovukHeader,
+        govukInput : GovukInput,
+        govukFieldset : GovukFieldset,
+        govukDateInput : GovukDateInput,
+        govukButton : GovukButton,
+        formWithCSRF: FormWithCSRF,
+        inputText: inputText,
+        errorSummary: errorSummary)
 
 @(formAction: Call, displayName: String, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(title = title(messages("enter-nino.title"), form)) {
-
     @errorSummary(form.errors)
-
-    @govukFieldset(Fieldset(
-        legend = Some(Legend(
-            content = Text(Messages("enter-nino.heading",displayName)),
-            classes = "govuk-fieldset__legend--xl",
-            isPageHeading = true
-        )),
-        html = html
-    ))
-
-}
-
-@html = {
     @formWithCSRF(action = formAction) {
-            @inputText(
+        @inputText(
             form = form,
             id = "nino",
             name = "nino",
-            label = messages("enter-nino.line_1"),
-            isPageHeading = false,
+            label = messages("enter-nino.heading",displayName),
+            isPageHeading = true,
             hint = Some(Html(s"""<p class="govuk-body">${messages("enter-nino.line_1")}</p>""")),
             classes = "govuk-input--width-20"
         )
