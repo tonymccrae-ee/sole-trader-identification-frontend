@@ -39,10 +39,8 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
 
   "POST /sa-utr" when {
     "the sautr is correctly formatted" should {
-      lazy val result = post("/sa-utr")("sa-utr" -> testSautr)
-
       "store the sautr in the database" in {
-        val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
+        post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
         val optSautr = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveSautr(testJourneyId))
         optSautr mustBe Some(testSautr)
       }
@@ -51,7 +49,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
         val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CheckYourAnswersController.show().url)
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
         )
       }
     }

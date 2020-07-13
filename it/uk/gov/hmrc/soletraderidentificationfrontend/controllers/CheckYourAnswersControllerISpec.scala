@@ -25,14 +25,15 @@ import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTe
 class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests {
 
   "GET /check-your-answers-business" should {
-    lazy val result: WSResponse = get("/check-your-answers-business")
+    val testJourneyId = "testJourneyId"
+    lazy val result: WSResponse = get(s"/check-your-answers-business/$testJourneyId")
 
     "return OK" in {
       result.status mustBe OK
     }
 
     "return a view which" should {
-      testCheckYourAnswersView(result)
+      testCheckYourAnswersView(result, testJourneyId)
     }
   }
 

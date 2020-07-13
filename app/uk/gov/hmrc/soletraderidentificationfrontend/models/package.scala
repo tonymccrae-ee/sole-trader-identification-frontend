@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.soletraderidentificationfrontend.models
+package uk.gov.hmrc.soletraderidentificationfrontend
 
-import java.time.LocalDate
+package object models {
 
-case class PersonalDetails(firstName: String, lastName: String, dateOfBirth: LocalDate)
+  val personalDetailsKey = "personalDetails"
+  val ninoKey = "nino"
+  val sautrKey = "sautr"
+  val firstNameKey = "firstName"
+  val lastNameKey = "lastName"
+  val dateOfBirthKey = "dateOfBirth"
+
+}

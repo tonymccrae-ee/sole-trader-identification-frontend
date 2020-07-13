@@ -20,7 +20,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureNinoViewTests
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoViewTests {
   val testJourneyId = "testJourneyId"
@@ -41,7 +40,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
     val testNino = "AA111111A"
 
     "store the NINO in the database" in {
-      val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
+      post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
       val optNino = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveNino(testJourneyId))
       optNino mustBe Some(testNino)
     }
@@ -50,7 +49,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
       val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(routes.CaptureSautrController.show("").url)
+        redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
       )
     }
   }

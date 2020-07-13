@@ -21,29 +21,32 @@ import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CapturePersonalDetailsForm
+import uk.gov.hmrc.soletraderidentificationfrontend.services.PersonalDetailsStorageService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_personal_details_page
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CapturePersonalDetailsController @Inject()(mcc: MessagesControllerComponents,
                                                  view: capture_personal_details_page,
-                                                 personalDetailsForm: CapturePersonalDetailsForm)
-                                                (implicit val config: AppConfig) extends FrontendController(mcc) {
+                                                 personalDetailsForm: CapturePersonalDetailsForm,
+                                                 personalDetailsStorageService: PersonalDetailsStorageService
+                                                )(implicit val config: AppConfig, ec: ExecutionContext) extends FrontendController(mcc) {
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CapturePersonalDetailsController.submit(), personalDetailsForm.apply())))
+      Future.successful(Ok(view(routes.CapturePersonalDetailsController.submit(journeyId), personalDetailsForm.apply())))
   }
 
-  val testJourneyId = "testId" //Todo this needs removing
-  val submit: Action[AnyContent] = Action.async {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       personalDetailsForm.apply().bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(routes.CapturePersonalDetailsController.submit(), formWithErrors))),
-        _ =>
-          Future.successful(Redirect(routes.CaptureNinoController.show(testJourneyId)))
+          Future.successful(BadRequest(view(routes.CapturePersonalDetailsController.submit(journeyId), formWithErrors))),
+        personalDetails =>
+          personalDetailsStorageService.storePersonalDetails(journeyId, personalDetails).map {
+            _ => Redirect(routes.CaptureNinoController.show(journeyId))
+          }
       )
   }
 

@@ -2,16 +2,16 @@
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /personal-details                            uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.show
-POST        /personal-details                            uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.submit
+GET         /personal-details/:journeyId                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.show(journeyId: String)
+POST        /personal-details/:journeyId                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.submit(journeyId: String)
 
-GET         /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId)
-POST        /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId)
+GET         /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId: String)
+POST        /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId: String)
 
 GET         /sa-utr/:journeyId                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId)
 POST        /sa-utr/:journeyId                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId)
 
-GET         /check-your-answers-business                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show
+GET         /check-your-answers-business/:journeyId      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId: String)
 POST        /check-your-answers-business                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit
 
 ->          /govuk-frontend                              govuk.Routes
