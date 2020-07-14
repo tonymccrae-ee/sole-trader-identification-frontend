@@ -46,7 +46,7 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
           BadRequest(view(routes.CaptureSautrController.submit(journeyId), name, formWithErrors))
         ),
         sautr => sautrStorageService.storeSautr(journeyId, sautr).map {
-          _ => Redirect(routes.CheckYourAnswersController.show())
+          _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
         }
       )
   }

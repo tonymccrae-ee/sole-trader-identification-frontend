@@ -18,14 +18,34 @@ package uk.gov.hmrc.soletraderidentificationfrontend.models
 
 import java.time.LocalDate
 
-import play.api.libs.json.Json
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
 case class SoleTraderDetailsModel(firstName: String,
                                   lastName: String,
-                                  dob: LocalDate,
+                                  dateOfBirth: LocalDate,
                                   nino: String,
                                   optSautr: Option[String])
 
 object SoleTraderDetailsModel {
-  val format = Json.format[SoleTraderDetailsModel]
+
+  implicit val reads: Reads[SoleTraderDetailsModel] = (
+    (JsPath \ personalDetailsKey \ firstNameKey).read[String] and
+      (JsPath \ personalDetailsKey \ lastNameKey).read[String] and
+      (JsPath \ personalDetailsKey \ dateOfBirthKey).read[LocalDate] and
+      (JsPath \ ninoKey).read[String] and
+      (JsPath \ sautrKey).readNullable[String]
+    )(SoleTraderDetailsModel.apply _)
+
+  val writes: OWrites[SoleTraderDetailsModel] = (
+      (JsPath \ personalDetailsKey \ firstNameKey).write[String] and
+        (JsPath \ personalDetailsKey \ lastNameKey).write[String] and
+        (JsPath \ personalDetailsKey \ dateOfBirthKey).write[LocalDate] and
+        (JsPath \ ninoKey).write[String] and
+        (JsPath \ sautrKey).writeNullable[String]
+      )(unlift(SoleTraderDetailsModel.unapply))
+
+
+  val format: OFormat[SoleTraderDetailsModel] = OFormat(reads, writes)
+
 }

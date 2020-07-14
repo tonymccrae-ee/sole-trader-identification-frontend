@@ -30,10 +30,10 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                           (implicit val config: AppConfig) extends FrontendController(mcc) {
 
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(
-        Ok(view(routes.CheckYourAnswersController.submit()))
+        Ok(view(routes.CheckYourAnswersController.submit(), journeyId))
       )
   }
 

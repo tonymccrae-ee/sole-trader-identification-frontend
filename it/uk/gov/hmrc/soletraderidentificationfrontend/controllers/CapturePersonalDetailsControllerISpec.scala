@@ -16,7 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import java.time.LocalDate
+
 import play.api.test.Helpers._
+import uk.gov.hmrc.soletraderidentificationfrontend.models.PersonalDetailsModel
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CapturePersonalDetailsViewTests
 
@@ -27,8 +31,10 @@ class CapturePersonalDetailsControllerISpec extends ComponentSpecHelper with Cap
   val testMonth = "01"
   val testYear = "1990"
 
+  val testJourneyId: String = "testJourneyId"
+
   "GET /personal-details" should {
-    lazy val result = get("/personal-details")
+    lazy val result = get(s"/personal-details/$testJourneyId")
 
     "return OK" in {
       result.status mustBe OK
@@ -40,128 +46,261 @@ class CapturePersonalDetailsControllerISpec extends ComponentSpecHelper with Cap
   }
 
   "POST /personal-details" when {
+    val testPersonalDetails = PersonalDetailsModel(testFirstName, testLastName, LocalDate.parse(s"$testYear-$testMonth-$testDay"))
 
     "the whole form is correctly formatted" should {
-      lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month" -> testMonth, "date-of-birth-year" -> testYear)
+      "store the personal details in the database" in {
+        post(s"/personal-details/$testJourneyId")(
+          "first-name" -> testFirstName,
+          "last-name" -> testLastName,
+          "date-of-birth-day" -> testDay,
+          "date-of-birth-month" -> testMonth,
+          "date-of-birth-year" -> testYear
+        )
+
+        val optPersonalDetails = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrievePersonalDetails(testJourneyId))
+
+        optPersonalDetails mustBe Some(testPersonalDetails)
+      }
+
       "redirect to the Capture Nino page" in {
+        lazy val result = post(s"/personal-details/$testJourneyId")(
+          "first-name" -> testFirstName,
+          "last-name" -> testLastName,
+          "date-of-birth-day" -> testDay,
+          "date-of-birth-month" -> testMonth,
+          "date-of-birth-year" -> testYear
+        )
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CaptureNinoController.show("").url)
+          redirectUri(routes.CaptureNinoController.show(testJourneyId).url)
         )
       }
     }
-      "the whole form is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> "", "last-name" -> "", "date-of-birth-day" -> "", "date-of-birth-month" -> "", "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessage(result)
+
+    "the whole form is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> "",
+        "last-name" -> "",
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the first name is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> "", "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month" -> testMonth, "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoFirstName(result)
+      testCapturePersonalDetailsErrorMessage(result)
+    }
+
+    "the first name is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> "",
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the last name is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> "", "date-of-birth-day" -> testDay, "date-of-birth-month" -> testMonth, "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoLastName(result)
+      testCapturePersonalDetailsErrorMessageNoFirstName(result)
+    }
+
+    "the last name is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> "",
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the date of birth is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> "", "date-of-birth-month" -> "", "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoDob(result)
+      testCapturePersonalDetailsErrorMessageNoLastName(result)
+    }
+
+    "the date of birth is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the first name and last name are missing" should {
-        lazy val result = post("/personal-details")("first-name" -> "", "last-name" -> "", "date-of-birth-day" -> testDay, "date-of-birth-month" -> testMonth, "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoFirstNameAndLastName(result)
+      testCapturePersonalDetailsErrorMessageNoDob(result)
+    }
+
+    "the first name and last name are missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> "",
+        "last-name" -> "",
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the first name and dob are missing" should {
-        lazy val result = post("/personal-details")("first-name" -> "", "last-name" -> testLastName, "date-of-birth-day" -> "", "date-of-birth-month" -> "", "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoFirstNameAndDob(result)
+      testCapturePersonalDetailsErrorMessageNoFirstNameAndLastName(result)
+    }
+
+    "the first name and dob are missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> "",
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the last name and dob are missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> "", "date-of-birth-day" -> "", "date-of-birth-month" -> "", "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoLastNameAndDob(result)
+      testCapturePersonalDetailsErrorMessageNoFirstNameAndDob(result)
+    }
+
+    "the last name and dob are missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> "",
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the day in dob is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> "", "date-of-birth-month" -> testMonth, "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoDay(result)
+      testCapturePersonalDetailsErrorMessageNoLastNameAndDob(result)
+    }
+
+    "the day in dob is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the month in dob is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month" -> "", "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoMonth(result)
+      testCapturePersonalDetailsErrorMessageNoDay(result)
+    }
+
+    "the month in dob is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the year in dob is missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month"-> testMonth, "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoYear(result)
+      testCapturePersonalDetailsErrorMessageNoMonth(result)
+    }
+
+    "the year in dob is missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the day and month in dob are missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> "", "date-of-birth-month" -> "", "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoDayNoMonth(result)
+      testCapturePersonalDetailsErrorMessageNoYear(result)
+    }
+
+    "the day and month in dob are missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the day and year in dob are missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> "", "date-of-birth-month" -> testMonth, "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoDayNoYear(result)
+      testCapturePersonalDetailsErrorMessageNoDayNoMonth(result)
+    }
+
+    "the day and year in dob are missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> "",
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "the month and year in dob are missing" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month" -> "", "date-of-birth-year" -> "")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageNoMonthNoYear(result)
+      testCapturePersonalDetailsErrorMessageNoDayNoYear(result)
+    }
+
+    "the month and year in dob are missing" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> "",
+        "date-of-birth-year" -> ""
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "an invalid day is submitted" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> "35", "date-of-birth-month" -> testMonth, "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageInvalidDay(result)
+      testCapturePersonalDetailsErrorMessageNoMonthNoYear(result)
+    }
+
+    "an invalid day is submitted" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> "35",
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "an invalid month is submitted" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month" -> "15", "date-of-birth-year" -> testYear)
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageInvalidMonth(result)
+      testCapturePersonalDetailsErrorMessageInvalidDay(result)
+    }
+
+    "an invalid month is submitted" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> "15",
+        "date-of-birth-year" -> testYear
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
-      "a future year is submitted" should {
-        lazy val result = post("/personal-details")("first-name" -> testFirstName, "last-name" -> testLastName, "date-of-birth-day" -> testDay, "date-of-birth-month" -> testMonth, "date-of-birth-year" -> "2024")
-        "return a bad request" in {
-          result.status mustBe BAD_REQUEST
-        }
-        testCapturePersonalDetailsErrorMessageInvalidYear(result)
+      testCapturePersonalDetailsErrorMessageInvalidMonth(result)
+    }
+
+    "a future year is submitted" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> "2024"
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
       }
+      testCapturePersonalDetailsErrorMessageInvalidYear(result)
     }
   }
+}
 

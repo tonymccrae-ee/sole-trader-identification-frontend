@@ -28,7 +28,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil._
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.MappingUtil._
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.TimeMachine
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper._
-import uk.gov.hmrc.soletraderidentificationfrontend.models.PersonalDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.PersonalDetailsModel
 
 class CapturePersonalDetailsForm @Inject()(timeMachine: TimeMachine) extends Mappings {
 
@@ -74,7 +74,7 @@ class CapturePersonalDetailsForm @Inject()(timeMachine: TimeMachine) extends Map
       )
   }
 
-  def apply()(implicit messages: Messages): Form[PersonalDetails] = {
+  def apply()(implicit messages: Messages): Form[PersonalDetailsModel] = {
     Form(
       mapping(
         "first-name" -> optText.toText.verifying(firstNameNotEntered andThen firstNameInvalid),
@@ -87,7 +87,7 @@ class CapturePersonalDetailsForm @Inject()(timeMachine: TimeMachine) extends Map
           twoRequiredKey = "error.no_entry_dob_two_required",
           requiredKey = "error.no_entry_dob_one_required"
         )
-          .verifying(dobYearInvalid))(PersonalDetails.apply)(PersonalDetails.unapply)
+          .verifying(dobYearInvalid))(PersonalDetailsModel.apply)(PersonalDetailsModel.unapply)
     )
   }
 }

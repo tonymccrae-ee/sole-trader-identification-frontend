@@ -30,7 +30,7 @@ import scala.collection.JavaConversions._
 trait CheckYourAnswersViewTests {
   this: WordSpecLike with MustMatchers =>
 
-  def testCheckYourAnswersView(result: => WSResponse): Unit = {
+  def testCheckYourAnswersView(result: => WSResponse, journeyId: String): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "have the correct title" in {
@@ -53,7 +53,7 @@ trait CheckYourAnswersViewTests {
 
         firstNameRow.getSummaryListQuestion mustBe messages.firstName
         firstNameRow.getSummaryListAnswer mustBe "John"
-        firstNameRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show().url
+        firstNameRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show(journeyId).url
         firstNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.firstName}"
       }
 
@@ -62,7 +62,7 @@ trait CheckYourAnswersViewTests {
 
         lastNameRow.getSummaryListQuestion mustBe messages.lastName
         lastNameRow.getSummaryListAnswer mustBe "Smith"
-        lastNameRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show().url
+        lastNameRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show(journeyId).url
         lastNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.lastName}"
       }
 
@@ -71,7 +71,7 @@ trait CheckYourAnswersViewTests {
 
         dateOfBirthRow.getSummaryListQuestion mustBe messages.dob
         dateOfBirthRow.getSummaryListAnswer mustBe "5 January 1978"
-        dateOfBirthRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show().url
+        dateOfBirthRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show(journeyId).url
         dateOfBirthRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.dob}"
       }
 
@@ -80,7 +80,7 @@ trait CheckYourAnswersViewTests {
 
         ninoRow.getSummaryListQuestion mustBe messages.nino
         ninoRow.getSummaryListAnswer mustBe "AA 11 11 11 A"
-        ninoRow.getSummaryListChangeLink mustBe routes.CaptureNinoController.show("").url
+        ninoRow.getSummaryListChangeLink mustBe routes.CaptureNinoController.show(journeyId).url
         ninoRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.nino}"
       }
 
@@ -89,7 +89,7 @@ trait CheckYourAnswersViewTests {
 
         sautrRow.getSummaryListQuestion mustBe messages.sautr
         sautrRow.getSummaryListAnswer mustBe "1234567890"
-        sautrRow.getSummaryListChangeLink mustBe routes.CaptureSautrController.show("").url
+        sautrRow.getSummaryListChangeLink mustBe routes.CaptureSautrController.show(journeyId).url
         sautrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.sautr}"
       }
 

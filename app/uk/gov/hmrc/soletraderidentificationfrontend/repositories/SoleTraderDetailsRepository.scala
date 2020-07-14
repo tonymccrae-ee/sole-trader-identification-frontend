@@ -19,10 +19,11 @@ package uk.gov.hmrc.soletraderidentificationfrontend.repositories
 import javax.inject.Inject
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
+import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.play.json.JSONSerializationPack.Reader
-import reactivemongo.play.json._
+import reactivemongo.play.json.JsObjectDocumentWriter
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{PersonalDetailsModel, SoleTraderDetailsModel}
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,28 +36,31 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
     idFormat = implicitly[Format[String]]
   ) {
 
-  def retrieveNino(journeyId: String): Future[Option[String]] = retrieve[String](journeyId, ninoKey)
-
-  def retrieveSautr(journeyId: String): Future[Option[String]] = retrieve[String](journeyId, sautrKey)
-
+  def storePersonalDetails(journeyId: String, personalDetails: PersonalDetailsModel): Future[Unit] =
+    upsert[PersonalDetailsModel](journeyId, personalDetailsKey, personalDetails).map(_ => ())
 
   def storeNino(journeyId: String, nino: String): Future[Unit] =
-    findAndUpdate(
-      query = Json.obj(
-        idKey -> journeyId
-      ),
-      update = Json.obj("$set" -> Json.obj(ninoKey -> nino)),
-      upsert = true
-    ).map(_ => ())
+    upsert[String](journeyId, ninoKey, nino).map(_ => ())
 
   def storeSautr(journeyId: String, sautr: String): Future[Unit] =
-    findAndUpdate(
-      query = Json.obj(
-        idKey -> journeyId
-      ),
-      update = Json.obj("$set" -> Json.obj(sautrKey -> sautr)),
+    upsert[String](journeyId, sautrKey, sautr).map(_ => ())
+
+  def retrievePersonalDetails(journeyId: String): Future[Option[PersonalDetailsModel]] =
+    retrieve[PersonalDetailsModel](journeyId, personalDetailsKey)
+
+  def retrieveNino(journeyId: String): Future[Option[String]] =
+    retrieve[String](journeyId, ninoKey)
+
+  def retrieveSautr(journeyId: String): Future[Option[String]] =
+    retrieve[String](journeyId, sautrKey)
+
+  private def upsert[T](journeyId: String, key: String, updates: T)
+                       (implicit writes: Writes[T]): Future[UpdateWriteResult] =
+    collection.update(ordered = false).one(
+      q = Json.obj(idKey -> journeyId),
+      u = Json.obj(fields = "$set" -> Json.obj(key -> updates)),
       upsert = true
-    ).map(_ => ())
+    ).filter(_.n == 1)
 
   private def retrieve[T](journeyId: String, key: String)(implicit reads: Reader[T]): Future[Option[T]] =
     collection.find(
@@ -77,7 +81,8 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
 }
 
 object SoleTraderDetailsRepository {
+  val idKey = "_id"
+  val personalDetailsKey = "personalDetails"
   val ninoKey = "nino"
   val sautrKey = "sautr"
-  val idKey = "_id"
 }
