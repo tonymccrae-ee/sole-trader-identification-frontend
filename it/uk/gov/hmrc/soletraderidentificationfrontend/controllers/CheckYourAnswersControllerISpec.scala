@@ -16,16 +16,30 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import java.time.LocalDate
+import java.util.UUID
+
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests {
 
   "GET /check-your-answers-business" should {
-    val testJourneyId = "testJourneyId"
+    val testJourneyId = UUID.randomUUID().toString
+    val testFirstName = "John"
+    val testLastName = "Smith"
+    val testSautr = "1234567890"
+    val testNino = "AA111111A"
+
+    val testSoleTraderDetails = SoleTraderDetailsModel(testFirstName,testLastName, LocalDate.parse("1978-01-05") , testNino,Some(testSautr))
+    await(app.injector.instanceOf[SoleTraderDetailsRepository].insert(testSoleTraderDetails))
     lazy val result: WSResponse = get(s"/check-your-answers-business/$testJourneyId")
 
     "return OK" in {

@@ -73,11 +73,11 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
           key -> 1
         )
       )
-    ).one[JsObject] map { doc =>
-      doc.flatMap { js =>
-        (js \ key).validateOpt[T].get
-      }
-    }
+    ).one[JsObject].map(
+      _.map(
+        js => (js \ key).as[T]
+      )
+    )
 }
 
 object SoleTraderDetailsRepository {
