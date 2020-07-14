@@ -249,4 +249,16 @@ trait CapturePersonalDetailsViewTests {
       doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidYear
     }
   }
+
+  def testCapturePersonalDetailsErrorMessageInvalidAge(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "correctly display the error summary" in {
+      doc.getErrorSummaryTitle.text mustBe Base.Error.title
+      doc.getErrorSummaryBody.text mustBe messages.Error.invalidAge
+    }
+    "correctly display the field errors" in {
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidAge
+    }
+  }
 }
