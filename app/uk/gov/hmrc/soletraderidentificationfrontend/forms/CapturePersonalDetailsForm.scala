@@ -68,9 +68,20 @@ class CapturePersonalDetailsForm @Inject()(timeMachine: TimeMachine) extends Map
     def now: LocalDate = timeMachine.now()
 
     dateOfBirth =>
-      validate(
-        constraint = (!dateOfBirth.isBefore(now)),
+      validateNot(
+        constraint = dateOfBirth.isBefore(now),
         errMsg = "error.invalid_dob_year"
+      )
+  }
+
+  private val invalidAge: Constraint[LocalDate] = constraint[LocalDate] {
+    def now: LocalDate = timeMachine.now()
+        val minAge = 16
+
+    dateOfBirth =>
+      validateNot(
+        constraint = dateOfBirth.isBefore(now.minusYears(minAge)),
+        errMsg = "error.invalid_age"
       )
   }
 
@@ -86,8 +97,7 @@ class CapturePersonalDetailsForm @Inject()(timeMachine: TimeMachine) extends Map
           allRequiredKey = "error.no_entry_dob",
           twoRequiredKey = "error.no_entry_dob_two_required",
           requiredKey = "error.no_entry_dob_one_required"
-        )
-          .verifying(dobYearInvalid))(PersonalDetailsModel.apply)(PersonalDetailsModel.unapply)
+        ).verifying(dobYearInvalid andThen invalidAge))(PersonalDetailsModel.apply)(PersonalDetailsModel.unapply)
     )
   }
 }

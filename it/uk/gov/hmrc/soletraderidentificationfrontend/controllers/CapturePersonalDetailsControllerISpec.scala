@@ -301,6 +301,20 @@ class CapturePersonalDetailsControllerISpec extends ComponentSpecHelper with Cap
       }
       testCapturePersonalDetailsErrorMessageInvalidYear(result)
     }
+
+    "the dob submitted is less than 16 years ago" should {
+      lazy val result = post(s"/personal-details/$testJourneyId")(
+        "first-name" -> testFirstName,
+        "last-name" -> testLastName,
+        "date-of-birth-day" -> testDay,
+        "date-of-birth-month" -> testMonth,
+        "date-of-birth-year" -> LocalDate.now.minusYears(10).getYear.toString
+      )
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+      testCapturePersonalDetailsErrorMessageInvalidAge(result)
+    }
   }
 }
 
