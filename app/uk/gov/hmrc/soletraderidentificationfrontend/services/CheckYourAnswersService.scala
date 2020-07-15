@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersService @Inject()(soleTraderDetailsRepository: SoleTraderDetailsRepository)(implicit ec: ExecutionContext) {
 
-  def retriveCheckYourAnswers(journeyId: String): Future[Option[SoleTraderDetailsModel]] = soleTraderDetailsRepository.findById(journeyId)
+  def retrieveCheckYourAnswers(journeyId: String): Future[Option[SoleTraderDetailsModel]] = soleTraderDetailsRepository.findById(journeyId)
 
 }
 

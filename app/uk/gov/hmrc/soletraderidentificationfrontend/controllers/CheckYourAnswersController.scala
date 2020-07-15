@@ -35,9 +35,9 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      checkYourAnswersService.retriveCheckYourAnswers(journeyId).map {
+      checkYourAnswersService.retrieveCheckYourAnswers(journeyId).map {
         case Some(details) => Ok(view(routes.CheckYourAnswersController.submit(), journeyId, details))
-        case None => throw new InternalServerException("Fail to retrive data from database")
+        case None => throw new InternalServerException("Fail to retrieve data from database")
       }
   }
 
