@@ -18,28 +18,31 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.services.CheckYourAnswersService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
-import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
-                                           view: check_your_answers_page)
-                                          (implicit val config: AppConfig) extends FrontendController(mcc) {
+                                           view: check_your_answers_page,
+                                           checkYourAnswersService: CheckYourAnswersService)
+                                          (implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
 
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Ok(view(routes.CheckYourAnswersController.submit(), journeyId))
-      )
+      checkYourAnswersService.retrieveCheckYourAnswers(journeyId).map {
+        case Some(details) => Ok(view(routes.CheckYourAnswersController.submit(), journeyId, details))
+        case None => throw new InternalServerException("Fail to retrieve data from database")
+      }
   }
 
   val submit: Action[AnyContent] = Action {
     implicit request =>
       NotImplemented
   }
-
 }

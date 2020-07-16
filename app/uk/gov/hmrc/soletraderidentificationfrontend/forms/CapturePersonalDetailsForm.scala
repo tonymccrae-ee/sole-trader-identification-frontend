@@ -76,7 +76,8 @@ class CapturePersonalDetailsForm @Inject()(timeMachine: TimeMachine) extends Map
 
   private val invalidAge: Constraint[LocalDate] = constraint[LocalDate] {
     def now: LocalDate = timeMachine.now()
-        val minAge = 16
+
+    val minAge = 16
 
     dateOfBirth =>
       validateNot(
