@@ -18,14 +18,14 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.{MustMatchers, WordSpecLike}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CaptureSautr => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
 
 trait CaptureSautrViewTests {
-  this: WordSpecLike with MustMatchers =>
+  this: ComponentSpecHelper =>
 
   def testCaptureSautrView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
@@ -53,9 +53,6 @@ trait CaptureSautrViewTests {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
 
-    "have a save and come back later button" in {
-      doc.getSubmitButton.get(1).text mustBe Base.saveAndComeBack
-    }
   }
 
   def testCaptureSautrErrorMessages(result: => WSResponse): Unit = {

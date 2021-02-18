@@ -5,7 +5,6 @@ error.title-prefix = 'Error: '
 
 ## Base
 base.save_and_continue = Save and continue
-base.save_and_come_back = Save and come back later
 base.change = Change
 base.confirm_and_continue = Confirm and continue
 date.day = Day

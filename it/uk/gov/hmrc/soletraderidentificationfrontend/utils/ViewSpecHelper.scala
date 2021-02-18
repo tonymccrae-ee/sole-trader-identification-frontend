@@ -20,13 +20,13 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object ViewSpecHelper {
 
   implicit class ElementExtensions(element: Element) {
 
-    lazy val content: Element = element.getElementsByTag("article").head
+    lazy val content: Element = element.getElementsByTag("article").iterator().asScala.toList.head
 
     lazy val getParagraphs: Elements = element.getElementsByTag("p")
 
