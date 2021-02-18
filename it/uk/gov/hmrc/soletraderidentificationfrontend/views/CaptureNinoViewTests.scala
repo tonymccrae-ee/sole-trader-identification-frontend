@@ -18,13 +18,13 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.{MustMatchers, WordSpecLike}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CaptureNino => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
 trait CaptureNinoViewTests {
-  this: WordSpecLike with MustMatchers =>
+  this: ComponentSpecHelper =>
 
   def testCaptureNinoView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
@@ -38,24 +38,23 @@ trait CaptureNinoViewTests {
     }
 
     "have the correct hint text" in {
-      doc.getHintText mustBe messages.line_1
+      doc.getElementsByClass("govuk-hint").text mustBe messages.line_1
     }
 
     "have correct labels in the form" in {
-      doc.getSpan("nino-hint").text mustBe messages.form_field_1
+      doc.getElementById("nino-hint").text mustBe messages.form_field_1
     }
 
     "have the correct line 2" in {
       doc.getParagraphs.last.text mustBe messages.line_2
     }
-    "have a save and confirm button" in {
+
+    "have a save and continue button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
 
-    "have a save and come back later button" in {
-      doc.getSubmitButton.get(1).text mustBe Base.saveAndComeBack
-    }
   }
+
   def testCaptureNinoErrorMessages(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 

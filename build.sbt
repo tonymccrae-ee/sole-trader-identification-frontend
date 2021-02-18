@@ -32,4 +32,4 @@ addTestReportOption(IntegrationTest, "int-test-reports")
 parallelExecution in IntegrationTest := false
 majorVersion := 1
 
-scalaVersion := "2.11.12"
+scalaVersion :=  "2.12.11"

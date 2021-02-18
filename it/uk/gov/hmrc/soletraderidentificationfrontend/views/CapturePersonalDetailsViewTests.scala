@@ -18,14 +18,14 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.{MustMatchers, WordSpecLike}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CapturePersonalDetails => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
 
 trait CapturePersonalDetailsViewTests {
-  this: WordSpecLike with MustMatchers =>
+  this: ComponentSpecHelper =>
 
   def testCapturePersonalDetailsView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
@@ -46,16 +46,13 @@ trait CapturePersonalDetailsViewTests {
       doc.getLabelElement.first.text() mustBe messages.form_field_1
       doc.getLabelElement.get(1).text() mustBe messages.form_field_2
       doc.getLegendElement.get(1).text() mustBe messages.form_field_3
-      doc.getSpan("date-of-birth-input-hint").text() mustBe messages.form_field_3_hint
+      doc.getElementById("date-of-birth-input-hint").text() mustBe messages.form_field_3_hint
     }
 
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
 
-    "have a save and come back later button" in {
-      doc.getSubmitButton.get(1).text mustBe Base.saveAndComeBack
-    }
   }
 
   def testCapturePersonalDetailsErrorMessage(result: => WSResponse): Unit = {

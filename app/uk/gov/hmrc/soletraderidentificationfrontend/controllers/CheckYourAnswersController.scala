@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.services.CheckYourAnswersService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page

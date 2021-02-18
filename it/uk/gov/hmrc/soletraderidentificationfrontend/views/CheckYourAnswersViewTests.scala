@@ -18,17 +18,17 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.{MustMatchers, WordSpecLike}
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CheckYourAnswers => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.routes
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 trait CheckYourAnswersViewTests {
-  this: WordSpecLike with MustMatchers =>
+  this: ComponentSpecHelper =>
 
   def testCheckYourAnswersView(result: => WSResponse, journeyId: String): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
@@ -42,7 +42,7 @@ trait CheckYourAnswersViewTests {
     }
 
     "have a summary list which" should {
-      lazy val summaryListRows = doc.getSummaryListRows.iterator().toList
+      lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
 
       "have 5 rows" in {
         summaryListRows.size mustBe 5
