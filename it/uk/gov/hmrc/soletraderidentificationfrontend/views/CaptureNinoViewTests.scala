@@ -45,10 +45,6 @@ trait CaptureNinoViewTests {
       doc.getElementById("nino-hint").text mustBe messages.form_field_1
     }
 
-    "have the correct line 2" in {
-      doc.getParagraphs.last.text mustBe messages.line_2
-    }
-
     "have a save and continue button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
