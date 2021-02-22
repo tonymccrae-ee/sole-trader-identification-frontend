@@ -16,27 +16,23 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import java.time.LocalDate
-
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
-case class PersonalDetailsModel(firstName: String, lastName: String, dateOfBirth: LocalDate)
+case class FullNameModel(firstName: String, lastName: String)
 
-object PersonalDetailsModel {
+object FullNameModel {
 
-  val writes: OWrites[PersonalDetailsModel] = (
+  val writes: OWrites[FullNameModel] = (
     (JsPath \ firstNameKey).write[String] and
-      (JsPath \ lastNameKey).write[String] and
-      (JsPath \ dateOfBirthKey).write[LocalDate]
-    )(unlift(PersonalDetailsModel.unapply))
+      (JsPath \ lastNameKey).write[String]
+    ) (unlift(FullNameModel.unapply))
 
-  val reads: Reads[PersonalDetailsModel] = (
+  val reads: Reads[FullNameModel] = (
     (JsPath \ firstNameKey).read[String] and
-      (JsPath \ lastNameKey).read[String] and
-      (JsPath \ dateOfBirthKey).read[LocalDate]
-    )(PersonalDetailsModel.apply _)
+      (JsPath \ lastNameKey).read[String]
+    ) (FullNameModel.apply _)
 
-  implicit val format: OFormat[PersonalDetailsModel] = OFormat(reads, writes)
+  implicit val format: OFormat[FullNameModel] = OFormat(reads, writes)
 
 }

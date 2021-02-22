@@ -16,16 +16,17 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.repositories
 
-import javax.inject.Inject
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.play.json.JSONSerializationPack.Reader
 import reactivemongo.play.json.JsObjectDocumentWriter
 import uk.gov.hmrc.mongo.ReactiveRepository
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{PersonalDetailsModel, SoleTraderDetailsModel}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetailsModel, dateOfBirthKey}
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository._
 
+import java.time.LocalDate
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMongoComponent)(implicit ec: ExecutionContext)
@@ -36,8 +37,11 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
     idFormat = implicitly[Format[String]]
   ) {
 
-  def storePersonalDetails(journeyId: String, personalDetails: PersonalDetailsModel): Future[Unit] =
-    upsert[PersonalDetailsModel](journeyId, personalDetailsKey, personalDetails).map(_ => ())
+  def storeFullName(journeyId: String, fullName: FullNameModel): Future[Unit] =
+    upsert[FullNameModel](journeyId, fullNameKey, fullName).map(_ => ())
+
+  def storeDateOfBirth(journeyId: String, dateOfBirth: LocalDate): Future[Unit] =
+    upsert[LocalDate](journeyId, dateOfBirthKey, dateOfBirth).map(_ => ())
 
   def storeNino(journeyId: String, nino: String): Future[Unit] =
     upsert[String](journeyId, ninoKey, nino).map(_ => ())
@@ -45,8 +49,11 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
   def storeSautr(journeyId: String, sautr: String): Future[Unit] =
     upsert[String](journeyId, sautrKey, sautr).map(_ => ())
 
-  def retrievePersonalDetails(journeyId: String): Future[Option[PersonalDetailsModel]] =
-    retrieve[PersonalDetailsModel](journeyId, personalDetailsKey)
+  def retrieveFullName(journeyId: String): Future[Option[FullNameModel]] =
+    retrieve[FullNameModel](journeyId, fullNameKey)
+
+  def retrieveDateOfBirth(journeyId: String): Future[Option[LocalDate]] =
+    retrieve[LocalDate](journeyId, dateOfBirthKey)
 
   def retrieveNino(journeyId: String): Future[Option[String]] =
     retrieve[String](journeyId, ninoKey)
@@ -82,7 +89,8 @@ class SoleTraderDetailsRepository @Inject()(reactiveMongoComponent: ReactiveMong
 
 object SoleTraderDetailsRepository {
   val idKey = "_id"
-  val personalDetailsKey = "personalDetails"
+  val fullNameKey = "fullName"
+  val dateOfBirthKey = "dateOfBirth"
   val ninoKey = "nino"
   val sautrKey = "sautr"
 }

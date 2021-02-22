@@ -52,7 +52,7 @@
             value = Value(content = Text(soleTraderDetailsModel.firstName)),
             actions = Some(Actions(items = Seq(
                 ActionItem(
-                    href = Routes.CapturePersonalDetailsController.show(journeyId).url,
+                    href = Routes.CaptureFullNameController.show(journeyId).url,
                     content = Text("Change"),
                     visuallyHiddenText = Some(Messages("check-your-answers.first_name"))
                 )
@@ -63,7 +63,7 @@
             value = Value(content = Text(soleTraderDetailsModel.lastName)),
             actions = Some(Actions(items = Seq(
                 ActionItem(
-                    href = Routes.CapturePersonalDetailsController.show(journeyId).url,
+                    href = Routes.CaptureFullNameController.show(journeyId).url,
                     content = Text("Change"),
                     visuallyHiddenText = Some(Messages("check-your-answers.last_name"))
                 )
@@ -74,7 +74,7 @@
             value = Value(content = Text(soleTraderDetailsModel.dateOfBirth.format(checkYourAnswersFormat))),
             actions = Some(Actions(items = Seq(
                 ActionItem(
-                    href = Routes.CapturePersonalDetailsController.show(journeyId).url,
+                    href = Routes.CaptureDateOfBirthController.show(journeyId).url,
                     content = Text("Change"),
                     visuallyHiddenText = Some(Messages("check-your-answers.dob"))
                 )

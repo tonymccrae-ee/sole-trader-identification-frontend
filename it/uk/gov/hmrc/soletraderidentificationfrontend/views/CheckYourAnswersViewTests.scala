@@ -53,7 +53,7 @@ trait CheckYourAnswersViewTests {
 
         firstNameRow.getSummaryListQuestion mustBe messages.firstName
         firstNameRow.getSummaryListAnswer mustBe "John"
-        firstNameRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show(journeyId).url
+        firstNameRow.getSummaryListChangeLink mustBe routes.CaptureFullNameController.show(journeyId).url
         firstNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.firstName}"
       }
 
@@ -62,7 +62,7 @@ trait CheckYourAnswersViewTests {
 
         lastNameRow.getSummaryListQuestion mustBe messages.lastName
         lastNameRow.getSummaryListAnswer mustBe "Smith"
-        lastNameRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show(journeyId).url
+        lastNameRow.getSummaryListChangeLink mustBe routes.CaptureFullNameController.show(journeyId).url
         lastNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.lastName}"
       }
 
@@ -71,7 +71,7 @@ trait CheckYourAnswersViewTests {
 
         dateOfBirthRow.getSummaryListQuestion mustBe messages.dob
         dateOfBirthRow.getSummaryListAnswer mustBe "5 January 1978"
-        dateOfBirthRow.getSummaryListChangeLink mustBe routes.CapturePersonalDetailsController.show(journeyId).url
+        dateOfBirthRow.getSummaryListChangeLink mustBe routes.CaptureDateOfBirthController.show(journeyId).url
         dateOfBirthRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.dob}"
       }
 

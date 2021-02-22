@@ -18,13 +18,16 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 
+import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.Future
 
+class DateOfBirthStorageService @Inject()(soleTraderDetailsRepository: SoleTraderDetailsRepository) {
 
-class NinoStorageService @Inject()(soleTraderDetailsRepository: SoleTraderDetailsRepository) {
+  def storeDateOfBirth(journeyId: String, dateOfBirth: LocalDate): Future[Unit] =
+    soleTraderDetailsRepository.storeDateOfBirth(journeyId, dateOfBirth)
 
-  def retrieveNino(journeyId: String): Future[Option[String]] = soleTraderDetailsRepository.retrieveNino(journeyId)
+  def retrieveDateOfBirth(journeyId: String): Future[Option[LocalDate]] =
+    soleTraderDetailsRepository.retrieveDateOfBirth(journeyId)
 
-  def storeNino(journeyId: String, nino: String): Future[Unit] = soleTraderDetailsRepository.storeNino(journeyId, nino: String)
 }

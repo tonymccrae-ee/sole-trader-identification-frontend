@@ -16,18 +16,18 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
-import javax.inject.Inject
-import uk.gov.hmrc.soletraderidentificationfrontend.models.PersonalDetailsModel
+import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
-class PersonalDetailsStorageService @Inject()(soleTraderDetailsRepository: SoleTraderDetailsRepository) {
+class FullNameStorageService @Inject()(soleTraderDetailsRepository: SoleTraderDetailsRepository) {
 
-  def storePersonalDetails(journeyId: String, personalDetails: PersonalDetailsModel): Future[Unit] =
-    soleTraderDetailsRepository.storePersonalDetails(journeyId, personalDetails)
+  def storeFullName(journeyId: String, fullName: FullNameModel): Future[Unit] =
+    soleTraderDetailsRepository.storeFullName(journeyId, fullName)
 
-  def retrievePersonalDetails(journeyId: String): Future[Option[PersonalDetailsModel]] =
-    soleTraderDetailsRepository.retrievePersonalDetails(journeyId)
+  def retrieveFullName(journeyId: String): Future[Option[FullNameModel]] =
+    soleTraderDetailsRepository.retrieveFullName(journeyId)
 
 }

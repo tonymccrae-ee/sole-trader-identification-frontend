@@ -21,14 +21,18 @@ footer.links.cookies.text = Cookies
 footer.links.privacy_policy.text = Privacy policy
 footer.links.terms_and_conditions.text = Terms and conditions
 
-## Personal Details Page
-personal-details.title = Enter your details
-personal-details.heading = Who do you want to register for VAT?
-personal-details.line_1 = We will attempt to match these details with the information we already have.
-personal-details.field_1 = First name
-personal-details.field_2 = Last name
-personal-details.field_3 = Date of birth
-personal-details.field_3_hint = For example, 27 3 2007
+## Full Name Page
+full-name.title = What is your full name?
+full-name.heading = What is your full name?
+full-name.line_1 = We will attempt to match these details with the information we already have.
+full-name.field_1 = First name
+full-name.field_2 = Last name
+
+## Date of Birth Page
+date-of-birth.title = What is your date of birth?
+date-of-birth.heading = What is your date of birth?
+date-of-birth.field_1 = Date of birth
+date-of-birth.field_1_hint = For example, 27 3 2007
 
 ## Enter Nino Page
 enter-nino.title = What is your National Insurance number?

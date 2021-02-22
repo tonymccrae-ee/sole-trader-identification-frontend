@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend
 
 package object models {
 
-  val personalDetailsKey = "personalDetails"
+  val fullNameKey = "fullName"
   val ninoKey = "nino"
   val sautrKey = "sautr"
   val firstNameKey = "firstName"
