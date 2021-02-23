@@ -30,20 +30,28 @@ object MessageLookup {
 
   }
 
-  object CapturePersonalDetails {
-    val title = "Enter your details"
-    val heading = "Who do you want to register for VAT?"
+  object CaptureFullName {
+    val title = "What is your full name?"
+    val heading = "What is your full name?"
     val line_1 = "We will attempt to match these details with the information we already have."
     val form_field_1 = "First name"
     val form_field_2 = "Last name"
-    val form_field_3 = "Date of birth"
-    val form_field_3_hint = "For example, 27 3 2007"
 
     object Error {
       val noFirstNameEntered = "Enter your first name"
       val noLastNameEntered = "Enter your last name"
       val invalidFirstNameEntered = "First name must be 99 characters or fewer."
       val invalidLastNameEntered = "Last name must be 99 characters or fewer."
+    }
+
+  }
+
+  object CaptureDateOfBirth {
+    val title = "What is your date of birth?"
+    val heading = "What is your date of birth?"
+    val hint = "For example, 27 3 2007"
+
+    object Error {
       val noDobEntered = "Enter your date of birth"
       val noDayEntered = "Your date of birth must include a day"
       val noMonthEntered = "Your date of birth must include a month"
@@ -64,9 +72,11 @@ object MessageLookup {
     val heading = "What is John Smith’s National Insurance number?"
     val line_1 = "It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’."
     val form_field_1 = "It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’."
+
     object Error {
       val invalidNinoEntered = "Enter a National Insurance number in the correct format"
     }
+
   }
 
   object CaptureSautr {

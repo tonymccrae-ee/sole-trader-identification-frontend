@@ -2,8 +2,11 @@
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /personal-details/:journeyId                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.show(journeyId: String)
-POST        /personal-details/:journeyId                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CapturePersonalDetailsController.submit(journeyId: String)
+GET         /full-name/:journeyId                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureFullNameController.show(journeyId: String)
+POST        /full-name/:journeyId                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureFullNameController.submit(journeyId: String)
+
+GET         /date-of-birth/:journeyId                    uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureDateOfBirthController.show(journeyId: String)
+POST        /date-of-birth/:journeyId                    uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureDateOfBirthController.submit(journeyId: String)
 
 GET         /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId: String)
 POST        /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId: String)

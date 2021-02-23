@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import java.time.LocalDate
-
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
+
+import java.time.LocalDate
 
 case class SoleTraderDetailsModel(firstName: String,
                                   lastName: String,
@@ -30,20 +30,20 @@ case class SoleTraderDetailsModel(firstName: String,
 object SoleTraderDetailsModel {
 
   implicit val reads: Reads[SoleTraderDetailsModel] = (
-    (JsPath \ personalDetailsKey \ firstNameKey).read[String] and
-      (JsPath \ personalDetailsKey \ lastNameKey).read[String] and
-      (JsPath \ personalDetailsKey \ dateOfBirthKey).read[LocalDate] and
+    (JsPath \ fullNameKey \ firstNameKey).read[String] and
+      (JsPath \ fullNameKey \ lastNameKey).read[String] and
+      (JsPath \ dateOfBirthKey).read[LocalDate] and
       (JsPath \ ninoKey).read[String] and
       (JsPath \ sautrKey).readNullable[String]
-    )(SoleTraderDetailsModel.apply _)
+    ) (SoleTraderDetailsModel.apply _)
 
   val writes: OWrites[SoleTraderDetailsModel] = (
-      (JsPath \ personalDetailsKey \ firstNameKey).write[String] and
-        (JsPath \ personalDetailsKey \ lastNameKey).write[String] and
-        (JsPath \ personalDetailsKey \ dateOfBirthKey).write[LocalDate] and
-        (JsPath \ ninoKey).write[String] and
-        (JsPath \ sautrKey).writeNullable[String]
-      )(unlift(SoleTraderDetailsModel.unapply))
+    (JsPath \ fullNameKey \ firstNameKey).write[String] and
+      (JsPath \ fullNameKey \ lastNameKey).write[String] and
+      (JsPath \ dateOfBirthKey).write[LocalDate] and
+      (JsPath \ ninoKey).write[String] and
+      (JsPath \ sautrKey).writeNullable[String]
+    ) (unlift(SoleTraderDetailsModel.unapply))
 
 
   val format: OFormat[SoleTraderDetailsModel] = OFormat(reads, writes)

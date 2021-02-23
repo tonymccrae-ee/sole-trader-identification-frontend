@@ -19,15 +19,15 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CapturePersonalDetails => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CaptureDateOfBirth => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
 
-trait CapturePersonalDetailsViewTests {
+trait CaptureDateOfBirthViewTests {
   this: ComponentSpecHelper =>
 
-  def testCapturePersonalDetailsView(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "have the correct title" in {
@@ -38,15 +38,8 @@ trait CapturePersonalDetailsViewTests {
       doc.getH1Elements.get(0).text mustBe messages.heading
     }
 
-    "have the correct first line" in {
-      doc.getParagraphs.get(0).text mustBe messages.line_1
-    }
-
-    "have correct labels in the form" in {
-      doc.getLabelElement.first.text() mustBe messages.form_field_1
-      doc.getLabelElement.get(1).text() mustBe messages.form_field_2
-      doc.getLegendElement.get(1).text() mustBe messages.form_field_3
-      doc.getElementById("date-of-birth-input-hint").text() mustBe messages.form_field_3_hint
+    "have the correct hint" in {
+      doc.getElementsByClass("govuk-hint").text() mustBe messages.hint
     }
 
     "have a save and confirm button" in {
@@ -55,43 +48,19 @@ trait CapturePersonalDetailsViewTests {
 
   }
 
-  def testCapturePersonalDetailsErrorMessage(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessage(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noFirstNameEntered + " " + messages.Error.noLastNameEntered + " " + messages.Error.noDobEntered
+      doc.getErrorSummaryBody.text mustBe messages.Error.noDobEntered
     }
     "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noFirstNameEntered + " " + Base.Error.error + messages.Error.noLastNameEntered + " " + Base.Error.error + messages.Error.noDobEntered
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noDobEntered
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoFirstName(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noFirstNameEntered
-    }
-    "correctly display the field error" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noFirstNameEntered
-    }
-  }
-
-  def testCapturePersonalDetailsErrorMessageNoLastName(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noLastNameEntered
-    }
-    "correctly display the field error" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noLastNameEntered
-    }
-  }
-
-  def testCapturePersonalDetailsErrorMessageNoDob(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoDob(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -103,43 +72,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoFirstNameAndLastName(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noFirstNameEntered + " " + messages.Error.noLastNameEntered
-    }
-    "correctly display the field error" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noFirstNameEntered + " " + Base.Error.error + messages.Error.noLastNameEntered
-    }
-  }
-
-  def testCapturePersonalDetailsErrorMessageNoFirstNameAndDob(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noFirstNameEntered + " " + messages.Error.noDobEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noFirstNameEntered + " " + Base.Error.error + messages.Error.noDobEntered
-    }
-  }
-
-  def testCapturePersonalDetailsErrorMessageNoLastNameAndDob(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noLastNameEntered + " " + messages.Error.noDobEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noLastNameEntered + " " + Base.Error.error + messages.Error.noDobEntered
-    }
-  }
-
-  def testCapturePersonalDetailsErrorMessageNoDay(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoDay(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -151,7 +84,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoMonth(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoMonth(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -163,7 +96,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoYear(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoYear(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -175,7 +108,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoDayNoMonth(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoDayNoMonth(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -187,7 +120,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoDayNoYear(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoDayNoYear(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -199,7 +132,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageNoMonthNoYear(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageNoMonthNoYear(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -211,7 +144,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageInvalidDay(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageInvalidDay(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -223,7 +156,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageInvalidMonth(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageInvalidMonth(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -235,7 +168,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageInvalidYear(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageInvalidYear(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
@@ -247,7 +180,7 @@ trait CapturePersonalDetailsViewTests {
     }
   }
 
-  def testCapturePersonalDetailsErrorMessageInvalidAge(result: => WSResponse): Unit = {
+  def testCaptureDateOfBirthErrorMessageInvalidAge(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {

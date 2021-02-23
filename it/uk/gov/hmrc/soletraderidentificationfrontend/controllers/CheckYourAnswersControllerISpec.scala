@@ -16,9 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import java.time.LocalDate
-import java.util.UUID
-
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -28,6 +25,8 @@ import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetai
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
 
+import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -44,12 +43,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
     await(app.injector.instanceOf[SoleTraderDetailsRepository].collection.insert(true).one(
       Json.obj(
         "_id" -> testJourneyId,
-        "personalDetails" ->
+        "fullName" ->
           Json.obj(
             "firstName" -> testFirstName,
-            "lastName" -> testLastName,
-            "dateOfBirth" -> Json.toJson(LocalDate.parse("1978-01-05"))
+            "lastName" -> testLastName
           ),
+        "dateOfBirth" -> Json.toJson(LocalDate.parse("1978-01-05")),
         "nino" -> testNino,
         "sautr" -> testSautr
       )))
