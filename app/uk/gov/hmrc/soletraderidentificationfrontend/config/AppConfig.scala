@@ -26,6 +26,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   private val assetsUrl = servicesConfig.getString("assets.url")
   private val serviceIdentifier = "sole-trader-identification-frontend"
 
+  private lazy val backendUrl: String = servicesConfig.baseUrl("sole-trader-identification")
+
   val assetsPrefix: String = assetsUrl + servicesConfig.getString("assets.version")
   val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
   val analyticsHost: String = servicesConfig.getString(s"google-analytics.host")
@@ -37,5 +39,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
+
+  def soleTraderIdentificationUrl(journeyId: String): String = s"$backendUrl/sole-trader-identification/$journeyId"
 
 }
