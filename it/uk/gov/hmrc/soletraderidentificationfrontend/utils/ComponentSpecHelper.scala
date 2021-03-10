@@ -50,7 +50,9 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.auth.port" -> mockPort,
     "microservice.services.base.host" -> mockHost,
     "microservice.services.base.port" -> mockPort,
-    "microservice.services.des.url" -> mockUrl
+    "microservice.services.des.url" -> mockUrl,
+    "microservice.services.sole-trader-identification.host" -> mockHost,
+    "microservice.services.sole-trader-identification.port" -> mockPort
   )
 
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]

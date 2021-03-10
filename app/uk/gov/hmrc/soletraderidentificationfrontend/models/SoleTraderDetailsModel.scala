@@ -37,7 +37,7 @@ object SoleTraderDetailsModel {
       (JsPath \ sautrKey).readNullable[String]
     ) (SoleTraderDetailsModel.apply _)
 
-  val writes: OWrites[SoleTraderDetailsModel] = (
+  implicit val writes: OWrites[SoleTraderDetailsModel] = (
     (JsPath \ fullNameKey \ firstNameKey).write[String] and
       (JsPath \ fullNameKey \ lastNameKey).write[String] and
       (JsPath \ dateOfBirthKey).write[LocalDate] and
