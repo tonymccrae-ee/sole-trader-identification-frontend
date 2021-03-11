@@ -24,7 +24,8 @@ object AppDependencies {
     // Bootstrap import needed to access stubMessagesControllerComponents in unit tests
     "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "3.4.0",
     "uk.gov.hmrc" %% "bootstrap-backend-play-27" % "3.4.0",
-    "org.mockito" % "mockito-core" % "3.3.3" % Test
+    "org.mockito" % "mockito-core" % "3.3.3" % Test,
+    "org.scalatestplus" %% "mockito-3-4" % "3.2.3.0" % Test
   ) ++ commonTestDependencies(Test)
 
   val it: Seq[ModuleID] = Seq(
