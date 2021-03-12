@@ -17,13 +17,12 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureSautrViewTests
 
-class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrViewTests {
-  val testJourneyId = "testJourneyId"
-  val testSautr = "1234567890"
+class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrViewTests with SoleTraderIdentificationStub {
 
   "GET /sa-utr" should {
     lazy val result = get(s"/sa-utr/$testJourneyId")
@@ -39,14 +38,11 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
 
   "POST /sa-utr" when {
     "the sautr is correctly formatted" should {
-      "store the sautr in the database" in {
-        post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
-        val optSautr = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveSautr(testJourneyId))
-        optSautr mustBe Some(testSautr)
-      }
+      "redirect to Check Your Answers Page and store the data in the backend" in {
+        stubStoreSautr(testJourneyId, testSautr)(status = OK)
 
-      "redirect to Check Your Answers Page" in {
-        val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
+        lazy val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
+
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)

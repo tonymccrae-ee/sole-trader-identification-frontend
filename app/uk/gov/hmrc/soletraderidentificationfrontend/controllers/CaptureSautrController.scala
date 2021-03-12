@@ -21,7 +21,7 @@ import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.SautrStorageService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sautr_page
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,8 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
                                        view: capture_sautr_page,
-                                       sautrStorageService: SautrStorageService)
-                                      (implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                       soleTraderIdentificationService: SoleTraderIdentificationService
+                                      )(implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
   val name = "John Smith"
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
@@ -42,12 +42,14 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       CaptureSautrForm.form.bindFromRequest().fold(
-        formWithErrors => Future.successful(
-          BadRequest(view(routes.CaptureSautrController.submit(journeyId), name, formWithErrors))
-        ),
-        sautr => sautrStorageService.storeSautr(journeyId, sautr).map {
-          _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
-        }
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(routes.CaptureSautrController.submit(journeyId), name, formWithErrors))
+          ),
+        sautr =>
+          soleTraderIdentificationService.storeSautr(journeyId, sautr).map {
+            _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+          }
       )
   }
 

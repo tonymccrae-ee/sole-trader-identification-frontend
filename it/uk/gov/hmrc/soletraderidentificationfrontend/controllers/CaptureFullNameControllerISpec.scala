@@ -17,17 +17,16 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testJourneyId
 import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
-import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureFullNameViewTests
 
-class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFullNameViewTests {
+class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFullNameViewTests with SoleTraderIdentificationStub {
 
   val testFirstName = "John"
   val testLastName = "Smith"
-
-  val testJourneyId: String = "testJourneyId"
 
   "GET /full-name" should {
     lazy val result = get(s"/full-name/$testJourneyId")
@@ -42,25 +41,15 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFul
   }
 
   "POST /full-name" when {
-    val testFullName = FullNameModel(testFirstName, testLastName)
-
     "the whole form is correctly formatted" should {
-      "store the full name in the database" in {
-        post(s"/full-name/$testJourneyId")(
-          "first-name" -> testFirstName,
-          "last-name" -> testLastName
-        )
+      "redirect to the Capture Date of Birth page and store the data in the backend" in {
+        stubStoreFullName(testJourneyId, FullNameModel(testFirstName, testLastName))(status = OK)
 
-        val optFullName = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveFullName(testJourneyId))
-
-        optFullName mustBe Some(testFullName)
-      }
-
-      "redirect to the Capture Date of Birth page" in {
         lazy val result = post(s"/full-name/$testJourneyId")(
-          "first-name" -> testFirstName,
-          "last-name" -> testLastName
-        )
+            "first-name" -> testFirstName,
+            "last-name" -> testLastName
+          )
+
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CaptureDateOfBirthController.show(testJourneyId).url)

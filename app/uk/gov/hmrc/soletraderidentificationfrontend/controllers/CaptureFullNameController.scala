@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureFullNameForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.FullNameStorageService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_full_name_page
 
 import javax.inject.Inject
@@ -29,8 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class CaptureFullNameController @Inject()(mcc: MessagesControllerComponents,
                                           view: capture_full_name_page,
                                           captureFullNameForm: CaptureFullNameForm,
-                                          fullNameStorageService: FullNameStorageService
-                                         )(implicit appConfig: AppConfig,ec: ExecutionContext) extends FrontendController(mcc) {
+                                          soleTraderIdentificationService: SoleTraderIdentificationService
+                                         )(implicit appConfig: AppConfig,
+                                           ec: ExecutionContext) extends FrontendController(mcc) {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -41,9 +42,11 @@ class CaptureFullNameController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       captureFullNameForm.apply().bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(routes.CaptureFullNameController.submit(journeyId), formWithErrors))),
+          Future.successful(
+            BadRequest(view(routes.CaptureFullNameController.submit(journeyId), formWithErrors))
+          ),
         fullName =>
-          fullNameStorageService.storeFullName(journeyId, fullName).map {
+          soleTraderIdentificationService.storeFullName(journeyId, fullName).map {
             _ => Redirect(routes.CaptureDateOfBirthController.show(journeyId))
           }
       )
