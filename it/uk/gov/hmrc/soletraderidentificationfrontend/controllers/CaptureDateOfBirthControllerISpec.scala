@@ -17,19 +17,14 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureDateOfBirthViewTests
 
 import java.time.LocalDate
 
-class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with CaptureDateOfBirthViewTests {
-
-  val testDay = "01"
-  val testMonth = "01"
-  val testYear = "1990"
-
-  val testJourneyId: String = "testJourneyId"
+class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with CaptureDateOfBirthViewTests with SoleTraderIdentificationStub {
 
   "GET /date-of-birth" should {
     lazy val result = get(s"/date-of-birth/$testJourneyId")
@@ -45,24 +40,15 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
   "POST /date-of-birth" when {
     "the whole form is correctly formatted" should {
-      "store the date of birth in the database" in {
-        post(s"/date-of-birth/$testJourneyId")(
-          "date-of-birth-day" -> testDay,
-          "date-of-birth-month" -> testMonth,
-          "date-of-birth-year" -> testYear
-        )
+      "redirect to the Capture Nino page and store the data in the backend" in {
+        stubStoreDob(testJourneyId, testDateOfBirth)(status = OK)
 
-        val optDateOfBirth = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveDateOfBirth(testJourneyId))
-
-        optDateOfBirth mustBe Some(LocalDate.parse(s"$testYear-$testMonth-$testDay"))
-      }
-
-      "redirect to the Capture Nino page" in {
         lazy val result = post(s"/date-of-birth/$testJourneyId")(
-          "date-of-birth-day" -> testDay,
-          "date-of-birth-month" -> testMonth,
-          "date-of-birth-year" -> testYear
+          "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
+          "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
+          "date-of-birth-year" -> testDateOfBirth.getYear.toString
         )
+
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CaptureNinoController.show(testJourneyId).url)
@@ -97,8 +83,8 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
     "the day in dob is missing" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
         "date-of-birth-day" -> "",
-        "date-of-birth-month" -> testMonth,
-        "date-of-birth-year" -> testYear
+        "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
+        "date-of-birth-year" -> testDateOfBirth.getYear.toString
       )
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -108,9 +94,9 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
     "the month in dob is missing" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
-        "date-of-birth-day" -> testDay,
+        "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
         "date-of-birth-month" -> "",
-        "date-of-birth-year" -> testYear
+        "date-of-birth-year" -> testDateOfBirth.getYear.toString
       )
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -120,8 +106,8 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
     "the year in dob is missing" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
-        "date-of-birth-day" -> testDay,
-        "date-of-birth-month" -> testMonth,
+        "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
+        "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
         "date-of-birth-year" -> ""
       )
       "return a bad request" in {
@@ -134,7 +120,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
         "date-of-birth-day" -> "",
         "date-of-birth-month" -> "",
-        "date-of-birth-year" -> testYear
+        "date-of-birth-year" -> testDateOfBirth.getYear.toString
       )
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -145,7 +131,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
     "the day and year in dob are missing" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
         "date-of-birth-day" -> "",
-        "date-of-birth-month" -> testMonth,
+        "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
         "date-of-birth-year" -> ""
       )
       "return a bad request" in {
@@ -156,7 +142,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
     "the month and year in dob are missing" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
-        "date-of-birth-day" -> testDay,
+        "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
         "date-of-birth-month" -> "",
         "date-of-birth-year" -> ""
       )
@@ -169,8 +155,8 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
     "an invalid day is submitted" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
         "date-of-birth-day" -> "35",
-        "date-of-birth-month" -> testMonth,
-        "date-of-birth-year" -> testYear
+        "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
+        "date-of-birth-year" -> testDateOfBirth.getYear.toString
       )
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -180,9 +166,9 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
     "an invalid month is submitted" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
-        "date-of-birth-day" -> testDay,
+        "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
         "date-of-birth-month" -> "15",
-        "date-of-birth-year" -> testYear
+        "date-of-birth-year" -> testDateOfBirth.getYear.toString
       )
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -192,8 +178,8 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
     "a future year is submitted" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
-        "date-of-birth-day" -> testDay,
-        "date-of-birth-month" -> testMonth,
+        "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
+        "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
         "date-of-birth-year" -> "2024"
       )
       "return a bad request" in {
@@ -204,8 +190,8 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper with Capture
 
     "the dob submitted is less than 16 years ago" should {
       lazy val result = post(s"/date-of-birth/$testJourneyId")(
-        "date-of-birth-day" -> testDay,
-        "date-of-birth-month" -> testMonth,
+        "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
+        "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
         "date-of-birth-year" -> LocalDate.now.minusYears(10).getYear.toString
       )
       "return a bad request" in {

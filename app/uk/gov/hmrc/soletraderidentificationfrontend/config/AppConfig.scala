@@ -40,6 +40,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
-  def soleTraderIdentificationUrl(journeyId: String): String = s"$backendUrl/sole-trader-identification/$journeyId"
+  def soleTraderIdentificationUrl(journeyId: String): String = s"$backendUrl/sole-trader-identification/journey/$journeyId"
 
 }

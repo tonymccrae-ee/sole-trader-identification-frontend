@@ -21,7 +21,7 @@ import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureNinoForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.NinoStorageService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_nino_page
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,10 +29,11 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                                       view: capture_nino_page,
-                                      ninoStorageService: NinoStorageService)
-                                     (implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
-  val name = "John Smith" // TODO this will be pre-pop data
+                                      soleTraderIdentificationService: SoleTraderIdentificationService
+                                     )(implicit val config: AppConfig,
+                                       executionContext: ExecutionContext) extends FrontendController(mcc) {
 
+  val name = "John Smith" // TODO this will be pre-pop data
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -42,12 +43,14 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       CaptureNinoForm.form.bindFromRequest().fold(
-        formWithErrors => Future.successful(
-          BadRequest(view(routes.CaptureNinoController.submit(journeyId), name, formWithErrors))
-        ),
-        nino => ninoStorageService.storeNino(journeyId, nino).map {
-          _ => Redirect(routes.CaptureSautrController.show(journeyId))
-        }
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(routes.CaptureNinoController.submit(journeyId), name, formWithErrors))
+          ),
+        nino =>
+          soleTraderIdentificationService.storeNino(journeyId, nino).map {
+            _ => Redirect(routes.CaptureSautrController.show(journeyId))
+          }
       )
   }
 }

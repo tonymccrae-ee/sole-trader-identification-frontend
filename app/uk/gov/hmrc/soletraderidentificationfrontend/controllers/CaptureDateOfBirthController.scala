@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureDateOfBirthForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.DateOfBirthStorageService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_date_of_birth_page
 
 import javax.inject.Inject
@@ -29,8 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
                                              view: capture_date_of_birth_page,
                                              captureDateOfBirthForm: CaptureDateOfBirthForm,
-                                             dateOfBirthStorageService: DateOfBirthStorageService
-                                            )(implicit appConfig: AppConfig, ec: ExecutionContext) extends FrontendController(mcc) {
+                                             soleTraderIdentificationService: SoleTraderIdentificationService
+                                            )(implicit appConfig: AppConfig,
+                                              ec: ExecutionContext) extends FrontendController(mcc) {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -41,9 +42,11 @@ class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       captureDateOfBirthForm.apply().bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(routes.CaptureDateOfBirthController.submit(journeyId), formWithErrors))),
+          Future.successful(
+            BadRequest(view(routes.CaptureDateOfBirthController.submit(journeyId), formWithErrors))
+          ),
         dateOfBirth =>
-          dateOfBirthStorageService.storeDateOfBirth(journeyId, dateOfBirth).map {
+          soleTraderIdentificationService.storeDateOfBirth(journeyId, dateOfBirth).map {
             _ => Redirect(routes.CaptureNinoController.show(journeyId))
           }
       )

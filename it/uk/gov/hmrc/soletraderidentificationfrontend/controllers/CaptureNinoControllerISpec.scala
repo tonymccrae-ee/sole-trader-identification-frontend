@@ -17,12 +17,12 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.repositories.SoleTraderDetailsRepository
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureNinoViewTests
 
-class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoViewTests {
-  val testJourneyId = "testJourneyId"
+class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoViewTests with SoleTraderIdentificationStub {
 
   "GET /national-insurance-number" should {
     lazy val result = get(s"/national-insurance-number/$testJourneyId")
@@ -37,16 +37,11 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper with CaptureNinoVie
   }
 
   "POST /national-insurance-number" should {
-    val testNino = "AA111111A"
-
-    "store the NINO in the database" in {
-      post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
-      val optNino = await(app.injector.instanceOf[SoleTraderDetailsRepository].retrieveNino(testJourneyId))
-      optNino mustBe Some(testNino)
-    }
-
     "redirect to the capture sautr page" in {
-      val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
+      stubStoreNino(testJourneyId, testNino)(status = OK)
+
+      lazy val result = post(s"/national-insurance-number/$testJourneyId")("nino" -> testNino)
+
       result must have(
         httpStatus(SEE_OTHER),
         redirectUri(routes.CaptureSautrController.show(testJourneyId).url)

@@ -17,52 +17,59 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import java.time.LocalDate
-
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.JsString
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models._
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetailsModel, StorageResult}
+import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificationConnector
-                                               )(implicit ec: ExecutionContext) {
+class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificationConnector)
+                                               (implicit ec: ExecutionContext) {
 
 
   def storeFullName(journeyId: String, fullName: FullNameModel)(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData(journeyId, fullNameKey, fullName)
+    connector.storeData[FullNameModel](journeyId, FullNameKey, fullName)
 
   def storeDateOfBirth(journeyId: String, dateOfBirth: LocalDate)(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData(journeyId, dateOfBirthKey, dateOfBirth)
+    connector.storeData[LocalDate](journeyId, DateOfBirthKey, dateOfBirth)
 
   def storeNino(journeyId: String, nino: String)(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData(journeyId, ninoKey, nino)
+    connector.storeData[String](journeyId, NinoKey, nino)
 
   def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData(journeyId, sautrKey, sautr)
+    connector.storeData[String](journeyId, SautrKey, sautr)
 
 
-  def retrieveFullName(journeyId: String
-                      )(implicit hc: HeaderCarrier): Future[Option[FullNameModel]] =
-    connector.retrieveSoleTraderIdentification[FullNameModel](journeyId, fullNameKey)
+  def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullNameModel]] =
+    connector.retrieveSoleTraderIdentification[FullNameModel](journeyId, FullNameKey)
 
-  def retrieveDateOfBirth(journeyId: String
-                         )(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
-    connector.retrieveSoleTraderIdentification[LocalDate](journeyId, dateOfBirthKey)
+  def retrieveDateOfBirth(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
+    connector.retrieveSoleTraderIdentification[LocalDate](journeyId, DateOfBirthKey)
 
   def retrieveNino(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveSoleTraderIdentification[JsString](journeyId, ninoKey).map {
+    connector.retrieveSoleTraderIdentification[JsString](journeyId, NinoKey).map {
       case Some(jsString) => Some(jsString.value)
       case None => None
     }
 
   def retrieveSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveSoleTraderIdentification[String](journeyId, sautrKey)
+    connector.retrieveSoleTraderIdentification[JsString](journeyId, SautrKey).map {
+      case Some(jsString) => Some(jsString.value)
+      case None => None
+    }
 
-  def retrieveAll(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetailsModel]] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetailsModel]] =
     connector.retrieveSoleTraderIdentification(journeyId)
 }
 
+object SoleTraderIdentificationService {
+  private val FullNameKey = "fullName"
+  private val NinoKey = "nino"
+  private val SautrKey = "sautr"
+  private val DateOfBirthKey = "dateOfBirth"
+}

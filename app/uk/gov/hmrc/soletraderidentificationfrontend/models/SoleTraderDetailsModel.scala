@@ -29,20 +29,27 @@ case class SoleTraderDetailsModel(firstName: String,
 
 object SoleTraderDetailsModel {
 
+  private val FullNameKey = "fullName"
+  private val FirstNameKey = "firstName"
+  private val LastNameKey = "lastName"
+  private val NinoKey = "nino"
+  private val SautrKey = "sautr"
+  private val DateOfBirthKey = "dateOfBirth"
+
   implicit val reads: Reads[SoleTraderDetailsModel] = (
-    (JsPath \ fullNameKey \ firstNameKey).read[String] and
-      (JsPath \ fullNameKey \ lastNameKey).read[String] and
-      (JsPath \ dateOfBirthKey).read[LocalDate] and
-      (JsPath \ ninoKey).read[String] and
-      (JsPath \ sautrKey).readNullable[String]
+    (JsPath \ FullNameKey \ FirstNameKey).read[String] and
+      (JsPath \ FullNameKey \ LastNameKey).read[String] and
+      (JsPath \ DateOfBirthKey).read[LocalDate] and
+      (JsPath \ NinoKey).read[String] and
+      (JsPath \ SautrKey).readNullable[String]
     ) (SoleTraderDetailsModel.apply _)
 
   implicit val writes: OWrites[SoleTraderDetailsModel] = (
-    (JsPath \ fullNameKey \ firstNameKey).write[String] and
-      (JsPath \ fullNameKey \ lastNameKey).write[String] and
-      (JsPath \ dateOfBirthKey).write[LocalDate] and
-      (JsPath \ ninoKey).write[String] and
-      (JsPath \ sautrKey).writeNullable[String]
+    (JsPath \ FullNameKey \ FirstNameKey).write[String] and
+      (JsPath \ FullNameKey \ LastNameKey).write[String] and
+      (JsPath \ DateOfBirthKey).write[LocalDate] and
+      (JsPath \ NinoKey).write[String] and
+      (JsPath \ SautrKey).writeNullable[String]
     ) (unlift(SoleTraderDetailsModel.unapply))
 
 

@@ -22,15 +22,17 @@ import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 case class FullNameModel(firstName: String, lastName: String)
 
 object FullNameModel {
+  private val FirstNameKey = "firstName"
+  private val LastNameKey = "lastName"
 
   val writes: OWrites[FullNameModel] = (
-    (JsPath \ firstNameKey).write[String] and
-      (JsPath \ lastNameKey).write[String]
+    (JsPath \ FirstNameKey).write[String] and
+      (JsPath \ LastNameKey).write[String]
     ) (unlift(FullNameModel.unapply))
 
   val reads: Reads[FullNameModel] = (
-    (JsPath \ firstNameKey).read[String] and
-      (JsPath \ lastNameKey).read[String]
+    (JsPath \ FirstNameKey).read[String] and
+      (JsPath \ LastNameKey).read[String]
     ) (FullNameModel.apply _)
 
   implicit val format: OFormat[FullNameModel] = OFormat(reads, writes)

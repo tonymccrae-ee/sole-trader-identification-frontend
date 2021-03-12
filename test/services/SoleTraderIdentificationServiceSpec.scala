@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.MockSoleTraderIdentificationConnector
+import mocks.MockSoleTraderIdentificationConnector
 import helpers.TestConstants.{testJourneyId, testSautr}
 import play.api.libs.json.JsString
 import play.api.test.Helpers._
@@ -45,7 +45,7 @@ class SoleTraderIdentificationServiceSpec extends UnitSpec with MockSoleTraderId
 
         val result = await(TestService.retrieveSautr(testJourneyId))
 
-        result mustBe Some(JsString(testSautr))
+        result mustBe Some(testSautr)
         verifyRetrieveSoleTraderInformation[JsString](testJourneyId, dataKey)
       }
     }
