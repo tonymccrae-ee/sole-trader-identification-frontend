@@ -20,17 +20,21 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
 
 
-class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests with SoleTraderIdentificationStub {
+class CheckYourAnswersControllerISpec extends ComponentSpecHelper
+  with CheckYourAnswersViewTests
+  with SoleTraderIdentificationStub
+  with AuthStub {
 
   "GET /check-your-answers-business" should {
     lazy val result: WSResponse = {
+      stubAuth(OK, successfulAuthResponse())
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = Json.toJsObject(testSoleTraderDetails))
-      get(s"/check-your-answers-business/$testJourneyId")
+      get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
     }
 
     "return OK" in {
@@ -40,13 +44,36 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
     "return a view which" should {
       testCheckYourAnswersView(result, testJourneyId)
     }
+
+    "redirect to sign in page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
+        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri("/bas-gateway/sign-in" +
+            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fcheck-your-answers-business" +
+            "&origin=sole-trader-identification-frontend"
+          )
+        )
+      }
+    }
   }
 
   "POST /check-your-answers-business" should {
-    lazy val result = post("/check-your-answers-business")()
+    "redirect to continue url from the supplied journey config" in {
+      val testContinueUrl = "/testContinueUrl"
 
-    "return NotImplemented" in {
-      result.status mustBe NOT_IMPLEMENTED
+      insertJourneyConfig(testJourneyId, testContinueUrl)
+      stubAuth(OK, successfulAuthResponse())
+
+      lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(testContinueUrl)
+      )
     }
   }
 }

@@ -16,7 +16,7 @@
 
 package services
 
-import mocks.MockSoleTraderIdentificationConnector
+import connectors.mocks.MockSoleTraderIdentificationConnector
 import helpers.TestConstants.{testJourneyId, testSautr}
 import play.api.libs.json.JsString
 import play.api.test.Helpers._
@@ -38,21 +38,21 @@ class SoleTraderIdentificationServiceSpec extends UnitSpec with MockSoleTraderId
   "retrieveSautr" should {
     "return Some(sautr)" when {
       "the sautr exists in the database for a given journey id" in {
-        mockRetrieveSoleTraderInformation[JsString](
+        mockRetrieveSoleTraderInformation[String](
           testJourneyId,
           dataKey
-        )(Future.successful(Some(JsString(testSautr))))
+        )(Future.successful(Some(testSautr)))
 
         val result = await(TestService.retrieveSautr(testJourneyId))
 
         result mustBe Some(testSautr)
-        verifyRetrieveSoleTraderInformation[JsString](testJourneyId, dataKey)
+        verifyRetrieveSoleTraderInformation[String](testJourneyId, dataKey)
       }
     }
 
     "return None" when {
       "the sautr does not exist in the database for a given journey id" in {
-        mockRetrieveSoleTraderInformation[JsString](
+        mockRetrieveSoleTraderInformation[String](
           testJourneyId,
           dataKey
         )(Future.successful(None))
@@ -60,13 +60,13 @@ class SoleTraderIdentificationServiceSpec extends UnitSpec with MockSoleTraderId
         val result = await(TestService.retrieveSautr(testJourneyId))
 
         result mustBe None
-        verifyRetrieveSoleTraderInformation[JsString](testJourneyId, dataKey)
+        verifyRetrieveSoleTraderInformation[String](testJourneyId, dataKey)
       }
     }
 
     "surface an exception" when {
       "the call to the database times out" in {
-        mockRetrieveSoleTraderInformation[JsString](
+        mockRetrieveSoleTraderInformation[String](
           journeyId = testJourneyId,
           dataKey = "sautr"
         )(Future.failed(new GatewayTimeoutException("GET of '/testUrl' timed out with message 'testError'")))
@@ -74,7 +74,7 @@ class SoleTraderIdentificationServiceSpec extends UnitSpec with MockSoleTraderId
         intercept[GatewayTimeoutException](
           await(TestService.retrieveSautr(testJourneyId))
         )
-        verifyRetrieveSoleTraderInformation[JsString](testJourneyId, dataKey)
+        verifyRetrieveSoleTraderInformation[String](testJourneyId, dataKey)
       }
     }
   }

@@ -19,7 +19,6 @@ package uk.gov.hmrc.soletraderidentificationfrontend.forms
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.data.validation.Constraint
-import play.api.i18n.Messages
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.mappings.Mappings
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil.ConstraintUtil
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.MappingUtil.{OTextUtil, optText}
@@ -30,7 +29,7 @@ import javax.inject.Inject
 
 class CaptureFullNameForm @Inject() extends Mappings {
 
-  def validName(text: String): Boolean = text.length > 0 && text.length < 100
+  def validName(text: String): Boolean = text.nonEmpty && text.length < 100
 
   private val firstNameNotEntered: Constraint[String] = Constraint("first_name.not_entered")(
     firstName => validate(
@@ -60,7 +59,7 @@ class CaptureFullNameForm @Inject() extends Mappings {
     )
   )
 
-  def apply()(implicit messages: Messages): Form[FullNameModel] = {
+  def apply(): Form[FullNameModel] = {
     Form(
       mapping(
         "first-name" -> optText.toText.verifying(firstNameNotEntered andThen firstNameInvalid),

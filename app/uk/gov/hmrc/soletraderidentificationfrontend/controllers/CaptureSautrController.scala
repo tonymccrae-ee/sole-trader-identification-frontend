@@ -18,6 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
@@ -29,14 +30,17 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
                                        view: capture_sautr_page,
-                                       soleTraderIdentificationService: SoleTraderIdentificationService
-                                      )(implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                       soleTraderIdentificationService: SoleTraderIdentificationService,
+                                       val authConnector: AuthConnector
+                                      )(implicit val config: AppConfig,
+                                        executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
   val name = "John Smith"
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CaptureSautrController.submit(journeyId), name, CaptureSautrForm.form))
-      )
+      authorised() {
+        Future.successful(Ok(view(routes.CaptureSautrController.submit(journeyId), name, CaptureSautrForm.form)))
+      }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {

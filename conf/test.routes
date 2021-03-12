@@ -1,0 +1,6 @@
+
+GET        /create-journey                                                                  uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestCreateJourneyController.show
+POST       /create-journey                                                                  uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestCreateJourneyController.submit
+
+GET        /retrieve-journey/:journeyId                                                     uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveSoleTraderDetails(journeyId)
+GET        /retrieve-journey                                                                uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveSoleTraderDetails(journeyId)

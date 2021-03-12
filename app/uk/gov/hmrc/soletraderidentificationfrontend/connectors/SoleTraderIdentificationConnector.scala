@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
@@ -25,6 +25,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.models.{SoleTraderDetailsMod
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
                                                   appConfig: AppConfig
                                                  )(implicit ec: ExecutionContext) extends HttpReadsInstances {

@@ -1,0 +1,5 @@
+# microservice specific routes
+
++ nocsrf
+POST       /journey                                         uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController.createJourney()
+GET        /journey/:journeyId                              uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController.retrieveJourneyData(journeyId: String)
