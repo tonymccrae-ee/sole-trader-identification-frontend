@@ -16,16 +16,23 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureSautrViewTests
 
-class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrViewTests with SoleTraderIdentificationStub {
+class CaptureSautrControllerISpec extends ComponentSpecHelper
+  with CaptureSautrViewTests
+  with SoleTraderIdentificationStub
+  with AuthStub {
 
   "GET /sa-utr" should {
-    lazy val result = get(s"/sa-utr/$testJourneyId")
+    lazy val result = {
+      stubAuth(OK, successfulAuthResponse())
+      get(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")
+    }
 
     "return OK" in {
       result.status mustBe OK
@@ -34,14 +41,30 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     "return a view which" should {
       testCaptureSautrView(result)
     }
+
+    "redirect to sign in page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
+        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri("/bas-gateway/sign-in" +
+            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fsa-utr" +
+            "&origin=sole-trader-identification-frontend"
+          )
+        )
+      }
+    }
   }
 
   "POST /sa-utr" when {
     "the sautr is correctly formatted" should {
       "redirect to Check Your Answers Page and store the data in the backend" in {
+        stubAuth(OK, successfulAuthResponse())
         stubStoreSautr(testJourneyId, testSautr)(status = OK)
 
-        lazy val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> testSautr)
+        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> testSautr)
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -51,7 +74,10 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     }
 
     "no sautr is submitted" should {
-      lazy val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> "")
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "")
+      }
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -61,7 +87,10 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper with CaptureSautrV
     }
 
     "an invalid sautr is submitted" should {
-      lazy val result = post(s"/sa-utr/$testJourneyId")("sa-utr" -> "123456789")
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "123456789")
+      }
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST

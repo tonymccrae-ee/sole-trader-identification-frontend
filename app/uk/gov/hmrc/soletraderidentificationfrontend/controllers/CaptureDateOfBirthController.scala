@@ -17,38 +17,44 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureDateOfBirthForm
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_date_of_birth_page
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
                                              view: capture_date_of_birth_page,
                                              captureDateOfBirthForm: CaptureDateOfBirthForm,
-                                             soleTraderIdentificationService: SoleTraderIdentificationService
-                                            )(implicit appConfig: AppConfig,
-                                              ec: ExecutionContext) extends FrontendController(mcc) {
+                                             soleTraderIdentificationService: SoleTraderIdentificationService,
+                                             val authConnector: AuthConnector
+                                            )(implicit ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CaptureDateOfBirthController.submit(journeyId), captureDateOfBirthForm.apply())))
+      authorised() {
+        Future.successful(Ok(view(routes.CaptureDateOfBirthController.submit(journeyId), captureDateOfBirthForm.apply())))
+      }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      captureDateOfBirthForm.apply().bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(view(routes.CaptureDateOfBirthController.submit(journeyId), formWithErrors))
-          ),
-        dateOfBirth =>
-          soleTraderIdentificationService.storeDateOfBirth(journeyId, dateOfBirth).map {
-            _ => Redirect(routes.CaptureNinoController.show(journeyId))
-          }
-      )
+      authorised() {
+        captureDateOfBirthForm.apply().bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(routes.CaptureDateOfBirthController.submit(journeyId), formWithErrors))
+            ),
+          dateOfBirth =>
+            soleTraderIdentificationService.storeDateOfBirth(journeyId, dateOfBirth).map {
+              _ => Redirect(routes.CaptureNinoController.show(journeyId))
+            }
+        )
+      }
   }
+
 }

@@ -17,39 +17,44 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureFullNameForm
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_full_name_page
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class CaptureFullNameController @Inject()(mcc: MessagesControllerComponents,
                                           view: capture_full_name_page,
                                           captureFullNameForm: CaptureFullNameForm,
-                                          soleTraderIdentificationService: SoleTraderIdentificationService
-                                         )(implicit appConfig: AppConfig,
-                                           ec: ExecutionContext) extends FrontendController(mcc) {
+                                          soleTraderIdentificationService: SoleTraderIdentificationService,
+                                          val authConnector: AuthConnector
+                                         )(implicit ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CaptureFullNameController.submit(journeyId), captureFullNameForm.apply())))
+      authorised() {
+        Future.successful(Ok(view(routes.CaptureFullNameController.submit(journeyId), captureFullNameForm.apply())))
+      }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      captureFullNameForm.apply().bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(view(routes.CaptureFullNameController.submit(journeyId), formWithErrors))
-          ),
-        fullName =>
-          soleTraderIdentificationService.storeFullName(journeyId, fullName).map {
-            _ => Redirect(routes.CaptureDateOfBirthController.show(journeyId))
-          }
-      )
+      authorised() {
+        captureFullNameForm.apply().bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(routes.CaptureFullNameController.submit(journeyId), formWithErrors))
+            ),
+          fullName =>
+            soleTraderIdentificationService.storeFullName(journeyId, fullName).map {
+              _ => Redirect(routes.CaptureDateOfBirthController.show(journeyId))
+            }
+        )
+      }
   }
 
 }

@@ -15,7 +15,6 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.footer.FooterItem
 @import uk.gov.hmrc.soletraderidentificationfrontend.views.helpers.FooterLinks
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 
@@ -25,7 +24,7 @@
       footerLinks: FooterLinks,
       footer: govukFooter)
 
-@(title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
+@(title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>

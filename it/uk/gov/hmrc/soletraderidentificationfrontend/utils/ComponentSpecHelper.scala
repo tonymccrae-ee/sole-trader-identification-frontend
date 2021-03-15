@@ -22,9 +22,15 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Writes
+import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
+import reactivemongo.api.commands.WriteResult
+import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
@@ -49,12 +55,17 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.auth.port" -> mockPort,
     "microservice.services.base.host" -> mockHost,
     "microservice.services.base.port" -> mockPort,
+    "microservice.services.self.host" -> mockHost,
+    "microservice.services.self.port" -> mockPort,
     "microservice.services.des.url" -> mockUrl,
+    "microservice.services.self.url" -> mockUrl,
     "microservice.services.sole-trader-identification.host" -> mockHost,
     "microservice.services.sole-trader-identification.port" -> mockPort
   )
 
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
+
+  lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
 
   override def beforeAll(): Unit = {
     startWiremock()
@@ -68,6 +79,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   override def beforeEach(): Unit = {
     resetWiremock()
+    await(journeyConfigRepository.drop)
     super.beforeEach()
   }
 
@@ -84,6 +96,14 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     )
   }
 
+  def post(uri: String, json: JsValue): WSResponse = {
+    await(
+      buildClient(uri)
+        .withHttpHeaders("Content-Type" -> "application/json")
+        .post(json.toString())
+    )
+  }
+
   def put[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse = {
     await(
       buildClient(uri)
@@ -92,9 +112,11 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     )
   }
 
-  val baseUrl: String = "/identify-your-sole-trader-business"
-
   private def buildClient(path: String): WSRequest =
-    ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
+    ws.url(s"http://localhost:$port$path").withFollowRedirects(false)
+
+  def insertJourneyConfig(journeyId: String,
+                          continueUrl: String): Future[WriteResult] =
+    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl))
 
 }

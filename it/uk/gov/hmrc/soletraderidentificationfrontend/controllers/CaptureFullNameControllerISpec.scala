@@ -16,20 +16,27 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testJourneyId
 import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
-import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureFullNameViewTests
 
-class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFullNameViewTests with SoleTraderIdentificationStub {
+class CaptureFullNameControllerISpec extends ComponentSpecHelper
+  with CaptureFullNameViewTests
+  with SoleTraderIdentificationStub
+  with AuthStub {
 
   val testFirstName = "John"
   val testLastName = "Smith"
 
   "GET /full-name" should {
-    lazy val result = get(s"/full-name/$testJourneyId")
+    lazy val result = {
+      stubAuth(OK, successfulAuthResponse())
+      get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
+    }
 
     "return OK" in {
       result.status mustBe OK
@@ -38,17 +45,33 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFul
     "return a view which" should {
       testCaptureFullNameView(result)
     }
+
+    "redirect to sign in page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
+        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri("/bas-gateway/sign-in" +
+            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Ffull-name" +
+            "&origin=sole-trader-identification-frontend"
+          )
+        )
+      }
+    }
   }
 
   "POST /full-name" when {
     "the whole form is correctly formatted" should {
       "redirect to the Capture Date of Birth page and store the data in the backend" in {
+        stubAuth(OK, successfulAuthResponse())
         stubStoreFullName(testJourneyId, FullNameModel(testFirstName, testLastName))(status = OK)
 
-        lazy val result = post(s"/full-name/$testJourneyId")(
-            "first-name" -> testFirstName,
-            "last-name" -> testLastName
-          )
+        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> testFirstName,
+          "last-name" -> testLastName
+        )
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -58,10 +81,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFul
     }
 
     "the whole form is missing" should {
-      lazy val result = post(s"/full-name/$testJourneyId")(
-        "first-name" -> "",
-        "last-name" -> ""
-      )
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> "",
+          "last-name" -> ""
+        )
+      }
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -69,10 +95,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFul
     }
 
     "the first name is missing" should {
-      lazy val result = post(s"/full-name/$testJourneyId")(
-        "first-name" -> "",
-        "last-name" -> testLastName
-      )
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> "",
+          "last-name" -> testLastName
+        )
+      }
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -80,10 +109,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFul
     }
 
     "the last name is missing" should {
-      lazy val result = post(s"/full-name/$testJourneyId")(
-        "first-name" -> testFirstName,
-        "last-name" -> ""
-      )
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> testFirstName,
+          "last-name" -> ""
+        )
+      }
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -91,10 +123,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper with CaptureFul
     }
 
     "the first name and last name are missing" should {
-      lazy val result = post(s"/full-name/$testJourneyId")(
-        "first-name" -> "",
-        "last-name" -> ""
-      )
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> "",
+          "last-name" -> ""
+        )
+      }
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }

@@ -17,10 +17,11 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
 import javax.inject.{Inject, Singleton}
@@ -29,21 +30,30 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
-                                           soleTraderIdentificationService: SoleTraderIdentificationService
+                                           soleTraderIdentificationService: SoleTraderIdentificationService,
+                                           journeyService: JourneyService,
+                                           val authConnector: AuthConnector
                                           )(implicit val config: AppConfig,
-                                            executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                            executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).map {
-        case Some(details) => Ok(view(routes.CheckYourAnswersController.submit(), journeyId, details))
-        case None => throw new InternalServerException("Fail to retrieve data from database")
+      authorised() {
+        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).map {
+          case Some(details) => Ok(view(routes.CheckYourAnswersController.submit(journeyId), journeyId, details))
+          case None => throw new InternalServerException("Fail to retrieve data from database")
+        }
       }
   }
 
-  val submit: Action[AnyContent] = Action {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      NotImplemented
+      authorised() {
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig => Redirect(journeyConfig.continueUrl)
+        }
+      }
   }
+
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mocks
+package connectors.mocks
 
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.{reset, verify, when}

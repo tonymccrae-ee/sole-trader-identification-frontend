@@ -2,19 +2,19 @@
 
 GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /full-name/:journeyId                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureFullNameController.show(journeyId: String)
-POST        /full-name/:journeyId                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureFullNameController.submit(journeyId: String)
+GET         /:journeyId/full-name                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureFullNameController.show(journeyId: String)
+POST        /:journeyId/full-name                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureFullNameController.submit(journeyId: String)
 
-GET         /date-of-birth/:journeyId                    uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureDateOfBirthController.show(journeyId: String)
-POST        /date-of-birth/:journeyId                    uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureDateOfBirthController.submit(journeyId: String)
+GET         /:journeyId/date-of-birth                    uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureDateOfBirthController.show(journeyId: String)
+POST        /:journeyId/date-of-birth                    uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureDateOfBirthController.submit(journeyId: String)
 
-GET         /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId: String)
-POST        /national-insurance-number/:journeyId        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId: String)
+GET         /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId: String)
+POST        /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId: String)
 
-GET         /sa-utr/:journeyId                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId)
-POST        /sa-utr/:journeyId                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId)
+GET         /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId: String)
+POST        /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId: String)
 
-GET         /check-your-answers-business/:journeyId      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId: String)
-POST        /check-your-answers-business                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit
+GET         /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId: String)
+POST        /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId: String)
 
 ->          /govuk-frontend                              govuk.Routes

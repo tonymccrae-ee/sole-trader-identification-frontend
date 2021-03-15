@@ -18,6 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureNinoForm
@@ -29,28 +30,34 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                                       view: capture_nino_page,
-                                      soleTraderIdentificationService: SoleTraderIdentificationService
+                                      soleTraderIdentificationService: SoleTraderIdentificationService,
+                                      val authConnector: AuthConnector
                                      )(implicit val config: AppConfig,
-                                       executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   val name = "John Smith" // TODO this will be pre-pop data
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CaptureNinoController.submit(journeyId), name, CaptureNinoForm.form)))
+      authorised() {
+        Future.successful(Ok(view(routes.CaptureNinoController.submit(journeyId), name, CaptureNinoForm.form)))
+      }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      CaptureNinoForm.form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(view(routes.CaptureNinoController.submit(journeyId), name, formWithErrors))
-          ),
-        nino =>
-          soleTraderIdentificationService.storeNino(journeyId, nino).map {
-            _ => Redirect(routes.CaptureSautrController.show(journeyId))
-          }
-      )
+      authorised() {
+        CaptureNinoForm.form.bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(routes.CaptureNinoController.submit(journeyId), name, formWithErrors))
+            ),
+          nino =>
+            soleTraderIdentificationService.storeNino(journeyId, nino).map {
+              _ => Redirect(routes.CaptureSautrController.show(journeyId))
+            }
+        )
+      }
   }
+
 }

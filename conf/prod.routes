@@ -1,5 +1,6 @@
 # Add all the application routes to the app.routes file
-->         /identify-your-sole-trader-business      app.Routes
-->         /                                        health.Routes
+->         /identify-your-sole-trader-business                          app.Routes
+->         /sole-trader-identification/api                              api.Routes
+->         /                                                            health.Routes
 
-GET        /admin/metrics                           com.kenshoo.play.metrics.MetricsController.metrics
+GET        /admin/metrics                                               com.kenshoo.play.metrics.MetricsController.metrics

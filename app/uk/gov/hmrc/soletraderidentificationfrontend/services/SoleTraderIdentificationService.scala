@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
-import java.time.LocalDate
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.JsString
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetailsModel, StorageResult}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
+import java.time.LocalDate
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -52,16 +51,10 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
     connector.retrieveSoleTraderIdentification[LocalDate](journeyId, DateOfBirthKey)
 
   def retrieveNino(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveSoleTraderIdentification[JsString](journeyId, NinoKey).map {
-      case Some(jsString) => Some(jsString.value)
-      case None => None
-    }
+    connector.retrieveSoleTraderIdentification[String](journeyId, NinoKey)
 
   def retrieveSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveSoleTraderIdentification[JsString](journeyId, SautrKey).map {
-      case Some(jsString) => Some(jsString.value)
-      case None => None
-    }
+    connector.retrieveSoleTraderIdentification[String](journeyId, SautrKey)
 
   def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetailsModel]] =
     connector.retrieveSoleTraderIdentification(journeyId)

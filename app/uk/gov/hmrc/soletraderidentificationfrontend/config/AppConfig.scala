@@ -42,4 +42,11 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
   def soleTraderIdentificationUrl(journeyId: String): String = s"$backendUrl/sole-trader-identification/journey/$journeyId"
 
+  lazy val createJourneyUrl: String = s"$backendUrl/sole-trader-identification/journey"
+
+  lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
+  lazy val selfUrl: String = servicesConfig.getString("microservice.services.self.url")
+
+  lazy val timeToLiveSeconds: Long = servicesConfig.getString("mongodb.timeToLiveSeconds").toLong
+
 }
