@@ -53,15 +53,8 @@ object MessageLookup {
 
     object Error {
       val noDobEntered = "Enter your date of birth"
-      val noDayEntered = "Your date of birth must include a day"
-      val noMonthEntered = "Your date of birth must include a month"
-      val noYearEntered = "Your date of birth must include a year"
-      val noDayAndMonthEntered = "Your date of birth must include a day and month"
-      val noDayAndYearEntered = "Your date of birth must include a day and year"
-      val noMonthAndYearEntered = "Your date of birth must include a month and year"
-      val invalidDay = "Day (Enter a number between 1 and 31)"
-      val invalidMonth = "Month (Enter a number between 1 and 12)"
-      val invalidYear = "Year (The date must be in the past)"
+      val invalidDate =  "Enter a real date"
+      val futureDate = "The date of birth must be in the past"
       val invalidAge = "You must be at least 16 years of age"
     }
 

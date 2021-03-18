@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import java.time.LocalDate
+
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureDateOfBirthViewTests
-
-import java.time.LocalDate
 
 class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
   with CaptureDateOfBirthViewTests
@@ -109,126 +109,6 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       testCaptureDateOfBirthErrorMessageNoDob(result)
     }
 
-    "the day in dob is missing" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> "",
-          "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
-          "date-of-birth-year" -> testDateOfBirth.getYear.toString
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageNoDay(result)
-    }
-
-    "the month in dob is missing" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
-          "date-of-birth-month" -> "",
-          "date-of-birth-year" -> testDateOfBirth.getYear.toString
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageNoMonth(result)
-    }
-
-    "the year in dob is missing" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
-          "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
-          "date-of-birth-year" -> ""
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageNoYear(result)
-    }
-
-    "the day and month in dob are missing" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> "",
-          "date-of-birth-month" -> "",
-          "date-of-birth-year" -> testDateOfBirth.getYear.toString
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageNoDayNoMonth(result)
-    }
-
-    "the day and year in dob are missing" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> "",
-          "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
-          "date-of-birth-year" -> ""
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageNoDayNoYear(result)
-    }
-
-    "the month and year in dob are missing" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
-          "date-of-birth-month" -> "",
-          "date-of-birth-year" -> ""
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageNoMonthNoYear(result)
-    }
-
-    "an invalid day is submitted" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> "35",
-          "date-of-birth-month" -> testDateOfBirth.getMonthValue.toString,
-          "date-of-birth-year" -> testDateOfBirth.getYear.toString
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageInvalidDay(result)
-    }
-
-    "an invalid month is submitted" should {
-      lazy val result = {
-        stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
-          "date-of-birth-day" -> testDateOfBirth.getDayOfMonth.toString,
-          "date-of-birth-month" -> "15",
-          "date-of-birth-year" -> testDateOfBirth.getYear.toString
-        )
-      }
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureDateOfBirthErrorMessageInvalidMonth(result)
-    }
-
     "a future year is submitted" should {
       lazy val result = {
         stubAuth(OK, successfulAuthResponse())
@@ -242,6 +122,21 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
         result.status mustBe BAD_REQUEST
       }
       testCaptureDateOfBirthErrorMessageInvalidYear(result)
+    }
+
+    "an invalid date is submitted" should {
+      lazy val result = {
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
+          "date-of-birth-day" -> "31",
+          "date-of-birth-month" -> "02",
+          "date-of-birth-year" -> "2020"
+        )
+      }
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+      testCaptureDateOfBirthErrorMessageInvalidDate(result)
     }
 
     "the dob submitted is less than 16 years ago" should {
