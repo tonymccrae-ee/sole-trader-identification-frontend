@@ -16,56 +16,78 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.forms
 
-import play.api.data.Form
-import play.api.data.Forms.single
+import java.time.LocalDate
+
+import play.api.data.Forms.{of, single}
+import play.api.data.format.Formatter
 import play.api.data.validation.Constraint
-import play.api.i18n.Messages
-import uk.gov.hmrc.soletraderidentificationfrontend.forms.mappings.Mappings
-import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil.{ConstraintUtil, constraint}
+import play.api.data.{Form, FormError}
+import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil.constraint
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.TimeMachine
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.validateNot
 
-import java.time.LocalDate
-import javax.inject.Inject
+import scala.util.Try
 
-class CaptureDateOfBirthForm @Inject()(timeMachine: TimeMachine) extends Mappings {
+object CaptureDateOfBirthForm {
 
-  val dateRegex = "^[0-9]+$"
+  val dateKey = "date-of-birth"
+  val dayKey = "date-of-birth-day"
+  val monthKey = "date-of-birth-month"
+  val yearKey = "date-of-birth-year"
+  val invalidDateErrorKey = "error.invalid_date"
+  val missingDateErrorKey = "error.no_entry_dob"
+  val futureDateErrorKey = "error.invalid_dob_future"
 
-  private val dobYearInvalid: Constraint[LocalDate] = constraint[LocalDate] {
-    def now: LocalDate = timeMachine.now()
-
-    dateOfBirth =>
-      validateNot(
-        constraint = dateOfBirth.isBefore(now),
-        errMsg = "error.invalid_dob_year"
-      )
-  }
-
-  private val invalidAge: Constraint[LocalDate] = constraint[LocalDate] {
-    def now: LocalDate = timeMachine.now()
-
+  private def invalidAge(currentDate: LocalDate): Constraint[LocalDate] = constraint[LocalDate] {
     val minAge = 16
 
     dateOfBirth =>
       validateNot(
-        constraint = dateOfBirth.isBefore(now.minusYears(minAge)),
+        constraint = dateOfBirth.isBefore(currentDate.minusYears(minAge)),
         errMsg = "error.invalid_age"
       )
   }
 
-  def apply()(implicit messages: Messages): Form[LocalDate] = {
-    Form(
-      single(
-        "date-of-birth" -> localDate(
-          invalidKey = "error.no_entry_dob",
-          invalidDayKey = "error.invalid_dob_day",
-          invalidMonthKey = "error.invalid_dob_month",
-          allRequiredKey = "error.no_entry_dob",
-          twoRequiredKey = "error.no_entry_dob_two_required",
-          requiredKey = "error.no_entry_dob_one_required"
-        ).verifying(dobYearInvalid andThen invalidAge))
+  private val invalidDate: Formatter[LocalDate] = new Formatter[LocalDate] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], LocalDate] = {
+
+      val dayExists = data.getOrElse(dayKey, "").nonEmpty
+      val monthExists = data.getOrElse(monthKey, "").nonEmpty
+      val yearExists = data.getOrElse(yearKey, "").nonEmpty
+
+      val dateExists = dayExists && monthExists && yearExists
+
+      if (dateExists) {
+        val inputDate = Try(
+          for {
+            day <- data.get(dayKey).map(Integer.parseInt)
+            month <- data.get(monthKey).map(Integer.parseInt)
+            year <- data.get(yearKey).map(Integer.parseInt).filter(_ > 1900)
+          } yield LocalDate.of(year, month, day)
+        ).getOrElse(None)
+
+        inputDate match {
+          case None => Left(Seq(FormError(dateKey, invalidDateErrorKey)))
+          case Some(date) if date.isAfter(LocalDate.now) => Left(Seq(FormError(dateKey, futureDateErrorKey)))
+          case Some(date) => Right(date)
+        }
+      } else {
+        Left(Seq(FormError(dateKey, missingDateErrorKey)))
+      }
+    }
+
+    override def unbind(key: String, value: LocalDate): Map[String, String] = Map(
+      "day" -> value.getDayOfMonth.toString,
+      "month" -> value.getMonth.toString,
+      "year" -> value.getYear.toString
     )
   }
 
+
+  def captureDateOfBirthForm(currentDate: LocalDate): Form[LocalDate] = Form(
+    single(dateKey -> of[LocalDate](invalidDate).verifying(invalidAge(currentDate)))
+  )
+
 }
+
+

@@ -72,111 +72,27 @@ trait CaptureDateOfBirthViewTests {
     }
   }
 
-  def testCaptureDateOfBirthErrorMessageNoDay(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noDayEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noDayEntered
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageNoMonth(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noMonthEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noMonthEntered
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageNoYear(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noYearEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noYearEntered
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageNoDayNoMonth(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noDayAndMonthEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noDayAndMonthEntered
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageNoDayNoYear(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noDayAndYearEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noDayAndYearEntered
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageNoMonthNoYear(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.noMonthAndYearEntered
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noMonthAndYearEntered
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageInvalidDay(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.invalidDay
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidDay
-    }
-  }
-
-  def testCaptureDateOfBirthErrorMessageInvalidMonth(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "correctly display the error summary" in {
-      doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.invalidMonth
-    }
-    "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidMonth
-    }
-  }
-
   def testCaptureDateOfBirthErrorMessageInvalidYear(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
-      doc.getErrorSummaryBody.text mustBe messages.Error.invalidYear
+      doc.getErrorSummaryBody.text mustBe messages.Error.futureDate
     }
     "correctly display the field errors" in {
-      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidYear
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.futureDate
+    }
+  }
+
+  def testCaptureDateOfBirthErrorMessageInvalidDate(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "correctly display the error summary" in {
+      doc.getErrorSummaryTitle.text mustBe Base.Error.title
+      doc.getErrorSummaryBody.text mustBe messages.Error.invalidDate
+    }
+    "correctly display the field errors" in {
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidDate
     }
   }
 

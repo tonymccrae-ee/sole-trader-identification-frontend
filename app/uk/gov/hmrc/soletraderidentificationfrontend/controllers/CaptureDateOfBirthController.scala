@@ -19,32 +19,33 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureDateOfBirthForm
+import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureDateOfBirthForm.captureDateOfBirthForm
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_date_of_birth_page
-
 import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.TimeMachine
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
                                              view: capture_date_of_birth_page,
-                                             captureDateOfBirthForm: CaptureDateOfBirthForm,
                                              soleTraderIdentificationService: SoleTraderIdentificationService,
-                                             val authConnector: AuthConnector
+                                             val authConnector: AuthConnector,
+                                             timeMachine: TimeMachine
                                             )(implicit ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CaptureDateOfBirthController.submit(journeyId), captureDateOfBirthForm.apply())))
+        Future.successful(Ok(view(routes.CaptureDateOfBirthController.submit(journeyId), captureDateOfBirthForm(timeMachine.now()))))
       }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        captureDateOfBirthForm.apply().bindFromRequest().fold(
+        captureDateOfBirthForm(timeMachine.now()).bindFromRequest.fold(
           formWithErrors =>
             Future.successful(
               BadRequest(view(routes.CaptureDateOfBirthController.submit(journeyId), formWithErrors))

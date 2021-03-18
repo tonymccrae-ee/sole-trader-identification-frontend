@@ -23,5 +23,3 @@ class TimeMachine {
     LocalDate.now(ZoneId.of("Europe/London"))
   }
 }
-
-object TimeMachine
