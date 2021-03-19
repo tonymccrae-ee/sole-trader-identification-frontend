@@ -4,3 +4,5 @@ POST       /create-journey                                                      
 
 GET        /retrieve-journey/:journeyId                                                     uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveSoleTraderDetails(journeyId)
 GET        /retrieve-journey                                                                uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveSoleTraderDetails(journeyId)
+
+POST       /authenticator/match                                                             uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers.StubAuthenticatorMatchController.stubMatch
