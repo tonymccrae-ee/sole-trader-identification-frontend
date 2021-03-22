@@ -5,4 +5,11 @@ POST       /create-journey                                                      
 GET        /retrieve-journey/:journeyId                                                     uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveSoleTraderDetails(journeyId)
 GET        /retrieve-journey                                                                uk.gov.hmrc.soletraderidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveSoleTraderDetails(journeyId)
 
+GET        /feature-switches                                                                uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
+POST       /feature-switches                                                                uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
+
+GET        /api/feature-switches                                                            uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
++ nocsrf
+POST       /api/feature-switches                                                            uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+
 POST       /authenticator/match                                                             uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers.StubAuthenticatorMatchController.stubMatch
