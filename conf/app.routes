@@ -17,4 +17,7 @@ POST        /:journeyId/sa-utr                           uk.gov.hmrc.soletraderi
 GET         /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId: String)
 POST        /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId: String)
 
+GET         /:journeyId/personal-information-error       uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalInformationErrorController.show(journeyId: String)
+
+
 ->          /govuk-frontend                              govuk.Routes
