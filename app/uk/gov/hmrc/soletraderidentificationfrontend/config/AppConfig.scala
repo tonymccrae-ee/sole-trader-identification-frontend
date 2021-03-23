@@ -18,10 +18,16 @@ package uk.gov.hmrc.soletraderidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, FeatureSwitching}
 
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig) {
-  def matchSoleTraderDetailsUrl: String = s"${servicesConfig.baseUrl("authenticator")}/authenticator/match"
+class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
+  def matchSoleTraderDetailsUrl: String =
+    if (isEnabled(AuthenticatorStub)) {
+      s"${servicesConfig.baseUrl("self")}/identify-your-sole-trader-business/test-only/authenticator/match"
+    } else {
+      s"${servicesConfig.baseUrl("authenticator")}/authenticator/match"
+    }
 
   private val contactBaseUrl = servicesConfig.baseUrl("contact-frontend")
 

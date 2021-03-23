@@ -20,23 +20,35 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, FeatureSwitching}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.AuthenticatorStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 
-class AuthenticatorConnectorISpec extends ComponentSpecHelper with AuthenticatorStub {
+class AuthenticatorConnectorISpec extends ComponentSpecHelper with AuthenticatorStub with FeatureSwitching {
   lazy val testConnector: AuthenticatorConnector = app.injector.instanceOf[AuthenticatorConnector]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "matchSoleTraderDetails" should {
     "return successful match" when {
-      "authenticator returns matched data" in {
-        stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
+      "authenticator returns matched data" when {
+        "the stub authenticator feature switch is disabled" in {
+          stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
 
-        val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+          val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
 
-        res mustBe Right(SoleTraderDetailsMatching.Matched)
+          res mustBe Right(SoleTraderDetailsMatching.Matched)
+        }
+
+        "the stub authenticator feature switch is enabled" in {
+          enable(AuthenticatorStub)
+          stubMatchStub(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+
+          res mustBe Right(SoleTraderDetailsMatching.Matched)
+        }
       }
     }
     "return details mismatch" when {
@@ -74,4 +86,5 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
       }
     }
   }
+
 }
