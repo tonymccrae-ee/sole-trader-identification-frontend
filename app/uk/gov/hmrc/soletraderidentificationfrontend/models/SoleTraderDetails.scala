@@ -21,13 +21,13 @@ import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
 import java.time.LocalDate
 
-case class SoleTraderDetailsModel(firstName: String,
-                                  lastName: String,
-                                  dateOfBirth: LocalDate,
-                                  nino: String,
-                                  optSautr: Option[String])
+case class SoleTraderDetails(firstName: String,
+                             lastName: String,
+                             dateOfBirth: LocalDate,
+                             nino: String,
+                             optSautr: Option[String])
 
-object SoleTraderDetailsModel {
+object SoleTraderDetails {
 
   private val FullNameKey = "fullName"
   private val FirstNameKey = "firstName"
@@ -36,23 +36,23 @@ object SoleTraderDetailsModel {
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
 
-  implicit val reads: Reads[SoleTraderDetailsModel] = (
+  implicit val reads: Reads[SoleTraderDetails] = (
     (JsPath \ FullNameKey \ FirstNameKey).read[String] and
       (JsPath \ FullNameKey \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).read[String] and
       (JsPath \ SautrKey).readNullable[String]
-    ) (SoleTraderDetailsModel.apply _)
+    ) (SoleTraderDetails.apply _)
 
-  implicit val writes: OWrites[SoleTraderDetailsModel] = (
+  implicit val writes: OWrites[SoleTraderDetails] = (
     (JsPath \ FullNameKey \ FirstNameKey).write[String] and
       (JsPath \ FullNameKey \ LastNameKey).write[String] and
       (JsPath \ DateOfBirthKey).write[LocalDate] and
       (JsPath \ NinoKey).write[String] and
       (JsPath \ SautrKey).writeNullable[String]
-    ) (unlift(SoleTraderDetailsModel.unapply))
+    ) (unlift(SoleTraderDetails.unapply))
 
 
-  val format: OFormat[SoleTraderDetailsModel] = OFormat(reads, writes)
+  val format: OFormat[SoleTraderDetails] = OFormat(reads, writes)
 
 }

@@ -46,7 +46,7 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = Json.toJsObject(
-            SoleTraderDetailsModel(
+            SoleTraderDetails(
               firstName = testFirstName,
               lastName = testLastName,
               dateOfBirth = testDateOfBirth,
@@ -59,7 +59,7 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
         val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification(testJourneyId))
 
         result mustBe Some(
-          SoleTraderDetailsModel(
+          SoleTraderDetails(
             testFirstName,
             testLastName,
             testDateOfBirth,
