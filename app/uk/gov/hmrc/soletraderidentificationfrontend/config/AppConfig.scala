@@ -21,6 +21,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) {
+  def matchSoleTraderDetailsUrl: String = s"${servicesConfig.baseUrl("authenticator")}/authenticator/match"
+
   private val contactBaseUrl = servicesConfig.baseUrl("contact-frontend")
 
   private val assetsUrl = servicesConfig.getString("assets.url")

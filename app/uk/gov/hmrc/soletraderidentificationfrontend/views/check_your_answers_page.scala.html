@@ -16,7 +16,7 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => Routes}
-@import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 @import uk.gov.hmrc.soletraderidentificationfrontend.utils.DateHelper.checkYourAnswersFormat
 
 @this(layout: govuk_template,
@@ -27,7 +27,7 @@
         formWithCSRF: FormWithCSRF)
 
 
-@(formAction: Call, journeyId: String, soleTraderDetailsModel: SoleTraderDetailsModel)(implicit request: Request[_], messages: Messages)
+@(formAction: Call, journeyId: String, soleTraderDetailsModel: SoleTraderDetails)(implicit request: Request[_], messages: Messages)
 
 @layout(title = messages("check-your-answers.title")) {
 

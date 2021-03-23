@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
@@ -27,7 +27,7 @@ import scala.concurrent.Future
 @Singleton
 class StubAuthenticatorMatchController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val stubMatch: Action[SoleTraderDetailsModel] = Action.async(parse.json[SoleTraderDetailsModel]) {
+  val stubMatch: Action[SoleTraderDetails] = Action.async(parse.json[SoleTraderDetails]) {
 
     implicit request =>
       request.body.lastName.toLowerCase match {

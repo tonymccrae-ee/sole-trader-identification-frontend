@@ -21,7 +21,7 @@ import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SoleTraderIdentificationStorageHttpReads
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{SoleTraderDetailsModel, StorageResult}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{SoleTraderDetails, StorageResult}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -38,8 +38,8 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
     http.GET[Option[DataType]](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey")
 
   def retrieveSoleTraderIdentification(journeyId: String
-                                      )(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetailsModel]] =
-    http.GET[Option[SoleTraderDetailsModel]](appConfig.soleTraderIdentificationUrl(journeyId))
+                                      )(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
+    http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))
 
   def storeData[DataType](journeyId: String, dataKey: String, data: DataType
                          )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {

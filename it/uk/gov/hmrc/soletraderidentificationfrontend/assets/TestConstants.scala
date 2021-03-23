@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.assets
 
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsModel
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 import java.time.LocalDate
 import java.util.UUID
@@ -30,8 +30,8 @@ case object TestConstants {
   val testNino: String = "AA111111A"
   val testSautr: String = "1234567890"
 
-  val testSoleTraderDetails: SoleTraderDetailsModel =
-    SoleTraderDetailsModel(
+  val testSoleTraderDetails: SoleTraderDetails =
+    SoleTraderDetails(
       testFirstName,
       testLastName,
       testDateOfBirth,

@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetailsModel, StorageResult}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetails, StorageResult}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
 import java.time.LocalDate
@@ -56,7 +56,7 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def retrieveSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveSoleTraderIdentification[String](journeyId, SautrKey)
 
-  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetailsModel]] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
     connector.retrieveSoleTraderIdentification(journeyId)
 }
 
