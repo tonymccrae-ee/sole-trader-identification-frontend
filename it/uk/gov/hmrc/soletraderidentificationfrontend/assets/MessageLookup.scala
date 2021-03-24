@@ -87,6 +87,13 @@ object MessageLookup {
 
   }
 
+  object PersonalInformationError {
+    val title = "We could not identify you on our records"
+    val heading = "We could not identify you on our records"
+    val line_1 = "This could have been because of a mistake when entering your name, date of birth or National Insurance number."
+    val button = "Try again"
+  }
+
   object CheckYourAnswers {
     val title = "Check your answers"
     val heading = "Check your answers"
