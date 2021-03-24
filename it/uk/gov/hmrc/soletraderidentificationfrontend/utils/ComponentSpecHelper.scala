@@ -26,6 +26,8 @@ import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, FeatureSwitching, FeatureSwitchingModule}
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
 import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository
 
@@ -37,7 +39,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with WiremockHelper
   with BeforeAndAfterAll
   with BeforeAndAfterEach
-  with GuiceOneServerPerSuite {
+  with GuiceOneServerPerSuite
+  with FeatureSwitching {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
@@ -68,6 +71,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
   lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
+  lazy val featureSwitches: Seq[FeatureSwitch] = app.injector.instanceOf[FeatureSwitchingModule].switches
+
 
   override def beforeAll(): Unit = {
     startWiremock()
@@ -82,6 +87,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   override def beforeEach(): Unit = {
     resetWiremock()
     await(journeyConfigRepository.drop)
+    featureSwitches.foreach(disable)
     super.beforeEach()
   }
 

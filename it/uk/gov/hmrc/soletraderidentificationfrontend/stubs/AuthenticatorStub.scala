@@ -38,6 +38,21 @@ trait AuthenticatorStub extends WireMockMethods {
     )
   }
 
+  def stubMatchStub(soleTraderDetails: SoleTraderDetails)(status: Int, body: JsObject): Unit = {
+    when(method = POST,
+      uri = s"/identify-your-sole-trader-business/test-only/authenticator/match",
+      body = Json.obj(
+        "firstName" -> soleTraderDetails.firstName,
+        "lastName" -> soleTraderDetails.lastName,
+        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("yyyy-MM-DD")),
+        "nino" -> soleTraderDetails.nino
+      )
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+  }
+
   def successfulMatchJson(soleTraderDetails: SoleTraderDetails): JsObject = Json.obj(
     "firstName" -> soleTraderDetails.firstName,
     "lastName" -> soleTraderDetails.lastName,
