@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
 
@@ -28,7 +28,8 @@ import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTe
 class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   with CheckYourAnswersViewTests
   with SoleTraderIdentificationStub
-  with AuthStub {
+  with AuthStub
+  with AuthenticatorStub {
 
   "GET /check-your-answers-business" should {
     lazy val result: WSResponse = {
@@ -63,16 +64,33 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
   "POST /check-your-answers-business" should {
     "redirect to continue url from the supplied journey config" in {
-      val testContinueUrl = "/testContinueUrl"
 
       insertJourneyConfig(testJourneyId, testContinueUrl)
+      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = Json.toJsObject(testSoleTraderDetails))
       stubAuth(OK, successfulAuthResponse())
+      stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
+
 
       lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
       result must have(
         httpStatus(SEE_OTHER),
         redirectUri(testContinueUrl)
+      )
+    }
+
+    "redirect to personal information error page" in {
+      insertJourneyConfig(testJourneyId, testContinueUrl)
+      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = Json.toJsObject(testSoleTraderDetails))
+      stubAuth(OK, successfulAuthResponse())
+      stubMatch(testSoleTraderDetails)(UNAUTHORIZED, mismatchErrorJson)
+
+
+      lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
       )
     }
   }

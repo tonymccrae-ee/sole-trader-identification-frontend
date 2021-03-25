@@ -29,6 +29,7 @@ case object TestConstants {
   val testLastName: String = "Smith"
   val testNino: String = "AA111111A"
   val testSautr: String = "1234567890"
+  val testContinueUrl = "/test-continue-url"
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(

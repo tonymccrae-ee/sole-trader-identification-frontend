@@ -16,22 +16,24 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Matched
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuthenticatorService, JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
                                            soleTraderIdentificationService: SoleTraderIdentificationService,
                                            journeyService: JourneyService,
+                                           authenticatorService: AuthenticatorService,
                                            val authConnector: AuthConnector
                                           )(implicit val config: AppConfig,
                                             executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
@@ -50,10 +52,18 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig => Redirect(journeyConfig.continueUrl)
+        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).flatMap {
+          case Some(soleTraderDetails) =>
+            authenticatorService.matchSoleTraderDetails(soleTraderDetails).flatMap {
+              case Right(Matched) => journeyService.getJourneyConfig(journeyId).map {
+                journeyConfig => Redirect(journeyConfig.continueUrl)
+              }
+              case Left(_) =>
+                Future.successful(Redirect(routes.PersonalInformationErrorController.show(journeyId)))
+            }
+          case _ =>
+            throw new InternalServerException("Fail to retrieve data from database")
         }
       }
   }
-
 }
