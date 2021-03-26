@@ -65,6 +65,6 @@ trait AuthenticatorStub extends WireMockMethods {
   )
 
   val notFoundErrorJson: JsObject = Json.obj(
-    "errors" -> Json.arr("cid_no_nino")
+    "errors" -> "CID returned no record"
   )
 }
