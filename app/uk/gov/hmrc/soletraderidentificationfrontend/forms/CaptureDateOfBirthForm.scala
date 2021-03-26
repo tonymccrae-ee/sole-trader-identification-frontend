@@ -23,7 +23,6 @@ import play.api.data.format.Formatter
 import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil.constraint
-import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.TimeMachine
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.validateNot
 
 import scala.util.Try
