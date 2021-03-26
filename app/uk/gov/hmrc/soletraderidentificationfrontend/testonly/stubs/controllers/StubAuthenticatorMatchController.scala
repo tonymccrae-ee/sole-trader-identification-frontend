@@ -16,27 +16,23 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton
 class StubAuthenticatorMatchController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val stubMatch: Action[SoleTraderDetails] = Action.async(parse.json[SoleTraderDetails]) {
-
-    implicit request =>
-      request.body.lastName.toLowerCase match {
-        case "pass" =>
-          Future.successful(Ok(Json.obj("result" -> "match")))
+  val stubMatch: Action[JsValue] = Action(parse.json) { request =>
+      (request.body \ "lastName").as[String].toLowerCase match {
         case "fail" =>
-          Future.successful(Unauthorized(Json.obj("errors" -> "DOB does not exist in CID")))
+          Unauthorized(Json.obj("errors" -> "DOB does not exist in CID"))
         case "deceased" =>
-          Future.successful(FailedDependency)
+          FailedDependency
+        case _ =>
+          Ok(Json.obj("result" -> "match"))
       }
   }
 
