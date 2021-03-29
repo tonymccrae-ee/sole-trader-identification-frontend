@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.api.controllers
 import play.api.http.Status.CREATED
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testJourneyId, testSoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testJourneyId, testSoleTraderDetails, testSoleTraderDetailsJson}
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, JourneyStub, SoleTraderIdentificationStub}
@@ -65,7 +65,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
         stubAuth(OK, successfulAuthResponse())
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = Json.toJsObject(testSoleTraderDetails)
+          body = testSoleTraderDetailsJson
         )
 
         lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")

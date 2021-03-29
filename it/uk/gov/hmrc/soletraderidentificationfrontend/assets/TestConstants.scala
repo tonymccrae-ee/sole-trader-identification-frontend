@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.assets
 
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 import java.time.LocalDate
@@ -38,6 +39,16 @@ case object TestConstants {
       testDateOfBirth,
       testNino,
       Some(testSautr)
+    )
+
+  val testSoleTraderDetailsJson: JsObject =
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "nino" -> testNino,
+      "sautr" -> testSautr
     )
 
   val testCredentialId: String = UUID.randomUUID().toString

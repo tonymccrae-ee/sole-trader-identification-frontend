@@ -45,27 +45,12 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
       "there is Sole Trader Identification stored against the journeyId" in {
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = Json.toJsObject(
-            SoleTraderDetails(
-              firstName = testFirstName,
-              lastName = testLastName,
-              dateOfBirth = testDateOfBirth,
-              nino = testNino,
-              optSautr = Some(testSautr)
-            )
-          )
+          body = testSoleTraderDetailsJson
         )
 
         val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification(testJourneyId))
 
-        result mustBe Some(
-          SoleTraderDetails(
-            testFirstName,
-            testLastName,
-            testDateOfBirth,
-            testNino,
-            Some(testSautr)
-          ))
+        result mustBe Some(testSoleTraderDetails)
       }
     }
     "return None" when {
