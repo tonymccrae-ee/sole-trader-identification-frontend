@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching._
 
 object SoleTraderVerificationResultHttpParser {
-  val notFoundError: String = "cid_no_nino"
+  val notFoundError: String = "CID returned no record"
 
   implicit object SoleTraderVerificationResultReads extends HttpReads[SoleTraderVerificationResult] {
     override def read(method: String, url: String, response: HttpResponse): SoleTraderVerificationResult =
@@ -29,7 +29,7 @@ object SoleTraderVerificationResultHttpParser {
         case OK => Right(Matched)
         case FAILED_DEPENDENCY => Left(Deceased)
         case UNAUTHORIZED =>
-          val errors = (response.json \ "errors").as[Seq[String]]
+          val errors = (response.json \ "errors").toString
 
           if (errors.contains(notFoundError)) {
             Left(NotFound)
