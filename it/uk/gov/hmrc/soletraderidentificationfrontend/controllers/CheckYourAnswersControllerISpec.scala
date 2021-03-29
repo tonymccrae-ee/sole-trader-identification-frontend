@@ -34,7 +34,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   "GET /check-your-answers-business" should {
     lazy val result: WSResponse = {
       stubAuth(OK, successfulAuthResponse())
-      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = Json.toJsObject(testSoleTraderDetails))
+      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
     }
 
@@ -66,7 +66,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     "redirect to continue url from the supplied journey config" in {
 
       insertJourneyConfig(testJourneyId, testContinueUrl)
-      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = Json.toJsObject(testSoleTraderDetails))
+      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       stubAuth(OK, successfulAuthResponse())
       stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
 
@@ -81,7 +81,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "redirect to personal information error page" in {
       insertJourneyConfig(testJourneyId, testContinueUrl)
-      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = Json.toJsObject(testSoleTraderDetails))
+      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       stubAuth(OK, successfulAuthResponse())
       stubMatch(testSoleTraderDetails)(UNAUTHORIZED, mismatchErrorJson)
 

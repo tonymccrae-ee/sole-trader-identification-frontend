@@ -47,10 +47,9 @@ Status:
 
 Example response body:
 ```
-{"fullName":
-   {"firstName":"John",
-   "lastName":"Smith"
-   },
+{
+"firstName": "John",
+"lastName": "Smith",
 "dateOfBirth": 1978-01-05,
 "nino": "AA111111A",
 "sautr": "1234567890"

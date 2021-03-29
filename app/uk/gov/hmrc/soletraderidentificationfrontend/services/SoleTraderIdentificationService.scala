@@ -24,12 +24,10 @@ import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentific
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @Singleton
-class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificationConnector)
-                                               (implicit ec: ExecutionContext) {
-
+class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificationConnector) {
 
   def storeFullName(journeyId: String, fullName: FullNameModel)(implicit hc: HeaderCarrier): Future[StorageResult] =
     connector.storeData[FullNameModel](journeyId, FullNameKey, fullName)
@@ -42,7 +40,6 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
 
   def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[StorageResult] =
     connector.storeData[String](journeyId, SautrKey, sautr)
-
 
   def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullNameModel]] =
     connector.retrieveSoleTraderIdentification[FullNameModel](journeyId, FullNameKey)

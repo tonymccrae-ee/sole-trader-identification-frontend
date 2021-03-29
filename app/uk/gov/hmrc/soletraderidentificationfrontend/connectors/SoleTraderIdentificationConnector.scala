@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RetrieveSoleTraderDetailsHttpParser.RetrieveSoleTraderDetailsHttpReads
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SoleTraderIdentificationStorageHttpReads
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{SoleTraderDetails, StorageResult}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -39,7 +40,7 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
 
   def retrieveSoleTraderIdentification(journeyId: String
                                       )(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
-    http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))
+    http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))(RetrieveSoleTraderDetailsHttpReads, hc, ec)
 
   def storeData[DataType](journeyId: String, dataKey: String, data: DataType
                          )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {
@@ -47,3 +48,4 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
   }
 
 }
+
