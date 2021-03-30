@@ -15,6 +15,9 @@ localDate.label.day = day
 localDate.label.month = month
 localDate.label.year = year
 
+## Header Links
+header.links.sign_out = Sign Out
+
 ## Footer Links
 footer.links.help_page.text = Help using GOV.UK
 footer.links.cookies.text = Cookies

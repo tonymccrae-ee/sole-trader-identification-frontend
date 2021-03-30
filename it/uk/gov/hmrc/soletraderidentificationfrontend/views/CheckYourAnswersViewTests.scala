@@ -19,8 +19,9 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, CheckYourAnswers => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, Header, CheckYourAnswers => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.routes
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.DateHelper.checkYourAnswersFormat
@@ -34,6 +35,16 @@ trait CheckYourAnswersViewTests {
 
   def testCheckYourAnswersView(result: => WSResponse, journeyId: String): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+
+    "have a sign out link in the header" in {
+      doc.getSignOutText mustBe Header.signOut
+    }
+
+    "have sign out link redirecting to feedback page" in {
+      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    }
 
     "have the correct title" in {
       doc.title mustBe messages.title

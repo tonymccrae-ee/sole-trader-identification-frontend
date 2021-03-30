@@ -71,6 +71,10 @@ object ViewSpecHelper {
     def getSummaryListChangeLink: String = element.select("dd.govuk-summary-list__actions > a").attr("href")
 
     def getSummaryListChangeText: String = element.select("dd.govuk-summary-list__actions > a").text
+
+    lazy val getSignOutLink: String = element.select(".hmrc-sign-out-nav__link").attr("href")
+
+    lazy val getSignOutText: String = element.select(".hmrc-sign-out-nav__link").text
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =
