@@ -30,6 +30,10 @@ object MessageLookup {
 
   }
 
+  object Header {
+    val signOut = "Sign out"
+  }
+
   object CaptureFullName {
     val title = "What is your full name?"
     val heading = "What is your full name?"
