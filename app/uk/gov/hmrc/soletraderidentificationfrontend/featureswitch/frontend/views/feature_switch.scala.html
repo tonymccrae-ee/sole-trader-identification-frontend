@@ -17,8 +17,8 @@
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting
 @import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.models.FeatureSwitchProvider
-@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.govuk_template
-
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
         govukFieldset: GovukFieldset,
@@ -29,7 +29,7 @@
 
 @(featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-    @layout(title = "Choose which features to enable.") {
+    @layout(PageConfig(None, "", ""), "Choose which features to enable.") {
         <h1 class="govuk-heading-l" >Choose which features to enable.</h1>
 
         @formWithCSRF(action = formAction) {

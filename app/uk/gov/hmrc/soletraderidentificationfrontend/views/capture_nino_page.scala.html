@@ -15,29 +15,34 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
+@import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.views.helpers.TitleHelper.title
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
         govUkHeader: GovukHeader,
-        govukInput : GovukInput,
-        govukFieldset : GovukFieldset,
-        govukDateInput : GovukDateInput,
-        govukButton : GovukButton,
+        govukInput: GovukInput,
+        govukFieldset: GovukFieldset,
+        govukDateInput: GovukDateInput,
+        govukButton: GovukButton,
         formWithCSRF: FormWithCSRF,
         inputText: inputText,
         errorSummary: errorSummary)
 
-@(formAction: Call, displayName: String, form: Form[String])(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, formAction: Call, displayName: String, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(title = title(messages("enter-nino.title"), form)) {
+@layout(pageConfig, title = title(messages("enter-nino.title"), form)) {
+
     @errorSummary(form.errors)
+
     @formWithCSRF(action = formAction) {
         @inputText(
             form = form,
             id = "nino",
             name = "nino",
-            label = messages("enter-nino.heading",displayName),
+            label = messages("enter-nino.heading", displayName),
             isPageHeading = true,
             hint = Some(Html(s"""<p class="govuk-body">${messages("enter-nino.line_1")}</p>""")),
             classes = "govuk-input--width-20"

@@ -16,22 +16,23 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureNinoForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_nino_page
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                                       view: capture_nino_page,
                                       soleTraderIdentificationService: SoleTraderIdentificationService,
-                                      val authConnector: AuthConnector
+                                      val authConnector: AuthConnector,
+                                      journeyService: JourneyService
                                      )(implicit val config: AppConfig,
                                        executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
@@ -40,7 +41,15 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CaptureNinoController.submit(journeyId), name, CaptureNinoForm.form)))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(
+              pageConfig = journeyConfig.pageConfig,
+              formAction = routes.CaptureNinoController.submit(journeyId),
+              displayName = name,
+              form = CaptureNinoForm.form
+            ))
+        }
       }
   }
 
@@ -49,9 +58,15 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
       authorised() {
         CaptureNinoForm.form.bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(routes.CaptureNinoController.submit(journeyId), name, formWithErrors))
-            ),
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                BadRequest(view(
+                  pageConfig = journeyConfig.pageConfig,
+                  formAction = routes.CaptureNinoController.submit(journeyId),
+                  displayName = name,
+                  form = formWithErrors
+                ))
+            },
           nino =>
             soleTraderIdentificationService.storeNino(journeyId, nino).map {
               _ => Redirect(routes.CaptureSautrController.show(journeyId))

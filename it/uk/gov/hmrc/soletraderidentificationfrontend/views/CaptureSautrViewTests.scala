@@ -19,7 +19,8 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, Header, CaptureSautr => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureSautr => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testSignOutUrl
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
@@ -36,8 +37,16 @@ trait CaptureSautrViewTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "have sign out link redirecting to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have sign out link redirecting to signOutUrl from journey config" in {
+      doc.getSignOutLink mustBe testSignOutUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
     "have the correct title" in {
@@ -49,14 +58,14 @@ trait CaptureSautrViewTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.first.text mustBe messages.line_1
+      doc.getParagraphs.get(1).text mustBe messages.line_1
     }
 
     "have a correct details element" in {
       doc.getSpan("details-summary-text").text mustBe messages.line_2
-      doc.getParagraphs.get(1).text mustBe messages.details_line_1
-      doc.getParagraphs.get(2).text mustBe messages.details_line_2
-      doc.getParagraphs.get(3).text mustBe messages.details_line_3
+      doc.getParagraphs.get(2).text mustBe messages.details_line_1
+      doc.getParagraphs.get(3).text mustBe messages.details_line_2
+      doc.getParagraphs.get(4).text mustBe messages.details_line_3
     }
 
     "have a continue and confirm button" in {

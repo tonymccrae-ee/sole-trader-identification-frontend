@@ -16,30 +16,39 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sautr_page
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
                                        view: capture_sautr_page,
                                        soleTraderIdentificationService: SoleTraderIdentificationService,
-                                       val authConnector: AuthConnector
+                                       val authConnector: AuthConnector,
+                                       journeyService: JourneyService
                                       )(implicit val config: AppConfig,
                                         executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
-  val name = "John Smith"
+  val name = "John Smith" // TODO this will be pre-pop data
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CaptureSautrController.submit(journeyId), name, CaptureSautrForm.form)))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(
+              pageConfig = journeyConfig.pageConfig,
+              formAction = routes.CaptureSautrController.submit(journeyId),
+              personsName = name,
+              form = CaptureSautrForm.form
+            ))
+        }
       }
   }
 
@@ -47,9 +56,15 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       CaptureSautrForm.form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(
-            BadRequest(view(routes.CaptureSautrController.submit(journeyId), name, formWithErrors))
-          ),
+          journeyService.getJourneyConfig(journeyId).map {
+            journeyConfig =>
+              BadRequest(view(
+                pageConfig = journeyConfig.pageConfig,
+                formAction = routes.CaptureSautrController.submit(journeyId),
+                personsName = name,
+                form = formWithErrors
+              ))
+          },
         sautr =>
           soleTraderIdentificationService.storeSautr(journeyId, sautr).map {
             _ => Redirect(routes.CheckYourAnswersController.show(journeyId))

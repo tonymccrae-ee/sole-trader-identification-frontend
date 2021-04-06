@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
@@ -26,6 +25,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatc
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuthenticatorService, JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -42,9 +42,19 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).map {
-          case Some(details) => Ok(view(routes.CheckYourAnswersController.submit(journeyId), journeyId, details))
-          case None => throw new InternalServerException("Fail to retrieve data from database")
+        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).flatMap {
+          case Some(details) =>
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                Ok(view(
+                  pageConfig = journeyConfig.pageConfig,
+                  formAction = routes.CheckYourAnswersController.submit(journeyId),
+                  journeyId = journeyId,
+                  soleTraderDetails = details
+                ))
+            }
+          case None =>
+            throw new InternalServerException("Fail to retrieve data from database")
         }
       }
   }

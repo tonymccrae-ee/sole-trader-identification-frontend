@@ -30,6 +30,13 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
   "GET /sa-utr" should {
     lazy val result = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")
     }
@@ -61,6 +68,13 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
   "POST /sa-utr" when {
     "the sautr is correctly formatted" should {
       "redirect to Check Your Answers Page and store the data in the backend" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreSautr(testJourneyId, testSautr)(status = OK)
 
@@ -75,6 +89,13 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
     "no sautr is submitted" should {
       lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "")
       }
@@ -88,6 +109,13 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
     "an invalid sautr is submitted" should {
       lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "123456789")
       }

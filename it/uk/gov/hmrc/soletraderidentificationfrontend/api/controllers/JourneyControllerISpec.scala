@@ -19,9 +19,9 @@ package uk.gov.hmrc.soletraderidentificationfrontend.api.controllers
 import play.api.http.Status.CREATED
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testJourneyId, testSoleTraderDetails, testSoleTraderDetailsJson}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => controllerRoutes}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, JourneyStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 
@@ -34,11 +34,20 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
       stubAuth(OK, successfulAuthResponse())
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      lazy val result = post("/sole-trader-identification/api/journey", Json.obj("continueUrl" -> "/test"))
+      val testJourneyConfig = JourneyConfig(
+        continueUrl = "/testContinueUrl",
+        pageConfig = PageConfig(
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        )
+      )
+
+      lazy val result = post("/sole-trader-identification/api/journey", Json.toJsObject(testJourneyConfig))
 
       (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
 
-      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(JourneyConfig(continueUrl = "/test"))
+      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
 
     }
 
@@ -46,7 +55,16 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
       "the user is UNAUTHORISED" in {
         stubAuthFailure()
 
-        lazy val result = post("/sole-trader-identification/api/journey", Json.obj("continueUrl" -> "/test"))
+        val testJourneyConfig = JourneyConfig(
+          continueUrl = "/testContinueUrl",
+          pageConfig = PageConfig(
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
+          )
+        )
+
+        lazy val result = post("/sole-trader-identification/api/journey", Json.toJsObject(testJourneyConfig))
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -86,18 +104,20 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
       }
     }
 
-    "return See Other" in {
-      stubAuthFailure()
+    "redirect to Sign In Page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
 
-      lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
+        lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
 
-      result must have(
-        httpStatus(SEE_OTHER),
-        redirectUri("/bas-gateway/sign-in" +
-          s"?continue_url=%2Fsole-trader-identification%2Fapi%2Fjourney%2F$testJourneyId" +
-          "&origin=sole-trader-identification-frontend"
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri("/bas-gateway/sign-in" +
+            s"?continue_url=%2Fsole-trader-identification%2Fapi%2Fjourney%2F$testJourneyId" +
+            "&origin=sole-trader-identification-frontend"
+          )
         )
-      )
+      }
     }
   }
 

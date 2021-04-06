@@ -22,6 +22,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{A
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
+
   def matchSoleTraderDetailsUrl: String =
     if (isEnabled(AuthenticatorStub)) {
       s"${servicesConfig.baseUrl("self")}/identify-your-sole-trader-business/test-only/authenticator/match"
@@ -29,10 +30,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
       s"${servicesConfig.baseUrl("authenticator")}/authenticator/match"
     }
 
-  private val contactBaseUrl = servicesConfig.baseUrl("contact-frontend")
+  private lazy val contactHost: String = servicesConfig.getString("contact-frontend.host")
 
   private val assetsUrl = servicesConfig.getString("assets.url")
-  private val serviceIdentifier = "sole-trader-identification-frontend"
 
   private lazy val backendUrl: String = servicesConfig.baseUrl("sole-trader-identification")
 
@@ -40,8 +40,11 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
   val analyticsHost: String = servicesConfig.getString(s"google-analytics.host")
 
-  val reportAProblemPartialUrl: String = s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
-  val reportAProblemNonJSUrl: String = s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
+  def reportAProblemPartialUrl(serviceIdentifier: String): String =
+    s"$contactHost/contact/problem_reports_ajax?service=$serviceIdentifier"
+
+  def reportAProblemNonJSUrl(serviceIdentifier: String): String =
+    s"$contactHost/contact/problem_reports_nonjs?service=$serviceIdentifier"
 
   lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
@@ -60,5 +63,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val vatRegExitSurveyOrigin = "vat-registration"
   private lazy val feedbackUrl: String = servicesConfig.getString("feedback.host")
   lazy val vatRegFeedbackUrl = s"$feedbackUrl/feedback/$vatRegExitSurveyOrigin"
+
+  def betaFeedbackUrl(serviceIdentifier: String): String = s"$contactHost/contact/beta-feedback?service=$serviceIdentifier"
+
+  lazy val defaultServiceName: String = servicesConfig.getString("defaultServiceName")
 
 }

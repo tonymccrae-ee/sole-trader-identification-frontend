@@ -19,7 +19,9 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{ PersonalInformationError => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{BetaBanner, PersonalInformationError => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testSignOutUrl
+import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
@@ -28,9 +30,22 @@ trait PersonalInformationErrorViewTests {
 
   def testPersonInformationErrorView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
+    lazy val config = app.injector.instanceOf[AppConfig]
 
     "have the correct title" in {
       doc.title mustBe messages.title
+    }
+
+    "have sign out link redirecting to signOutUrl from journey config" in {
+      doc.getSignOutLink mustBe testSignOutUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
     "have the correct heading" in {
@@ -38,7 +53,7 @@ trait PersonalInformationErrorViewTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.get(0).text mustBe messages.line_1
+      doc.getParagraphs.get(1).text mustBe messages.line_1
     }
 
     "have a try again button" in {

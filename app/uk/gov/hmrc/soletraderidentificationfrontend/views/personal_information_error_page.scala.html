@@ -15,22 +15,22 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
-@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => Routes}
-
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
-h1: h1,
-p: p,
-govUkHeader: GovukHeader,
-govukButton: GovukButton,
-formWithCSRF: FormWithCSRF
-)
+        h1: h1,
+        p: p,
+        govUkHeader: GovukHeader,
+        govukButton: GovukButton,
+        formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(title = messages("personal-information-error.title")) {
+@layout(pageConfig, title = messages("personal-information-error.title")) {
     @h1(messages("personal-information-error.heading"))
 
     @p {

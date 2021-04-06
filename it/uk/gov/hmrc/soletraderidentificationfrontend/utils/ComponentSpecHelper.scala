@@ -28,7 +28,7 @@ import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, FeatureSwitching, FeatureSwitchingModule}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
-import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -124,7 +124,11 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     ws.url(s"http://localhost:$port$path").withFollowRedirects(false)
 
   def insertJourneyConfig(journeyId: String,
-                          continueUrl: String): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl))
-
+                          continueUrl: String,
+                          optServiceName: Option[String],
+                          deskProServiceId: String,
+                          signOutUrl: String): Future[WriteResult] =
+    journeyConfigRepository.insertJourneyConfig(
+      journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl))
+    )
 }

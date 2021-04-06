@@ -19,25 +19,35 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureFullNameForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_full_name_page
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureFullNameController @Inject()(mcc: MessagesControllerComponents,
                                           view: capture_full_name_page,
                                           captureFullNameForm: CaptureFullNameForm,
                                           soleTraderIdentificationService: SoleTraderIdentificationService,
-                                          val authConnector: AuthConnector
-                                         )(implicit ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                          val authConnector: AuthConnector,
+                                          journeyService: JourneyService
+                                         )(implicit val config: AppConfig,
+                                           ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CaptureFullNameController.submit(journeyId), captureFullNameForm.apply())))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(
+              pageConfig = journeyConfig.pageConfig,
+              formAction = routes.CaptureFullNameController.submit(journeyId),
+              form = captureFullNameForm.apply()
+            ))
+        }
       }
   }
 
@@ -46,9 +56,14 @@ class CaptureFullNameController @Inject()(mcc: MessagesControllerComponents,
       authorised() {
         captureFullNameForm.apply().bindFromRequest().fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(routes.CaptureFullNameController.submit(journeyId), formWithErrors))
-            ),
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                BadRequest(view(
+                  pageConfig = journeyConfig.pageConfig,
+                  formAction = routes.CaptureFullNameController.submit(journeyId),
+                  form = formWithErrors
+                ))
+            },
           fullName =>
             soleTraderIdentificationService.storeFullName(journeyId, fullName).map {
               _ => Redirect(routes.CaptureDateOfBirthController.show(journeyId))
