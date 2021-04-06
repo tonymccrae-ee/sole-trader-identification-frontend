@@ -72,20 +72,21 @@ object ViewSpecHelper {
 
     def getSummaryListChangeText: String = element.select("dd.govuk-summary-list__actions > a").text
 
+    def getBanner: Elements = element.getElementsByClass("govuk-phase-banner__text")
+
     lazy val getSignOutLink: String = element.select(".hmrc-sign-out-nav__link").attr("href")
 
     lazy val getSignOutText: String = element.select(".hmrc-sign-out-nav__link").text
+
+    lazy val getBannerLink: String = element.getElementsByClass("govuk-link-beta").attr("href")
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =
-    new HavePropertyMatcher[Elements, String] {
-      def apply(element: Elements) =
-        HavePropertyMatchResult(
-          element.text() == text,
-          "text",
-          text,
-          element.text()
-        )
-    }
+    (element: Elements) => HavePropertyMatchResult(
+      element.text() == text,
+      "text",
+      text,
+      element.text()
+    )
 
 }

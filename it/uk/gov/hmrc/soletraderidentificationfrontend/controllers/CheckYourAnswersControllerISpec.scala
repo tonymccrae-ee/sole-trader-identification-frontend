@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
@@ -33,6 +32,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
   "GET /check-your-answers-business" should {
     lazy val result: WSResponse = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
@@ -65,7 +71,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   "POST /check-your-answers-business" should {
     "redirect to continue url from the supplied journey config" in {
 
-      insertJourneyConfig(testJourneyId, testContinueUrl)
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       stubAuth(OK, successfulAuthResponse())
       stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
@@ -80,7 +92,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     }
 
     "redirect to personal information error page" in {
-      insertJourneyConfig(testJourneyId, testContinueUrl)
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       stubAuth(OK, successfulAuthResponse())
       stubMatch(testSoleTraderDetails)(UNAUTHORIZED, mismatchErrorJson)

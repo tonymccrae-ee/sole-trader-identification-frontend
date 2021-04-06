@@ -27,7 +27,7 @@ import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.error_template
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.error_template
 
 import scala.concurrent.Future
 

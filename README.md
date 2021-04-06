@@ -15,10 +15,18 @@ This is a Scala/Play frontend to allow Sole Traders to provide their information
 ---
 Creates a new journey, storing the journeyConfig against the journeyId.
 #### Request:
-Request body must contain the continueUrl.
+
+optServiceName will default to `Entity Validation Service` if the field is not provided.
+
+All other fields must be provided. 
 
 ```
-{"continueUrl" : "/testUrl"}
+{
+"continueUrl" : "/test",
+"optServiceName" : "Service Name",
+"deskProServiceId" : "abc",
+"signOutUrl : "/sign-out"
+}
 ```
 
 #### Response:
@@ -65,14 +73,29 @@ Shows all feature switches:
 
     - Use stub for Authenticator API
    
-#### GET/POST test-only/create-journey
+#### GET test-only/create-journey
 
 ---
-This is a test entry point which simulates a service making the initial call to setup a journey.
+This is a test entry point which simulates a service by triggering the initial POST call to set up a journey.
 
-1. ContinueURL(Required)
+1. Continue URL (Required)
 
-   - Where to redirect the user after the journey has been completed
+    - Where to redirect the user after the journey has been completed
+
+2. Service Name (Optional)
+
+    - Service Name to use throughout the service
+    - Currently, this is empty by default, so the default service name will be used
+
+3. DeskPro Service ID (Required)
+   
+    - Used for the `Get help with this page` link
+    - This is currently autofilled but can be changed
+    
+4. Sign Out Link (Required)
+   
+    - Shown in the HMRC header - typically a link to a feedback questionnaire
+    - This is currently autofilled but can be changed
 
 #### GET test-only/retrieve-journey/:journeyId or test-only/retrieve-journey
 

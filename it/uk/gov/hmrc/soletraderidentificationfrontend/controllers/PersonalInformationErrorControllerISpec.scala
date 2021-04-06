@@ -18,8 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testJourneyId
-import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.PersonalInformationErrorViewTests
@@ -30,8 +29,15 @@ class PersonalInformationErrorControllerISpec extends ComponentSpecHelper
   with AuthStub {
 
 
-  "GET /personal-information-error  " should {
+  "GET /personal-information-error" should {
     lazy val result = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/personal-information-error")
     }

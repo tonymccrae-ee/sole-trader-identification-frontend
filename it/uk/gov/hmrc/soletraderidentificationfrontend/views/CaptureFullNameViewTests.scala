@@ -19,7 +19,8 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, Header, CaptureFullName => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureFullName => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testSignOutUrl
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
@@ -35,8 +36,16 @@ trait CaptureFullNameViewTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "have sign out link redirecting to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have sign out link redirecting to signOutUrl from journey config" in {
+      doc.getSignOutLink mustBe testSignOutUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
     "have the correct title" in {
@@ -48,7 +57,7 @@ trait CaptureFullNameViewTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.get(0).text mustBe messages.line_1
+      doc.getParagraphs.get(1).text mustBe messages.line_1
     }
 
     "have correct labels in the form" in {

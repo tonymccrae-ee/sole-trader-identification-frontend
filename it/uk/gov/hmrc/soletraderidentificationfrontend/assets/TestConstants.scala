@@ -22,7 +22,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 import java.time.LocalDate
 import java.util.UUID
 
-case object TestConstants {
+object TestConstants {
 
   val testJourneyId: String = UUID.randomUUID().toString
   val testDateOfBirth: LocalDate = LocalDate.now().minusYears(17)
@@ -55,4 +55,8 @@ case object TestConstants {
   val testGGProviderId: String = UUID.randomUUID().toString
   val testGroupId: String = UUID.randomUUID().toString
   val testInternalId: String = UUID.randomUUID().toString
+
+  val testDeskProServiceId: String = "vrs"
+  val testSignOutUrl: String = "/sign-out"
+
 }

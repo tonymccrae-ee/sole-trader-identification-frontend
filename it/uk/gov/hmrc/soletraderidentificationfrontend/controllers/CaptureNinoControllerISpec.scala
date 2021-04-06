@@ -30,6 +30,13 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
   "GET /national-insurance-number" should {
     lazy val result = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
     }
@@ -60,6 +67,13 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
   "POST /national-insurance-number" should {
     "redirect to the capture sautr page" in {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       stubStoreNino(testJourneyId, testNino)(status = OK)
 
@@ -74,6 +88,13 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
   "no nino is submitted" should {
     lazy val result = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "")
     }
@@ -87,6 +108,13 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
   "an invalid nino is submitted" should {
     lazy val result = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "AAAAAAAAAA")
     }

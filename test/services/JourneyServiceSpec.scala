@@ -23,7 +23,7 @@ import reactivemongo.api.commands.WriteResult
 import reactivemongo.core.errors.GenericDriverException
 import repositories.mocks.MockJourneyConfigRepository
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.JourneyService
 import utils.UnitSpec
 
@@ -36,7 +36,14 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
 
   object TestService extends JourneyService(mockJourneyConnector, mockJourneyConfigRepository)
 
-  val testJourneyConfig: JourneyConfig = JourneyConfig(continueUrl = "/test")
+  val testJourneyConfig: JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl
+    )
+  )
 
   "createJourney" should {
     "return a journeyID and store the provided journey config" in {

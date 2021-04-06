@@ -34,6 +34,10 @@ object MessageLookup {
     val signOut = "Sign out"
   }
 
+  object BetaBanner {
+    val title = "This is a new service - your feedback (opens in new tab) will help us to improve it."
+  }
+
   object CaptureFullName {
     val title = "What is your full name?"
     val heading = "What is your full name?"

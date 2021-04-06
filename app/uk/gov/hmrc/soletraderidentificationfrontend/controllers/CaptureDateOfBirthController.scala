@@ -19,26 +19,36 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureDateOfBirthForm.captureDateOfBirthForm
-import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_date_of_birth_page
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.TimeMachine
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_date_of_birth_page
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
                                              view: capture_date_of_birth_page,
                                              soleTraderIdentificationService: SoleTraderIdentificationService,
                                              val authConnector: AuthConnector,
-                                             timeMachine: TimeMachine
-                                            )(implicit ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                             timeMachine: TimeMachine,
+                                             journeyService: JourneyService
+                                            )(implicit val config: AppConfig,
+                                              ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CaptureDateOfBirthController.submit(journeyId), captureDateOfBirthForm(timeMachine.now()))))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(
+              pageConfig = journeyConfig.pageConfig,
+              formAction = routes.CaptureDateOfBirthController.submit(journeyId),
+              form = captureDateOfBirthForm(timeMachine.now())
+            ))
+        }
       }
   }
 
@@ -47,9 +57,13 @@ class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
       authorised() {
         captureDateOfBirthForm(timeMachine.now()).bindFromRequest.fold(
           formWithErrors =>
-            Future.successful(
-              BadRequest(view(routes.CaptureDateOfBirthController.submit(journeyId), formWithErrors))
-            ),
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                BadRequest(view(
+                  pageConfig = journeyConfig.pageConfig,
+                  formAction = routes.CaptureDateOfBirthController.submit(journeyId),
+                  form = formWithErrors))
+            },
           dateOfBirth =>
             soleTraderIdentificationService.storeDateOfBirth(journeyId, dateOfBirth).map {
               _ => Redirect(routes.CaptureNinoController.show(journeyId))

@@ -15,48 +15,61 @@
  *@
 
 @import uk.gov.hmrc.soletraderidentificationfrontend.views.helpers.FooterLinks
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers.phaseBanner
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
 
 @this(govukLayout: GovukLayout,
         hmrcHeader: HmrcHeader,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
-        footer: govukFooter)
+        footer: govukFooter,
+        phaseBanner: phaseBanner)
 
-@(title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages)
+@(pageConfig: PageConfig, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
-        <!--[if lte IE 8]><link href='
-@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")
-    ' rel="stylesheet" type="text/css" /><![endif]-->
+        <!--[if lte IE 8]>
+    <link href='@controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /> <![endif]-->
         <!--[if gt IE 8]><!-->
     <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
         <!--<![endif]-->
 }
 
 @headerBlock = {
-@hmrcHeader(Header(
-    serviceName = Some(messages("service.name")),
-    signOutHref = Some(appConfig.vatRegFeedbackUrl)
-))
+    @hmrcHeader(Header(
+        serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+        signOutHref = Some(pageConfig.signOutUrl)
+    ))
+}
+
+@beforeContentBlock = {
+    @phaseBanner("beta", pageConfig)
 }
 
 @content = {
     <div class="govuk-!-margin-bottom-6">
-    @contentBlock
+        @contentBlock
+    </div>
+
+    <div class="govuk-body">
+        <a lang="en" hreflang="en" class="govuk-link " target="_blank" href="@{appConfig.reportAProblemNonJSUrl(pageConfig.deskProServiceId)}">
+            @messages("getpagehelp.linkText")
+        </a>
     </div>
 }
 
 @footerBlock = {
-@footer(Footer(meta = Some(Meta(items = Some(footerLinks.items)))))
+    @footer(Footer(meta = Some(Meta(items = Some(footerLinks.items)))))
 }
 
 @govukLayout(
     pageTitle = Some(title),
     headBlock = Some(head),
+    beforeContentBlock = Some(beforeContentBlock),
     headerBlock = Some(headerBlock),
     footerItems = Seq.empty,
     footerBlock = Some(footerBlock)

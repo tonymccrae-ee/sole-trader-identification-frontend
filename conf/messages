@@ -1,79 +1,84 @@
-service.name = Register for VAT
-getpagehelp.linkText = Get help with this page
-error.summary.title = There is a problem
-error.title-prefix = 'Error: '
+service.name                                                = Register for VAT
+getpagehelp.linkText                                        = Get help with this page
+error.summary.title                                         = There is a problem
+error.title-prefix                                          = 'Error: '
 
 ## Base
-base.save_and_continue = Save and continue
-base.change = Change
-base.confirm_and_continue = Confirm and continue
-date.day = Day
-date.month = Month
-date.year = Year
+base.save_and_continue                                      = Save and continue
+base.change                                                 = Change
+base.confirm_and_continue                                   = Confirm and continue
+date.day                                                    = Day
+date.month                                                  = Month
+date.year                                                   = Year
 
-localDate.label.day = day
-localDate.label.month = month
-localDate.label.year = year
+localDate.label.day                                         = day
+localDate.label.month                                       = month
+localDate.label.year                                        = year
+
+## Banner
+feedback.before                                             = This is a new service - your
+feedback.link                                               = feedback
+feedback.after                                              = (opens in new tab) will help us to improve it.
 
 ## Header Links
-header.links.sign_out = Sign Out
+header.links.sign_out                                       = Sign Out
 
 ## Footer Links
-footer.links.help_page.text = Help using GOV.UK
-footer.links.cookies.text = Cookies
-footer.links.privacy_policy.text = Privacy policy
-footer.links.terms_and_conditions.text = Terms and conditions
+footer.links.help_page.text                                 = Help using GOV.UK
+footer.links.cookies.text                                   = Cookies
+footer.links.privacy_policy.text                            = Privacy policy
+footer.links.terms_and_conditions.text                      = Terms and conditions
 
 ## Full Name Page
-full-name.title = What is your full name?
-full-name.heading = What is your full name?
-full-name.line_1 = We will attempt to match these details with the information we already have.
-full-name.field_1 = First name
-full-name.field_2 = Last name
+full-name.title                                             = What is your full name?
+full-name.heading                                           = What is your full name?
+full-name.line_1                                            = We will attempt to match these details with the information we already have.
+full-name.field_1                                           = First name
+full-name.field_2                                           = Last name
 
 ## Date of Birth Page
-date-of-birth.title = What is your date of birth?
-date-of-birth.heading = What is your date of birth?
-date-of-birth.field_1 = Date of birth
-date-of-birth.field_1_hint = For example, 27 3 2007
+date-of-birth.title                                         = What is your date of birth?
+date-of-birth.heading                                       = What is your date of birth?
+date-of-birth.field_1                                       = Date of birth
+date-of-birth.field_1_hint                                  = For example, 27 3 2007
 
 ## Enter Nino Page
-enter-nino.title = What is your National Insurance number?
-enter-nino.heading = What is {0}’s National Insurance number?
-enter-nino.line_1 = It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
-enter-nino.invalid.format.error = Enter a National Insurance number in the correct format
+enter-nino.title                                            = What is your National Insurance number?
+enter-nino.heading                                          = What is {0}’s National Insurance number?
+enter-nino.line_1                                           = It’s on the National Insurance card, benefit letter, payslip or P60. For example, ‘QQ 12 34 56 C’.
+enter-nino.invalid.format.error                             = Enter a National Insurance number in the correct format
 
 ## SA-UTR Page
-sa-utr.title = What is {0}’s Unique Taxpayer Reference?
-sa-utr.line_1 = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
-sa-utr.line_2 = {0} does not have a Unique Taxpayer Reference
-sa-utr.details.line_1 = Your UTR helps us identify your business
-sa-utr.details.line_2 = I cannot find the UTR
-sa-utr.details.line_3 = The business does not have a UTR
-sa-utr.error = Enter a Unique Taxpayer Reference in the correct format
+sa-utr.title                                                = What is {0}’s Unique Taxpayer Reference?
+sa-utr.line_1                                               = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
+sa-utr.line_2                                               = {0} does not have a Unique Taxpayer Reference
+sa-utr.details.line_1                                       = Your UTR helps us identify your business
+sa-utr.details.line_2                                       = I cannot find the UTR
+sa-utr.details.line_3                                       = The business does not have a UTR
+sa-utr.error                                                = Enter a Unique Taxpayer Reference in the correct format
 
 ## Check Your Answers Page
-check-your-answers.title = Check your answers
-check-your-answers.heading = Check your answers
-check-your-answers.first_name = First name
-check-your-answers.last_name = Last name
-check-your-answers.dob = Date of birth
-check-your-answers.nino = National insurance number
-check-your-answers.sautr = Unique taxpayers reference number
-check-your-answers.no_sautr = The business does not have a UTR
+check-your-answers.title                                    = Check your answers
+check-your-answers.heading                                  = Check your answers
+check-your-answers.first_name                               = First name
+check-your-answers.last_name                                = Last name
+check-your-answers.dob                                      = Date of birth
+check-your-answers.nino                                     = National insurance number
+check-your-answers.sautr                                    = Unique taxpayers reference number
+check-your-answers.no_sautr                                 = The business does not have a UTR
 
 ## Personal Information Error Page
-personal-information-error.title = We could not identify you on our records
-personal-information-error.heading = We could not identify you on our records
-personal-information-error.line_1 =  This could have been because of a mistake when entering your name, date of birth or National Insurance number.
-personal-information-error.tryAgain = Try again
+personal-information-error.title                            = We could not identify you on our records
+personal-information-error.heading                          = We could not identify you on our records
+personal-information-error.line_1                           = This could have been because of a mistake when entering your name, date of birth or National Insurance number.
+personal-information-error.tryAgain                         = Try again
 
 ## Errors
-error.no_entry_first_name = Enter your first name
-error.invalid_first_name = First name must be 99 characters or fewer
-error.no_entry_last_name = Enter your last name
-error.invalid_last_name = Last name must be 99 characters or fewer
-error.no_entry_dob = Enter your date of birth
-error.invalid_dob_future = The date of birth must be in the past
-error.invalid_age = You must be at least 16 years of age
-error.invalid_date = Enter a real date
+error.no_entry_first_name                                   = Enter your first name
+error.invalid_first_name                                    = First name must be 99 characters or fewer
+error.no_entry_last_name                                    = Enter your last name
+error.invalid_last_name                                     = Last name must be 99 characters or fewer
+error.no_entry_dob                                          = Enter your date of birth
+error.invalid_dob_future                                    = The date of birth must be in the past
+error.invalid_age                                           = You must be at least 16 years of age
+error.invalid_date                                          = Enter a real date

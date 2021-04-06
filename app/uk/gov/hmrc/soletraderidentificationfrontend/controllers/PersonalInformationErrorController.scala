@@ -16,27 +16,36 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.services.JourneyService
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.personal_information_error_page
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class PersonalInformationErrorController @Inject()(mcc: MessagesControllerComponents,
                                                    view: personal_information_error_page,
-                                                   val authConnector: AuthConnector
-                                          )(implicit val config: AppConfig,
-                                            executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                                   val authConnector: AuthConnector,
+                                                   journeyService: JourneyService
+                                                  )(implicit val config: AppConfig,
+                                                    executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.PersonalInformationErrorController.show(journeyId),journeyId)))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(
+              pageConfig = journeyConfig.pageConfig,
+              formAction = routes.PersonalInformationErrorController.show(journeyId),
+              journeyId = journeyId
+            ))
+        }
       }
   }
 

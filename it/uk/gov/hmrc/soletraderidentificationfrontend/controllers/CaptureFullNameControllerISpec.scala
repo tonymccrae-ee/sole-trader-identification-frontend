@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testJourneyId
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
@@ -34,6 +34,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
   "GET /full-name" should {
     lazy val result = {
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
     }
@@ -65,6 +72,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
   "POST /full-name" when {
     "the whole form is correctly formatted" should {
       "redirect to the Capture Date of Birth page and store the data in the backend" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreFullName(testJourneyId, FullNameModel(testFirstName, testLastName))(status = OK)
 
@@ -82,6 +96,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the whole form is missing" should {
       lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
           "first-name" -> "",
@@ -96,6 +117,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the first name is missing" should {
       lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
           "first-name" -> "",
@@ -110,6 +138,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the last name is missing" should {
       lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
           "first-name" -> testFirstName,
@@ -124,6 +159,13 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the first name and last name are missing" should {
       lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
           "first-name" -> "",
