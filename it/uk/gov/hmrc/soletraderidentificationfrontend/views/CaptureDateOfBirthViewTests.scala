@@ -65,6 +65,10 @@ trait CaptureDateOfBirthViewTests {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
 
+    "have a link to contact frontend" in {
+      doc.getLink("get-help").text mustBe Base.getHelp
+    }
+
   }
 
   def testCaptureDateOfBirthErrorMessage(result: => WSResponse): Unit = {
