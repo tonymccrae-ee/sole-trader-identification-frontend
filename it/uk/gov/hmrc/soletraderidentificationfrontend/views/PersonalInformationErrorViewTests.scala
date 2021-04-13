@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{BetaBanner, PersonalInformationError => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, PersonalInformationError => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testSignOutUrl
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
@@ -60,6 +60,9 @@ trait PersonalInformationErrorViewTests {
       doc.getSubmitButton.first.text mustBe messages.button
     }
 
+    "have a link to contact frontend" in {
+      doc.getLink("get-help").text mustBe Base.getHelp
+    }
   }
 
 }

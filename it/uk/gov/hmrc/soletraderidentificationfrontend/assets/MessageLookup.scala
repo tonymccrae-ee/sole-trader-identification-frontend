@@ -22,6 +22,7 @@ object MessageLookup {
     val confirmAndContinue = "Confirm and continue"
     val change = "Change"
     val saveAndContinue = "Save and continue"
+    val getHelp = "Is this page not working properly?"
 
     object Error {
       val title = "There is a problem"

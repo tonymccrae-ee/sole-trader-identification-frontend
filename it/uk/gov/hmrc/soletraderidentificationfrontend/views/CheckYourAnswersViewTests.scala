@@ -119,6 +119,9 @@ trait CheckYourAnswersViewTests {
       }
     }
 
+    "have a link to contact frontend" in {
+      doc.getLink("get-help").text mustBe Base.getHelp
+    }
   }
 
 }

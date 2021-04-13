@@ -33,7 +33,7 @@ class AuthenticatorConnector @Inject()(httpClient: HttpClient, appConfig: AppCon
     val jsonBody = Json.obj(
       "firstName" -> soleTraderDetails.firstName,
       "lastName" -> soleTraderDetails.lastName,
-      "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("yyyy-MM-DD")),
+      "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
       "nino" -> soleTraderDetails.nino
     )
 

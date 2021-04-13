@@ -29,7 +29,7 @@ trait AuthenticatorStub extends WireMockMethods {
       body = Json.obj(
         "firstName" -> soleTraderDetails.firstName,
         "lastName" -> soleTraderDetails.lastName,
-        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("yyyy-MM-DD")),
+        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
         "nino" -> soleTraderDetails.nino
       )
     ).thenReturn(
@@ -44,7 +44,7 @@ trait AuthenticatorStub extends WireMockMethods {
       body = Json.obj(
         "firstName" -> soleTraderDetails.firstName,
         "lastName" -> soleTraderDetails.lastName,
-        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("yyyy-MM-DD")),
+        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
         "nino" -> soleTraderDetails.nino
       )
     ).thenReturn(
@@ -56,7 +56,7 @@ trait AuthenticatorStub extends WireMockMethods {
   def successfulMatchJson(soleTraderDetails: SoleTraderDetails): JsObject = Json.obj(
     "firstName" -> soleTraderDetails.firstName,
     "lastName" -> soleTraderDetails.lastName,
-    "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("yyyy-MM-DD")),
+    "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
     "nino" -> soleTraderDetails.nino
   )
 
