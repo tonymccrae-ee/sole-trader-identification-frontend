@@ -18,13 +18,11 @@ package services
 
 import connectors.mocks.MockSoleTraderIdentificationConnector
 import helpers.TestConstants.{testJourneyId, testSautr}
-import play.api.libs.json.JsString
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 import utils.UnitSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SoleTraderIdentificationServiceSpec extends UnitSpec with MockSoleTraderIdentificationConnector {

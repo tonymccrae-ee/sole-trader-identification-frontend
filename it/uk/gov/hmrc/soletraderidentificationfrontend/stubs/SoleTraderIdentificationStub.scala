@@ -75,30 +75,36 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       body = body
     )
 
-  def stubRetrieveDob(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping = {
+  def stubRetrieveDob(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId/dateOfBirth"
     ).thenReturn(
       status = status,
       body = body
     )
-  }
 
-  def stubRetrieveNino(journeyId: String)(status: Int, body: String = ""): StubMapping = {
+  def stubRetrieveNino(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId/nino"
     ).thenReturn(
       status = status,
       body = JsString(body)
     )
-  }
 
-  def stubRetrieveSautr(journeyId: String)(status: Int, body: String = ""): StubMapping = {
+  def stubRetrieveSautr(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId/sautr"
     ).thenReturn(
       status = status,
       body = JsString(body)
     )
-  }
+
+  def stubRemoveSautr(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = DELETE,
+      uri = s"/sole-trader-identification/journey/$journeyId/sautr"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
 }

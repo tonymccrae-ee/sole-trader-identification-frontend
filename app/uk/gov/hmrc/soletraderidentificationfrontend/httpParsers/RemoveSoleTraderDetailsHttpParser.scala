@@ -16,20 +16,20 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.httpParsers
 
-import play.api.http.Status.OK
+import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
 
-object SoleTraderIdentificationStorageHttpParser {
+object RemoveSoleTraderDetailsHttpParser {
 
-  case object SuccessfullyStored
+  case object SuccessfullyRemoved
 
-  implicit object SoleTraderIdentificationStorageHttpReads extends HttpReads[SuccessfullyStored.type] {
-    override def read(method: String, url: String, response: HttpResponse): SuccessfullyStored.type = {
+  implicit object RemoveSoleTraderDetailsHttpReads extends HttpReads[SuccessfullyRemoved.type] {
+    override def read(method: String, url: String, response: HttpResponse): SuccessfullyRemoved.type = {
       response.status match {
-        case OK =>
-          SuccessfullyStored
+        case NO_CONTENT =>
+          SuccessfullyRemoved
         case status =>
-          throw new InternalServerException(s"Storage in Sole Trader Identification failed with status: $status")
+          throw new InternalServerException(s"Data could not be deleted. Status - $status, body - ${response.body}")
       }
     }
   }

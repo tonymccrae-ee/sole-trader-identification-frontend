@@ -43,6 +43,7 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
         journeyService.getJourneyConfig(journeyId).map {
           journeyConfig =>
             Ok(view(
+              journeyId = journeyId,
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureSautrController.submit(journeyId),
               form = CaptureSautrForm.form
@@ -53,21 +54,33 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      CaptureSautrForm.form.bindFromRequest().fold(
-        formWithErrors =>
-          journeyService.getJourneyConfig(journeyId).map {
-            journeyConfig =>
-              BadRequest(view(
-                pageConfig = journeyConfig.pageConfig,
-                formAction = routes.CaptureSautrController.submit(journeyId),
-                form = formWithErrors
-              ))
-          },
-        sautr =>
-          soleTraderIdentificationService.storeSautr(journeyId, sautr).map {
-            _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
-          }
-      )
+      authorised() {
+        CaptureSautrForm.form.bindFromRequest().fold(
+          formWithErrors =>
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                BadRequest(view(
+                  journeyId = journeyId,
+                  pageConfig = journeyConfig.pageConfig,
+                  formAction = routes.CaptureSautrController.submit(journeyId),
+                  form = formWithErrors
+                ))
+            },
+          sautr =>
+            soleTraderIdentificationService.storeSautr(journeyId, sautr).map {
+              _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+            }
+        )
+      }
+  }
+
+  def noSautr(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised() {
+        soleTraderIdentificationService.removeSautr(journeyId).map {
+          _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+        }
+      }
   }
 
 }

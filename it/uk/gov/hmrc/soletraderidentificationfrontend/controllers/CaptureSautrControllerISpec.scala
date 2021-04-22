@@ -127,4 +127,45 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
       testCaptureSautrErrorMessages(result)
     }
   }
+
+  "GET /no-sa-utr" should {
+    "redirect to CYA page" when {
+      "the sautr is successfully removed" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRemoveSautr(testJourneyId)(NO_CONTENT)
+
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-sa-utr")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+        )
+      }
+    }
+    "throw an exception" when {
+      "the backend returns a failure" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRemoveSautr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
+
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-sa-utr")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
 }
