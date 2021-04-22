@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -24,7 +25,6 @@ import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sautr_page
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -35,7 +35,7 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
                                        journeyService: JourneyService
                                       )(implicit val config: AppConfig,
                                         executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
-  val name = "John Smith" // TODO this will be pre-pop data
+
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -45,7 +45,6 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
             Ok(view(
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureSautrController.submit(journeyId),
-              personsName = name,
               form = CaptureSautrForm.form
             ))
         }
@@ -61,7 +60,6 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
               BadRequest(view(
                 pageConfig = journeyConfig.pageConfig,
                 formAction = routes.CaptureSautrController.submit(journeyId),
-                personsName = name,
                 form = formWithErrors
               ))
           },

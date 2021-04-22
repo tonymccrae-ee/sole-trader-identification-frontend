@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -24,7 +25,6 @@ import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureNinoForm
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_nino_page
 
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -36,8 +36,6 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                                      )(implicit val config: AppConfig,
                                        executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
-  val name = "John Smith" // TODO this will be pre-pop data
-
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
@@ -46,7 +44,6 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
             Ok(view(
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureNinoController.submit(journeyId),
-              displayName = name,
               form = CaptureNinoForm.form
             ))
         }
@@ -63,7 +60,6 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                 BadRequest(view(
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CaptureNinoController.submit(journeyId),
-                  displayName = name,
                   form = formWithErrors
                 ))
             },
