@@ -19,9 +19,11 @@ package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
 import play.api.libs.json.Format.GenericFormat
 import play.api.libs.json.{JsObject, JsString, Json}
-import play.api.test.Helpers.{NOT_FOUND, OK, await, defaultAwaitTimeout}
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Helpers._
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.SoleTraderIdentificationStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
@@ -187,6 +189,27 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
       val result = await(soleTraderIdentificationConnector.storeData[String](testJourneyId, SautrKey, testSautr))
 
       result mustBe SuccessfullyStored
+    }
+  }
+
+  s"removeSoleTraderIdentification($testJourneyId, $SautrKey)" should {
+    "return SuccessfullyRemoved" when {
+      "the sautr successfully removed from the database" in {
+        stubRemoveSautr(testJourneyId)(NO_CONTENT)
+        val result = await(soleTraderIdentificationConnector.removeSoleTraderIdentification(testJourneyId, SautrKey))
+
+        result mustBe SuccessfullyRemoved
+      }
+    }
+
+    "throw an exception" when {
+      "the sautr could not be deleted" in {
+        stubRemoveSautr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
+
+        intercept[InternalServerException] {
+          await(soleTraderIdentificationConnector.removeSoleTraderIdentification(testJourneyId, SautrKey))
+        }
+      }
     }
   }
 }

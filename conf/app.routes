@@ -13,6 +13,7 @@ POST        /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderi
 
 GET         /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId: String)
 POST        /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId: String)
+GET         /:journeyId/no-sa-utr                        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.noSautr(journeyId: String)
 
 GET         /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId: String)
 POST        /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId: String)

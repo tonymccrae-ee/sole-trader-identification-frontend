@@ -19,7 +19,9 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 import play.api.libs.json.OFormat.oFormatFromReadsAndOWrites
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetails, StorageResult}
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetails}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
 import java.time.LocalDate
@@ -29,16 +31,16 @@ import scala.concurrent.Future
 @Singleton
 class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificationConnector) {
 
-  def storeFullName(journeyId: String, fullName: FullNameModel)(implicit hc: HeaderCarrier): Future[StorageResult] =
+  def storeFullName(journeyId: String, fullName: FullNameModel)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[FullNameModel](journeyId, FullNameKey, fullName)
 
-  def storeDateOfBirth(journeyId: String, dateOfBirth: LocalDate)(implicit hc: HeaderCarrier): Future[StorageResult] =
+  def storeDateOfBirth(journeyId: String, dateOfBirth: LocalDate)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[LocalDate](journeyId, DateOfBirthKey, dateOfBirth)
 
-  def storeNino(journeyId: String, nino: String)(implicit hc: HeaderCarrier): Future[StorageResult] =
+  def storeNino(journeyId: String, nino: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, NinoKey, nino)
 
-  def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[StorageResult] =
+  def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, SautrKey, sautr)
 
   def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullNameModel]] =
@@ -55,6 +57,10 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
 
   def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
     connector.retrieveSoleTraderIdentification(journeyId)
+
+  def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    connector.removeSoleTraderIdentification(journeyId, SautrKey)
+
 }
 
 object SoleTraderIdentificationService {

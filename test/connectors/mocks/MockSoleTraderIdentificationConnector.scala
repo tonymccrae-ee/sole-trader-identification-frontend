@@ -24,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.StorageResult
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 
 import scala.concurrent.Future
 
@@ -60,7 +60,7 @@ trait MockSoleTraderIdentificationConnector extends MockitoSugar with BeforeAndA
   def mockStoreData[T](journeyId: String,
                        dataKey: String,
                        data: T
-                      )(response: Future[StorageResult]): OngoingStubbing[_] =
+                      )(response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationConnector.storeData[T](
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(dataKey),

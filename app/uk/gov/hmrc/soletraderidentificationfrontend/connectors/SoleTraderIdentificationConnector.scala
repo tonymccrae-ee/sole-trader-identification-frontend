@@ -20,8 +20,9 @@ import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RetrieveSoleTraderDetailsHttpParser.RetrieveSoleTraderDetailsHttpReads
-import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SoleTraderIdentificationStorageHttpReads
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{SoleTraderDetails, StorageResult}
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser._
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser._
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -43,9 +44,14 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
     http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))(RetrieveSoleTraderDetailsHttpReads, hc, ec)
 
   def storeData[DataType](journeyId: String, dataKey: String, data: DataType
-                         )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {
-    http.PUT[DataType, StorageResult](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey", data)
+                         )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[SuccessfullyStored.type] = {
+    http.PUT[DataType, SuccessfullyStored.type](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey", data)
   }
+
+  def removeSoleTraderIdentification(journeyId: String,
+                                     dataKey: String
+                                    )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    http.DELETE[SuccessfullyRemoved.type](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey")(RemoveSoleTraderDetailsHttpReads, hc, ec)
 
 }
 

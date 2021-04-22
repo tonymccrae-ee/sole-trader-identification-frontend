@@ -26,7 +26,7 @@ import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, FeatureSwitching, FeatureSwitchingModule}
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{FeatureSwitching, FeatureSwitchingModule}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository
