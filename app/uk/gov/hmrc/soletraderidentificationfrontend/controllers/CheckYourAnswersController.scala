@@ -66,7 +66,8 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
           case Some(soleTraderDetails) =>
             authenticatorService.matchSoleTraderDetails(soleTraderDetails).flatMap {
               case Right(Matched) => journeyService.getJourneyConfig(journeyId).map {
-                journeyConfig => Redirect(journeyConfig.continueUrl)
+                journeyConfig => Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
+
               }
               case Left(_) =>
                 Future.successful(Redirect(routes.PersonalInformationErrorController.show(journeyId)))

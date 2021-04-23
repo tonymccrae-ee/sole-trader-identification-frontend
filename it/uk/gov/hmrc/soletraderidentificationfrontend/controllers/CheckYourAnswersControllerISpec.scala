@@ -87,7 +87,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(testContinueUrl)
+        redirectUri(s"$testContinueUrl?journeyId=$testJourneyId")
       )
     }
 
