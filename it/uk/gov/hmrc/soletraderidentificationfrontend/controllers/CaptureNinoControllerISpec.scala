@@ -35,7 +35,8 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
@@ -66,13 +67,14 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
   }
 
   "POST /national-insurance-number" should {
-    "redirect to the capture sautr page" in {
+    "redirect to check your answers page" in {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubAuth(OK, successfulAuthResponse())
       stubStoreNino(testJourneyId, testNino)(status = OK)
@@ -81,7 +83,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
+        redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
       )
     }
   }
@@ -93,7 +95,8 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubAuth(OK, successfulAuthResponse())
       post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "")
@@ -113,7 +116,8 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubAuth(OK, successfulAuthResponse())
       post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "AAAAAAAAAA")
@@ -124,6 +128,26 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     }
 
     testCaptureNinoErrorMessages(result)
+  }
+
+  "redirect to the capture sautr page" in {
+    await(insertJourneyConfig(
+      journeyId = testJourneyId,
+      continueUrl = testContinueUrl,
+      optServiceName = None,
+      deskProServiceId = testDeskProServiceId,
+      signOutUrl = testSignOutUrl,
+      enableSautrCheck = true
+    ))
+    stubAuth(OK, successfulAuthResponse())
+    stubStoreNino(testJourneyId, testNino)(status = OK)
+
+    lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> testNino)
+
+    result must have(
+      httpStatus(SEE_OTHER),
+      redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
+    )
   }
 
 }

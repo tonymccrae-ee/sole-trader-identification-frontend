@@ -22,6 +22,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureNinoForm
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_nino_page
 
@@ -64,11 +65,13 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                 ))
             },
           nino =>
-            soleTraderIdentificationService.storeNino(journeyId, nino).map {
-              _ => Redirect(routes.CaptureSautrController.show(journeyId))
-            }
-        )
+            soleTraderIdentificationService.storeNino(journeyId, nino) flatMap { _ =>
+              journeyService.getJourneyConfig(journeyId).map {
+                case JourneyConfig(_, PageConfig(_, _, _, false)) => Redirect(routes.CheckYourAnswersController.show(journeyId))
+                case _ => Redirect(routes.CaptureSautrController.show(journeyId))
+              }
+
+            })
       }
   }
-
 }

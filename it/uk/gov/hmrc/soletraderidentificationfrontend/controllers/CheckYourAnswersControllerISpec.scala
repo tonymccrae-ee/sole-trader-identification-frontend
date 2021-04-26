@@ -20,6 +20,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
+import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm.enableSautrCheck
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
 
@@ -37,7 +38,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubAuth(OK, successfulAuthResponse())
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
@@ -76,7 +78,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       stubAuth(OK, successfulAuthResponse())
@@ -97,7 +100,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
       stubAuth(OK, successfulAuthResponse())
