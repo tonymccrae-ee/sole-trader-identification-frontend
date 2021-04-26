@@ -21,6 +21,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
+import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm.enableSautrCheck
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureFullNameViewTests
 
@@ -39,7 +40,8 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = testEnableSautrCheck
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
@@ -77,7 +79,8 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = testEnableSautrCheck
         ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreFullName(testJourneyId, FullNameModel(testFirstName, testLastName))(status = OK)
@@ -101,7 +104,8 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = testEnableSautrCheck
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -122,7 +126,8 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = testEnableSautrCheck
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -143,7 +148,8 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = testEnableSautrCheck
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -164,7 +170,8 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = testEnableSautrCheck
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(

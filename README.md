@@ -18,6 +18,9 @@ Creates a new journey, storing the journeyConfig against the journeyId.
 
 optServiceName will default to `Entity Validation Service` if the field is not provided.
 
+The enableSautrCheck field allows the calling service to decide whether to ask the user to provide 
+an SAUTR that will be verified. By default "enableSautrCheck" will be false.
+
 All other fields must be provided. 
 
 ```
@@ -25,7 +28,8 @@ All other fields must be provided.
 "continueUrl" : "/test",
 "optServiceName" : "Service Name",
 "deskProServiceId" : "abc",
-"signOutUrl : "/sign-out"
+"signOutUrl" : "/sign-out",
+"enableSautrCheck" : "true"
 }
 ```
 

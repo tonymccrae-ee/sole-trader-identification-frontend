@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.assets
 
-import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
-
 import java.time.LocalDate
 import java.util.UUID
+
+import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 object TestConstants {
 
@@ -58,5 +58,6 @@ object TestConstants {
 
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
+  val testEnableSautrCheck: Boolean = false
 
 }

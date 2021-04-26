@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import play.api.libs.json.{JsObject, JsResult, JsValue, Json, OFormat}
+import play.api.libs.json._
 
 case class JourneyConfig(continueUrl: String, pageConfig: PageConfig)
 
@@ -25,6 +25,7 @@ object JourneyConfig {
   private val optServiceNameKey = "optServiceName"
   private val deskProServiceIdKey = "deskProServiceId"
   private val signOutUrlKey = "signOutUrl"
+  private val enableSautrCheckKey = "enableSautrCheck"
 
   implicit val format: OFormat[JourneyConfig] = new OFormat[JourneyConfig] {
     override def reads(json: JsValue): JsResult[JourneyConfig] = for {
@@ -32,13 +33,15 @@ object JourneyConfig {
       optServiceName <- (json \ optServiceNameKey).validateOpt[String]
       deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
       signOutUrl <- (json \ signOutUrlKey).validate[String]
-    } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl))
+      enableSautrCheck <- (json \ enableSautrCheckKey).validate[Boolean]
+    } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck))
 
     override def writes(journeyConfig: JourneyConfig): JsObject = Json.obj(
       continueUrlKey -> journeyConfig.continueUrl,
       optServiceNameKey -> journeyConfig.pageConfig.optServiceName,
       deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId,
-      signOutUrlKey -> journeyConfig.pageConfig.signOutUrl
+      signOutUrlKey -> journeyConfig.pageConfig.signOutUrl,
+      enableSautrCheckKey -> journeyConfig.pageConfig.enableSautrCheck
     )
   }
 }
