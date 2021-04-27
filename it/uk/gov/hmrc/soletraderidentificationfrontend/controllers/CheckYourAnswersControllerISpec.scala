@@ -20,7 +20,6 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
-import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm.enableSautrCheck
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
 
@@ -31,45 +30,84 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   with AuthStub
   with AuthenticatorStub {
 
-  "GET /check-your-answers-business" should {
-    lazy val result: WSResponse = {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
-      ))
-      stubAuth(OK, successfulAuthResponse())
-      stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
-      get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
-    }
+  "GET /check-your-answers-business" when {
+    "the applicant declares nino and sautr" should {
+      lazy val result: WSResponse = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = true
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+        get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+      }
 
-    "return OK" in {
-      result.status mustBe OK
-    }
+      "return OK" in {
+        result.status mustBe OK
+      }
 
-    "return a view which" should {
-      testCheckYourAnswersView(result, testJourneyId)
-    }
+      "return a view which" should {
+        testCheckYourAnswersFullView(result, testJourneyId)
+      }
 
-    "redirect to sign in page" when {
-      "the user is UNAUTHORISED" in {
-        stubAuthFailure()
-        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          stubAuthFailure()
+          lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
 
-        result must have(
-          httpStatus(SEE_OTHER),
-          redirectUri("/bas-gateway/sign-in" +
-            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fcheck-your-answers-business" +
-            "&origin=sole-trader-identification-frontend"
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri("/bas-gateway/sign-in" +
+              s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fcheck-your-answers-business" +
+              "&origin=sole-trader-identification-frontend"
+            )
           )
-        )
+        }
+      }
+    }
+    "the applicant declares only nino" should {
+      lazy val result: WSResponse = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = testEnableSautrCheck
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+        get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+      }
+
+      "return OK" in {
+        result.status mustBe OK
+      }
+
+      "return a view which" should {
+        testCheckYourAnswersNoSautrView(result, testJourneyId)
+      }
+
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          stubAuthFailure()
+          lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri("/bas-gateway/sign-in" +
+              s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fcheck-your-answers-business" +
+              "&origin=sole-trader-identification-frontend"
+            )
+          )
+        }
       }
     }
   }
-
   "POST /check-your-answers-business" should {
     "redirect to continue url from the supplied journey config" in {
 
