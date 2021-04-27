@@ -45,78 +45,81 @@
 }
 
 @html = {
-    @govukSummaryList(SummaryList(
-        classes = "govuk-!-margin-bottom-9",
-        rows = Seq(
-            SummaryListRow(
-                key = Key(content = Text(Messages("check-your-answers.first_name"))),
-                value = Value(content = Text(soleTraderDetails.firstName)),
-                actions = Some(Actions(items = Seq(
-                    ActionItem(
-                        href = Routes.CaptureFullNameController.show(journeyId).url,
-                        content = Text("Change"),
-                        visuallyHiddenText = Some(Messages("check-your-answers.first_name"))
-                    )
-                )))
-            ),
-            SummaryListRow(
-                key = Key(content = Text(Messages("check-your-answers.last_name"))),
-                value = Value(content = Text(soleTraderDetails.lastName)),
-                actions = Some(Actions(items = Seq(
-                    ActionItem(
-                        href = Routes.CaptureFullNameController.show(journeyId).url,
-                        content = Text("Change"),
-                        visuallyHiddenText = Some(Messages("check-your-answers.last_name"))
-                    )
-                )))
-            ),
-            SummaryListRow(
-                key = Key(content = Text(Messages("check-your-answers.dob"))),
-                value = Value(content = Text(soleTraderDetails.dateOfBirth.format(checkYourAnswersFormat))),
-                actions = Some(Actions(items = Seq(
-                    ActionItem(
-                        href = Routes.CaptureDateOfBirthController.show(journeyId).url,
-                        content = Text("Change"),
-                        visuallyHiddenText = Some(Messages("check-your-answers.dob"))
-                    )
-                )))
-            ),
-            SummaryListRow(
-                key = Key(content = Text(Messages("check-your-answers.nino"))),
-                value = Value(content = Text(soleTraderDetails.nino.grouped(2).mkString(" "))),
-                actions = Some(Actions(items = Seq(
-                    ActionItem(
-                        href = Routes.CaptureNinoController.show(journeyId).url,
-                        content = Text("Change"),
-                        visuallyHiddenText = Some(Messages("check-your-answers.nino"))
-                    )
-                )))
-            ),
-            SummaryListRow(
-                key = Key(content = Text(Messages("check-your-answers.sautr"))),
-                value = Value(content = Text(
-                    soleTraderDetails.optSautr match {
-                        case Some(utr) => utr
-                        case None => Messages("check-your-answers.no_sautr")
-                    }
-                )),
-                actions = Some(Actions(items = Seq(
-                    ActionItem(
-                        href = Routes.CaptureSautrController.show(journeyId).url,
-                        content = Text("Change"),
-                        visuallyHiddenText = Some(Messages("check-your-answers.sautr"))
-                    )
-                )))
-            )
-        )
-    ))
-
-    @formWithCSRF(action = formAction) {
-        @govukButton(Button(
-            attributes = Map("id" -> "confirm-and-continue"),
-            classes = "govuk-!-margin-right-1",
-            content = Text(Messages("base.confirm_and_continue"))
+@govukSummaryList(SummaryList(
+    classes = "govuk-!-margin-bottom-9",
+    rows = Seq(
+        SummaryListRow(
+            key = Key(content = Text(Messages("check-your-answers.first_name"))),
+            value = Value(content = Text(soleTraderDetails.firstName)),
+            actions = Some(Actions(items = Seq(
+                ActionItem(
+                    href = Routes.CaptureFullNameController.show(journeyId).url,
+                    content = Text("Change"),
+                    visuallyHiddenText = Some(Messages("check-your-answers.first_name"))
+                )
+            )))
+        ),
+        SummaryListRow(
+            key = Key(content = Text(Messages("check-your-answers.last_name"))),
+            value = Value(content = Text(soleTraderDetails.lastName)),
+            actions = Some(Actions(items = Seq(
+                ActionItem(
+                    href = Routes.CaptureFullNameController.show(journeyId).url,
+                    content = Text("Change"),
+                    visuallyHiddenText = Some(Messages("check-your-answers.last_name"))
+                )
+            )))
+        ),
+        SummaryListRow(
+            key = Key(content = Text(Messages("check-your-answers.dob"))),
+            value = Value(content = Text(soleTraderDetails.dateOfBirth.format(checkYourAnswersFormat))),
+            actions = Some(Actions(items = Seq(
+                ActionItem(
+                    href = Routes.CaptureDateOfBirthController.show(journeyId).url,
+                    content = Text("Change"),
+                    visuallyHiddenText = Some(Messages("check-your-answers.dob"))
+                )
+            )))
+        ),
+        SummaryListRow(
+            key = Key(content = Text(Messages("check-your-answers.nino"))),
+            value = Value(content = Text(soleTraderDetails.nino.grouped(2).mkString(" "))),
+            actions = Some(Actions(items = Seq(
+                ActionItem(
+                    href = Routes.CaptureNinoController.show(journeyId).url,
+                    content = Text("Change"),
+                    visuallyHiddenText = Some(Messages("check-your-answers.nino"))
+                )
+            )))
+        )) ++ (if(pageConfig.enableSautrCheck) {
+        Seq(SummaryListRow(
+            key = Key(content = Text(Messages("check-your-answers.sautr"))),
+            value = Value(content = Text(
+                soleTraderDetails.optSautr match {
+                    case Some(utr) => utr
+                    case None => Messages("check-your-answers.no_sautr")
+                }
+            )),
+            actions = Some(Actions(items = Seq(
+                ActionItem(
+                    href = Routes.CaptureSautrController.show(journeyId).url,
+                    content = Text("Change"),
+                    visuallyHiddenText = Some(Messages("check-your-answers.sautr"))
+                )
+            )))
         ))
     }
+    else {
+        Seq()
+    }
+            )))
+
+@formWithCSRF(action = formAction) {
+    @govukButton(Button(
+        attributes = Map("id" -> "confirm-and-continue"),
+        classes = "govuk-!-margin-right-1",
+        content = Text(Messages("base.confirm_and_continue"))
+    ))
+}
 
 }
