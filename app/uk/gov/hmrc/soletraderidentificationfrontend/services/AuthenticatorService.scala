@@ -16,17 +16,32 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.AuthenticatorConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.SoleTraderVerificationResult
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{Matched, Mismatch, SoleTraderVerificationResult}
 
-import scala.concurrent.Future
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuthenticatorService @Inject()(authenticatorConnector: AuthenticatorConnector) {
+class AuthenticatorService @Inject()(authenticatorConnector: AuthenticatorConnector)(implicit ec: ExecutionContext) {
 
-  def matchSoleTraderDetails(soleTraderDetails: SoleTraderDetails)(implicit hc: HeaderCarrier): Future[SoleTraderVerificationResult] =
-    authenticatorConnector.matchSoleTraderDetails(soleTraderDetails)
+  def matchSoleTraderDetails(soleTraderDetails: SoleTraderDetails,
+                             journeyConfig: JourneyConfig
+                            )(implicit hc: HeaderCarrier): Future[SoleTraderVerificationResult] =
+    authenticatorConnector.matchSoleTraderDetails(soleTraderDetails).map {
+      case Right(authenticatorDetails) =>
+        if (journeyConfig.pageConfig.enableSautrCheck) {
+          if (authenticatorDetails.optSautr == soleTraderDetails.optSautr) {
+            Right(Matched)
+          } else {
+            Left(Mismatch)
+          }
+        } else {
+          Right(Matched)
+        }
+      case Left(failureReason) => Left(failureReason)
+    }
+
 }

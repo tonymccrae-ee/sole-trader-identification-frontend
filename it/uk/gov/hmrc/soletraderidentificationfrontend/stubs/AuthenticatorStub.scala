@@ -58,7 +58,13 @@ trait AuthenticatorStub extends WireMockMethods {
     "lastName" -> soleTraderDetails.lastName,
     "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
     "nino" -> soleTraderDetails.nino
-  )
+  ) ++ {
+    soleTraderDetails.optSautr match {
+      case Some(sautr) => Json.obj("saUtr" -> sautr)
+      case None => Json.obj()
+    }
+
+  }
 
   val mismatchErrorJson: JsObject = Json.obj(
     "errors" -> Json.arr("no_match_dob")

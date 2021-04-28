@@ -18,14 +18,15 @@ package services
 
 import connectors.mocks.MockSoleTraderIdentificationConnector
 import helpers.TestConstants.{testJourneyId, testSautr}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
-import utils.UnitSpec
 
 import scala.concurrent.Future
 
-class SoleTraderIdentificationServiceSpec extends UnitSpec with MockSoleTraderIdentificationConnector {
+class SoleTraderIdentificationServiceSpec extends AnyWordSpec with Matchers with MockSoleTraderIdentificationConnector {
 
   object TestService extends SoleTraderIdentificationService(mockSoleTraderIdentificationConnector)
 

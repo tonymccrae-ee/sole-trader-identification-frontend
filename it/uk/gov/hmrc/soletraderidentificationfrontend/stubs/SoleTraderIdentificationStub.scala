@@ -18,14 +18,14 @@ package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsString, JsValue, Json}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
+import uk.gov.hmrc.soletraderidentificationfrontend.models.FullName
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.WireMockMethods
 
 import java.time.LocalDate
 
 trait SoleTraderIdentificationStub extends WireMockMethods {
 
-  def stubStoreFullName(journeyId: String, fullName: FullNameModel)(status: Int): StubMapping =
+  def stubStoreFullName(journeyId: String, fullName: FullName)(status: Int): StubMapping =
     when(method = PUT,
       uri = s"/sole-trader-identification/journey/$journeyId/fullName",
       body = Json.obj(

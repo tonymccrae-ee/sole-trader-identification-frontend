@@ -17,16 +17,40 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.httpParsers
 
 import play.api.http.Status.{FAILED_DEPENDENCY, OK, UNAUTHORIZED}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsError, JsPath, JsSuccess, Reads}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching._
 
-object SoleTraderVerificationResultHttpParser {
-  val notFoundError: String = "CID returned no record"
+import java.time.LocalDate
 
-  implicit object SoleTraderVerificationResultReads extends HttpReads[SoleTraderVerificationResult] {
-    override def read(method: String, url: String, response: HttpResponse): SoleTraderVerificationResult =
+object SoleTraderVerificationResultHttpParser {
+  private val notFoundError: String = "CID returned no record"
+  private val FirstNameKey = "firstName"
+  private val LastNameKey = "lastName"
+  private val NinoKey = "nino"
+  private val SautrKey = "saUtr"
+  private val DateOfBirthKey = "dateOfBirth"
+
+  private val authenticatorReads: Reads[SoleTraderDetails] = (
+    (JsPath \ FirstNameKey).read[String] and
+      (JsPath \ LastNameKey).read[String] and
+      (JsPath \ DateOfBirthKey).read[LocalDate] and
+      (JsPath \ NinoKey).read[String] and
+      (JsPath \ SautrKey).readNullable[String]
+    )(SoleTraderDetails.apply _)
+
+  implicit object SoleTraderVerificationResultReads extends HttpReads[AuthenticatorResponse] {
+    override def read(method: String, url: String, response: HttpResponse): AuthenticatorResponse =
       response.status match {
-        case OK => Right(Matched)
+        case OK =>
+          response.json.validate[SoleTraderDetails](authenticatorReads) match {
+            case JsSuccess(details, _) =>
+              Right(details)
+            case JsError(errors) =>
+              throw new InternalServerException(s"Invalid JSON returned from authenticator. Errors - $errors")
+          }
         case FAILED_DEPENDENCY => Left(Deceased)
         case UNAUTHORIZED =>
           val errors = (response.json \ "errors").toString
@@ -40,4 +64,5 @@ object SoleTraderVerificationResultHttpParser {
           throw new InternalServerException(s"Invalid status received from authenticator#match API: $status")
       }
   }
+
 }

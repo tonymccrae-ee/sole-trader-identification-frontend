@@ -18,65 +18,56 @@ package services
 
 import connectors.mocks.MockJourneyConnector
 import helpers.TestConstants._
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.core.errors.GenericDriverException
 import repositories.mocks.MockJourneyConfigRepository
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.JourneyService
-import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJourneyConfigRepository {
+class JourneyServiceSpec extends AnyWordSpec with Matchers with MockJourneyConnector with MockJourneyConfigRepository {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   object TestService extends JourneyService(mockJourneyConnector, mockJourneyConfigRepository)
 
-  val testJourneyConfig: JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl
-    )
-  )
-
   "createJourney" should {
     "return a journeyID and store the provided journey config" in {
       mockCreateJourney(response = Future.successful(testJourneyId))
-      mockInsertJourneyConfig(testJourneyId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
+      mockInsertJourneyConfig(testJourneyId, testJourneyConfig())(response = Future.successful(mock[WriteResult]))
 
-      val result = await(TestService.createJourney(testJourneyConfig))
+      val result = await(TestService.createJourney(testJourneyConfig()))
 
       result mustBe testJourneyId
       verifyCreateJourney()
-      verifyInsertJourneyConfig(testJourneyId, testJourneyConfig)
+      verifyInsertJourneyConfig(testJourneyId, testJourneyConfig())
     }
 
     "throw an exception" when {
       "create journey API returns an invalid response" in {
         mockCreateJourney(response = Future.failed(new InternalServerException("Invalid response returned from create journey API")))
-        mockInsertJourneyConfig(testJourneyId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
+        mockInsertJourneyConfig(testJourneyId, testJourneyConfig())(response = Future.successful(mock[WriteResult]))
 
         intercept[InternalServerException](
-          await(TestService.createJourney(testJourneyConfig))
+          await(TestService.createJourney(testJourneyConfig()))
         )
         verifyCreateJourney()
       }
 
       "the journey config is not stored" in {
         mockCreateJourney(response = Future.successful(testJourneyId))
-        mockInsertJourneyConfig(testJourneyId, testJourneyConfig)(response = Future.failed(GenericDriverException("failed to insert")))
+        mockInsertJourneyConfig(testJourneyId, testJourneyConfig())(response = Future.failed(GenericDriverException("failed to insert")))
 
         intercept[GenericDriverException](
-          await(TestService.createJourney(testJourneyConfig))
+          await(TestService.createJourney(testJourneyConfig()))
         )
         verifyCreateJourney()
-        verifyInsertJourneyConfig(testJourneyId, testJourneyConfig)
+        verifyInsertJourneyConfig(testJourneyId, testJourneyConfig())
       }
     }
   }
@@ -84,11 +75,11 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
   "getJourneyConfig" should {
     "return the journey config for a specific journey id" when {
       "the journey id exists in the database" in {
-        mockFindById(testJourneyId)(Future.successful(Some(testJourneyConfig)))
+        mockFindById(testJourneyId)(Future.successful(Some(testJourneyConfig())))
 
         val result = await(TestService.getJourneyConfig(testJourneyId))
 
-        result mustBe testJourneyConfig
+        result mustBe testJourneyConfig()
         verifyFindById(testJourneyId)
       }
     }

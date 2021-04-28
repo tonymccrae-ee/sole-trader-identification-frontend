@@ -19,21 +19,39 @@ package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class StubAuthenticatorMatchController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val stubMatch: Action[JsValue] = Action(parse.json) { request =>
-      (request.body \ "lastName").as[String].toLowerCase match {
+  val stubMatch: Action[JsValue] = Action(parse.json) {
+    request =>
+      val soleTraderDetails = request.body.as[SoleTraderDetails]
+
+      soleTraderDetails.lastName.toLowerCase match {
         case "fail" =>
           Unauthorized(Json.obj("errors" -> "DOB does not exist in CID"))
         case "deceased" =>
           FailedDependency
+        case "no-sautr" =>
+          Ok(Json.obj(
+            "firstName" -> soleTraderDetails.firstName,
+            "lastName" -> soleTraderDetails.lastName,
+            "dateOfBirth" -> soleTraderDetails.dateOfBirth,
+            "nino" -> soleTraderDetails.nino
+          ))
         case _ =>
-          Ok(Json.obj("result" -> "match"))
+          Ok(Json.obj(
+            "firstName" -> soleTraderDetails.firstName,
+            "lastName" -> soleTraderDetails.lastName,
+            "dateOfBirth" -> soleTraderDetails.dateOfBirth,
+            "nino" -> soleTraderDetails.nino,
+            "saUtr" -> "1234567890"
+          ))
       }
+
   }
 
 }
