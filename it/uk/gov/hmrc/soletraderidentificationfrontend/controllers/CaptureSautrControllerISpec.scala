@@ -36,7 +36,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")
@@ -75,7 +75,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreSautr(testJourneyId, testSautr)(status = OK)
@@ -97,7 +97,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "")
@@ -118,7 +118,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "123456789")
@@ -141,7 +141,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveSautr(testJourneyId)(NO_CONTENT)
@@ -154,6 +154,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
         )
       }
     }
+
     "throw an exception" when {
       "the backend returns a failure" in {
         await(insertJourneyConfig(
@@ -162,7 +163,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveSautr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")

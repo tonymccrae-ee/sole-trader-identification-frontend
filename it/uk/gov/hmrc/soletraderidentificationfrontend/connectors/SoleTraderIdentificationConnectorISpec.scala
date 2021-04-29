@@ -71,7 +71,7 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
   s"retrieveSoleTraderIdentification($testJourneyId, $FullNameKey)" should {
     "return full name" when {
       "the full name key is given and a full name is stored against the journeyId" in {
-        stubRetrieveFullName(testJourneyId)(OK, Json.toJsObject(FullNameModel(testFirstName, testLastName)))
+        stubRetrieveFullName(testJourneyId)(OK, Json.toJsObject(FullName(testFirstName, testLastName)))
         val testJson = Json.obj(
           "firstName" -> testFirstName,
           "lastName" -> testLastName
@@ -155,9 +155,9 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
 
   s"storeData($testJourneyId, $FullNameKey)" should {
     "return SuccessfullyStored" in {
-      stubStoreFullName(testJourneyId, FullNameModel(testFirstName, testLastName))(status = OK)
-      val result = await(soleTraderIdentificationConnector.storeData[FullNameModel](
-        testJourneyId, FullNameKey, FullNameModel(testFirstName, testLastName)))
+      stubStoreFullName(testJourneyId, FullName(testFirstName, testLastName))(status = OK)
+      val result = await(soleTraderIdentificationConnector.storeData[FullName](
+        testJourneyId, FullNameKey, FullName(testFirstName, testLastName)))
 
       result mustBe SuccessfullyStored
     }

@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import java.time.LocalDate
-
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureDateOfBirthViewTests
+
+import java.time.LocalDate
 
 class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
   with CaptureDateOfBirthViewTests
@@ -38,7 +38,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")
@@ -60,7 +60,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuthFailure()
         lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")
@@ -85,7 +85,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreDob(testJourneyId, testDateOfBirth)(status = OK)
@@ -111,7 +111,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
@@ -134,7 +134,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
@@ -157,7 +157,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
@@ -180,7 +180,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(
@@ -203,7 +203,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/date-of-birth")(

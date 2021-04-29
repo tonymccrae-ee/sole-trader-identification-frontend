@@ -28,7 +28,6 @@ class PersonalInformationErrorControllerISpec extends ComponentSpecHelper
   with SoleTraderIdentificationStub
   with AuthStub {
 
-
   "GET /personal-information-error" should {
     lazy val result = {
       await(insertJourneyConfig(
@@ -37,7 +36,7 @@ class PersonalInformationErrorControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/personal-information-error")

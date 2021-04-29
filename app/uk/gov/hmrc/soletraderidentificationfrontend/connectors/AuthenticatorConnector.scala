@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderVerificationResultHttpParser.SoleTraderVerificationResultReads
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.SoleTraderVerificationResult
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.AuthenticatorResponse
 
 import java.time.format.DateTimeFormatter.ofPattern
 import javax.inject.{Inject, Singleton}
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthenticatorConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig)(implicit executionContext: ExecutionContext) {
-  def matchSoleTraderDetails(soleTraderDetails: SoleTraderDetails)(implicit hc: HeaderCarrier): Future[SoleTraderVerificationResult] = {
+  def matchSoleTraderDetails(soleTraderDetails: SoleTraderDetails)(implicit hc: HeaderCarrier): Future[AuthenticatorResponse] = {
     val jsonBody = Json.obj(
       "firstName" -> soleTraderDetails.firstName,
       "lastName" -> soleTraderDetails.lastName,

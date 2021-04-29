@@ -39,8 +39,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
         pageConfig = PageConfig(
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = testEnableSautrCheck
+          signOutUrl = testSignOutUrl
         )
       )
 
@@ -61,8 +60,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
           pageConfig = PageConfig(
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = testEnableSautrCheck
+            signOutUrl = testSignOutUrl
           )
         )
 

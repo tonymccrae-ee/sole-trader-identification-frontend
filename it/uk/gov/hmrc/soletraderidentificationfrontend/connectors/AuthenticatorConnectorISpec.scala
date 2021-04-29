@@ -32,13 +32,13 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
 
   "matchSoleTraderDetails" should {
     "return successful match" when {
-      "authenticator returns matched data" when {
+      "authenticator returns data" when {
         "the stub authenticator feature switch is disabled" in {
           stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
 
           val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
 
-          res mustBe Right(SoleTraderDetailsMatching.Matched)
+          res mustBe Right(testSoleTraderDetails)
         }
 
         "the stub authenticator feature switch is enabled" in {
@@ -47,7 +47,7 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
 
           val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
 
-          res mustBe Right(SoleTraderDetailsMatching.Matched)
+          res mustBe Right(testSoleTraderDetails)
         }
       }
     }

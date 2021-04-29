@@ -36,7 +36,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
@@ -74,7 +74,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       stubStoreNino(testJourneyId, testNino)(status = OK)
@@ -96,7 +96,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "")
@@ -117,7 +117,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = testEnableSautrCheck
+        enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
       post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "AAAAAAAAAA")

@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullNameModel, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{FullName, SoleTraderDetails}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
 import java.time.LocalDate
@@ -31,8 +31,8 @@ import scala.concurrent.Future
 @Singleton
 class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificationConnector) {
 
-  def storeFullName(journeyId: String, fullName: FullNameModel)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
-    connector.storeData[FullNameModel](journeyId, FullNameKey, fullName)
+  def storeFullName(journeyId: String, fullName: FullName)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[FullName](journeyId, FullNameKey, fullName)
 
   def storeDateOfBirth(journeyId: String, dateOfBirth: LocalDate)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[LocalDate](journeyId, DateOfBirthKey, dateOfBirth)
@@ -43,8 +43,8 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, SautrKey, sautr)
 
-  def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullNameModel]] =
-    connector.retrieveSoleTraderIdentification[FullNameModel](journeyId, FullNameKey)
+  def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullName]] =
+    connector.retrieveSoleTraderIdentification[FullName](journeyId, FullNameKey)
 
   def retrieveDateOfBirth(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[LocalDate]] =
     connector.retrieveSoleTraderIdentification[LocalDate](journeyId, DateOfBirthKey)

@@ -23,7 +23,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.forms.mappings.Mappings
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil.ConstraintUtil
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.MappingUtil.{OTextUtil, optText}
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.{validate, validateNot}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.FullNameModel
+import uk.gov.hmrc.soletraderidentificationfrontend.models.FullName
 
 import javax.inject.Inject
 
@@ -59,12 +59,12 @@ class CaptureFullNameForm @Inject() extends Mappings {
     )
   )
 
-  def apply(): Form[FullNameModel] = {
+  def apply(): Form[FullName] = {
     Form(
       mapping(
         "first-name" -> optText.toText.verifying(firstNameNotEntered andThen firstNameInvalid),
         "last-name" -> optText.toText.verifying(lastNameNotEntered andThen lastNameInvalid)
-      )(FullNameModel.apply)(FullNameModel.unapply)
+      )(FullName.apply)(FullName.unapply)
     )
   }
 

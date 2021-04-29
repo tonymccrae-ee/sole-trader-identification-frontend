@@ -19,22 +19,22 @@ package uk.gov.hmrc.soletraderidentificationfrontend.models
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
-case class FullNameModel(firstName: String, lastName: String)
+case class FullName(firstName: String, lastName: String)
 
-object FullNameModel {
+object FullName {
   private val FirstNameKey = "firstName"
   private val LastNameKey = "lastName"
 
-  val writes: OWrites[FullNameModel] = (
+  val writes: OWrites[FullName] = (
     (JsPath \ FirstNameKey).write[String] and
       (JsPath \ LastNameKey).write[String]
-    ) (unlift(FullNameModel.unapply))
+    ) (unlift(FullName.unapply))
 
-  val reads: Reads[FullNameModel] = (
+  val reads: Reads[FullName] = (
     (JsPath \ FirstNameKey).read[String] and
       (JsPath \ LastNameKey).read[String]
-    ) (FullNameModel.apply _)
+    ) (FullName.apply _)
 
-  implicit val format: OFormat[FullNameModel] = OFormat(reads, writes)
+  implicit val format: OFormat[FullName] = OFormat(reads, writes)
 
 }

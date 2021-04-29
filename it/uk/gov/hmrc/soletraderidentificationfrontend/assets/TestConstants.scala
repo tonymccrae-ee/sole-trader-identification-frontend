@@ -41,6 +41,15 @@ object TestConstants {
       Some(testSautr)
     )
 
+  val testSoleTraderDetailsNoSautr: SoleTraderDetails =
+    SoleTraderDetails(
+      testFirstName,
+      testLastName,
+      testDateOfBirth,
+      testNino,
+      None
+    )
+
   val testSoleTraderDetailsJson: JsObject =
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
@@ -51,6 +60,15 @@ object TestConstants {
       "sautr" -> testSautr
     )
 
+  val testSoleTraderDetailsNoSautrJson: JsObject =
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "nino" -> testNino
+    )
+
   val testCredentialId: String = UUID.randomUUID().toString
   val testGGProviderId: String = UUID.randomUUID().toString
   val testGroupId: String = UUID.randomUUID().toString
@@ -58,6 +76,5 @@ object TestConstants {
 
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
-  val testEnableSautrCheck: Boolean = false
 
 }

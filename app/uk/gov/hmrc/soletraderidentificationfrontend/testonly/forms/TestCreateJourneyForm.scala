@@ -53,13 +53,6 @@ object TestCreateJourneyForm {
     )
   )
 
-  def enableSautrCheckEmpty: Constraint[Boolean] = Constraint("enableSautrCheck.not_entered")(
-    enableSautrCheck => validate(
-      constraint = enableSautrCheck.toString.isEmpty,
-      errMsg = "Applicant Verification is not entered"
-    )
-  )
-
   val form: Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),

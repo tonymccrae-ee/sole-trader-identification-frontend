@@ -101,6 +101,12 @@ This is a test entry point which simulates a service by triggering the initial P
     - Shown in the HMRC header - typically a link to a feedback questionnaire
     - This is currently autofilled but can be changed
 
+5. Enable SAUTR Check (Optional)
+   
+    - Shows the user an extra page where they can enter an SAUTR
+    - This is currently defaulted to false unless otherwise specified
+    - If this is enabled, refer to Using the Authenticator Stub section below
+
 #### GET test-only/retrieve-journey/:journeyId or test-only/retrieve-journey
 
 ---
@@ -129,6 +135,17 @@ Example response body:
 "sautr": "1234567890"
 }
 ```
+
+#### Using the Authenticator stub
+
+This stub returns different responses based on the entered last name. 
+
+`fail` & `deceased` will return a data mismatch which upon submitting CYA will redirect the user to an error page.
+
+`no-sautr` will return the data the user has entered and allow them to pass successfully provided the enableSautrCheck boolean is false or the user has clicked the `I do not have an SAUTR` link when the boolean is enabled.
+
+Any other last name will return the data user has entered along with `1234567890` for the SAUTR. This is the SAUTR the user must provide in order to pass validation using this stub.
+
 
 ### License
 
