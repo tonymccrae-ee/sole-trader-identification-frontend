@@ -33,8 +33,8 @@ object JourneyConfig {
       optServiceName <- (json \ optServiceNameKey).validateOpt[String]
       deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
       signOutUrl <- (json \ signOutUrlKey).validate[String]
-      enableSautrCheck <- (json \ enableSautrCheckKey).validate[Boolean]
-    } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck))
+      enableSautrCheck <- (json \ enableSautrCheckKey).validateOpt[Boolean]
+    } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck.getOrElse(false)))
 
     override def writes(journeyConfig: JourneyConfig): JsObject = Json.obj(
       continueUrlKey -> journeyConfig.continueUrl,
