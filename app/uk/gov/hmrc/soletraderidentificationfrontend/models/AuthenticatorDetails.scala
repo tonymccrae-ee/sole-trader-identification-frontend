@@ -16,45 +16,41 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.{unlift, _}
+import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
 import java.time.LocalDate
 
-case class SoleTraderDetails(firstName: String,
-                             lastName: String,
-                             dateOfBirth: LocalDate,
-                             nino: String,
-                             optSautr: Option[String],
-                             businessVerification: BusinessVerificationStatus)
+case class AuthenticatorDetails(firstName: String,
+                                lastName: String,
+                                dateOfBirth: LocalDate,
+                                nino: String,
+                                optSautr: Option[String])
 
-object SoleTraderDetails {
+object AuthenticatorDetails {
 
   private val FirstNameKey = "firstName"
   private val LastNameKey = "lastName"
   private val NinoKey = "nino"
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
-  private val BusinessVerificationKey = "businessVerification"
 
-  implicit val reads: Reads[SoleTraderDetails] = (
+  implicit val reads: Reads[AuthenticatorDetails] = (
     (JsPath \ FirstNameKey).read[String] and
       (JsPath \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).read[String] and
-      (JsPath \ SautrKey).readNullable[String] and
-      (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus]
-    ) (SoleTraderDetails.apply _)
+      (JsPath \ SautrKey).readNullable[String]
+    ) (AuthenticatorDetails.apply _)
 
-  implicit val writes: OWrites[SoleTraderDetails] = (
+  implicit val writes: OWrites[AuthenticatorDetails] = (
     (JsPath \ FirstNameKey).write[String] and
       (JsPath \ LastNameKey).write[String] and
       (JsPath \ DateOfBirthKey).write[LocalDate] and
       (JsPath \ NinoKey).write[String] and
-      (JsPath \ SautrKey).writeNullable[String] and
-      (JsPath \ BusinessVerificationKey).write[BusinessVerificationStatus]
-    ) (unlift(SoleTraderDetails.unapply))
+      (JsPath \ SautrKey).writeNullable[String]
+    ) (unlift(AuthenticatorDetails.unapply))
 
-  val format: OFormat[SoleTraderDetails] = OFormat(reads, writes)
+  val format: OFormat[AuthenticatorDetails] = OFormat(reads, writes)
 
 }

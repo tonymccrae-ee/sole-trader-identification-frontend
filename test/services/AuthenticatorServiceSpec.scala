@@ -20,10 +20,10 @@ import connectors.mocks.MockAuthenticatorConnector
 import helpers.TestConstants._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{Deceased, Matched, Mismatch, NotFound}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.AuthenticatorService
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,17 +38,17 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
     "return Right(Matched)" when {
       "the provided details match those from authenticator" when {
         "the enableSautrCheck is true and the sautr matches the returned one" in {
-          mockMatchSoleTraderDetails(testSoleTraderDetails)(Future.successful(Right(testSoleTraderDetails)))
+          mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Right(testAuthenticatorDetails)))
 
-          val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetails, testJourneyConfig(enableSautrCheck = true)))
+          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testJourneyConfig(enableSautrCheck = true)))
 
           result mustBe Right(Matched)
         }
 
         "the enableSautrCheck is false and the sautr is not provided" in {
-          mockMatchSoleTraderDetails(testSoleTraderDetailsNoSautr)(Future.successful(Right(testSoleTraderDetailsNoSautr)))
+          mockMatchSoleTraderDetails(testAuthenticatorDetailsNoSautr)(Future.successful(Right(testAuthenticatorDetailsNoSautr)))
 
-          val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetailsNoSautr, testJourneyConfig()))
+          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetailsNoSautr, testJourneyConfig()))
 
           result mustBe Right(Matched)
         }
@@ -58,42 +58,42 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
     "return Left(Mismatch)" when {
       "the provided details do not match those from authenticator" when {
         "the enableSautrCheck is true and the sautr is provided" in {
-          mockMatchSoleTraderDetails(testSoleTraderDetails)(Future.successful(Left(Mismatch)))
+          mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(Mismatch)))
 
-          val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetails, testJourneyConfig(enableSautrCheck = true)))
+          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testJourneyConfig(enableSautrCheck = true)))
 
           result mustBe Left(Mismatch)
         }
 
         "the enableSautrCheck is false and the sautr is not provided" in {
-          mockMatchSoleTraderDetails(testSoleTraderDetailsNoSautr)(Future.successful(Left(Mismatch)))
+          mockMatchSoleTraderDetails(testAuthenticatorDetailsNoSautr)(Future.successful(Left(Mismatch)))
 
-          val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetailsNoSautr, testJourneyConfig()))
+          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetailsNoSautr, testJourneyConfig()))
 
           result mustBe Left(Mismatch)
         }
 
         "the enableSautrCheck is false and the sautr is provided" in {
-          mockMatchSoleTraderDetails(testSoleTraderDetails)(Future.successful(Left(Mismatch)))
+          mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(Mismatch)))
 
-          val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetails, testJourneyConfig()))
+          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testJourneyConfig()))
 
           result mustBe Left(Mismatch)
         }
       }
 
       "the provided sautr does not exist on authenticator" in {
-        mockMatchSoleTraderDetails(testSoleTraderDetails)(Future.successful(Right(testSoleTraderDetailsNoSautr)))
+        mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Right(testAuthenticatorDetailsNoSautr)))
 
-        val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetails, testJourneyConfig(enableSautrCheck = true)))
+        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testJourneyConfig(enableSautrCheck = true)))
 
         result mustBe Left(Mismatch)
       }
 
-      "the user haas not provided an sautr but one is returned from authenticator" in {
-        mockMatchSoleTraderDetails(testSoleTraderDetailsNoSautr)(Future.successful(Right(testSoleTraderDetails)))
+      "the user has not provided an sautr but one is returned from authenticator" in {
+        mockMatchSoleTraderDetails(testAuthenticatorDetailsNoSautr)(Future.successful(Right(testAuthenticatorDetails)))
 
-        val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetailsNoSautr, testJourneyConfig(enableSautrCheck = true)))
+        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetailsNoSautr, testJourneyConfig(enableSautrCheck = true)))
 
         result mustBe Left(Mismatch)
       }
@@ -101,9 +101,9 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
 
     "return Left(NotFound)" when {
       "the users details are not found by authenticator" in {
-        mockMatchSoleTraderDetails(testSoleTraderDetailsNoSautr)(Future.successful(Left(NotFound)))
+        mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(NotFound)))
 
-        val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetailsNoSautr, testJourneyConfig()))
+        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testJourneyConfig()))
 
         result mustBe Left(NotFound)
       }
@@ -111,9 +111,9 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
 
     "return Left(Deceased)" when {
       "the users details are not found by authenticator" in {
-        mockMatchSoleTraderDetails(testSoleTraderDetailsNoSautr)(Future.successful(Left(Deceased)))
+        mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(Deceased)))
 
-        val result = await(TestService.matchSoleTraderDetails(testSoleTraderDetailsNoSautr, testJourneyConfig()))
+        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testJourneyConfig()))
 
         result mustBe Left(Deceased)
       }

@@ -34,55 +34,55 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
     "return successful match" when {
       "authenticator returns data" when {
         "the stub authenticator feature switch is disabled" in {
-          stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
+          stubMatch(testAuthenticatorDetails)(OK, successfulMatchJson(testAuthenticatorDetails))
 
-          val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+          val res = await(testConnector.matchSoleTraderDetails(testAuthenticatorDetails))
 
-          res mustBe Right(testSoleTraderDetails)
+          res mustBe Right(testAuthenticatorDetails)
         }
 
         "the stub authenticator feature switch is enabled" in {
           enable(AuthenticatorStub)
-          stubMatchStub(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
+          stubMatchStub(testAuthenticatorDetails)(OK, successfulMatchJson(testAuthenticatorDetails))
 
-          val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+          val res = await(testConnector.matchSoleTraderDetails(testAuthenticatorDetails))
 
-          res mustBe Right(testSoleTraderDetails)
+          res mustBe Right(testAuthenticatorDetails)
         }
       }
     }
     "return details mismatch" when {
       "authenticator returns an error with matching" in {
-        stubMatch(testSoleTraderDetails)(UNAUTHORIZED, mismatchErrorJson)
+        stubMatch(testAuthenticatorDetails)(UNAUTHORIZED, mismatchErrorJson)
 
-        val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+        val res = await(testConnector.matchSoleTraderDetails(testAuthenticatorDetails))
 
         res mustBe Left(SoleTraderDetailsMatching.Mismatch)
       }
     }
     "return details not found" when {
       "authenticator returns a not found error" in {
-        stubMatch(testSoleTraderDetails)(UNAUTHORIZED, notFoundErrorJson)
+        stubMatch(testAuthenticatorDetails)(UNAUTHORIZED, notFoundErrorJson)
 
-        val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+        val res = await(testConnector.matchSoleTraderDetails(testAuthenticatorDetails))
 
         res mustBe Left(SoleTraderDetailsMatching.NotFound)
       }
     }
     "return user is deceased" when {
       "authenticator returns dependency failed" in {
-        stubMatch(testSoleTraderDetails)(FAILED_DEPENDENCY, Json.obj())
+        stubMatch(testAuthenticatorDetails)(FAILED_DEPENDENCY, Json.obj())
 
-        val res = await(testConnector.matchSoleTraderDetails(testSoleTraderDetails))
+        val res = await(testConnector.matchSoleTraderDetails(testAuthenticatorDetails))
 
         res mustBe Left(SoleTraderDetailsMatching.Deceased)
       }
     }
     "throw an exception" when {
       "any other status is received" in {
-        stubMatch(testSoleTraderDetails)(INTERNAL_SERVER_ERROR, Json.obj())
+        stubMatch(testAuthenticatorDetails)(INTERNAL_SERVER_ERROR, Json.obj())
 
-        intercept[InternalServerException](await(testConnector.matchSoleTraderDetails(testSoleTraderDetails)))
+        intercept[InternalServerException](await(testConnector.matchSoleTraderDetails(testAuthenticatorDetails)))
       }
     }
   }

@@ -18,8 +18,8 @@ package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsString, JsValue, Json}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.FullName
-import uk.gov.hmrc.soletraderidentificationfrontend.utils.WireMockMethods
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationStatus, FullName}
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
 import java.time.LocalDate
 
@@ -67,6 +67,14 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       body = body
     )
 
+  def stubRetrieveAuthenticatorDetails(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
   def stubRetrieveFullName(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId/fullName"
@@ -107,4 +115,18 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       body = body
     )
 
+  def stubStoreBusinessVerificationStatus(journeyId: String,
+                                          businessVerificationStatus: BusinessVerificationStatus
+                                         )(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/sole-trader-identification/journey/$journeyId/businessVerification",
+      body = Json.toJson(businessVerificationStatus)
+    ).thenReturn(
+      status = status
+    )
+
+  def verifyStoreBusinessVerificationStatus(journeyId: String, businessVerificationStatus: BusinessVerificationStatus): Unit = {
+    val jsonBody = Json.toJson(businessVerificationStatus)
+    WiremockHelper.verifyPut(uri = s"/sole-trader-identification/journey/$journeyId/businessVerification", optBody = Some(jsonBody.toString()))
+  }
 }

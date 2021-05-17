@@ -21,12 +21,13 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.models.BusinessVerificationUnchallenged
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Matched
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuthenticatorService, JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
@@ -42,18 +43,18 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).flatMap {
-          case Some(details) =>
+        soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId).flatMap {
+          case Some(authenticatorDetails) =>
             journeyService.getJourneyConfig(journeyId).map {
               journeyConfig =>
                 Ok(view(
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CheckYourAnswersController.submit(journeyId),
                   journeyId = journeyId,
-                  soleTraderDetails = details
+                  authenticatorDetails = authenticatorDetails
                 ))
             }
-          case None =>
+          case _ =>
             throw new InternalServerException("Fail to retrieve data from database")
         }
       }
@@ -62,15 +63,21 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).flatMap {
-          case Some(soleTraderDetails) =>
+        soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId).flatMap {
+          case Some(authenticatorDetails) =>
             journeyService.getJourneyConfig(journeyId).flatMap {
               journeyConfig =>
-                authenticatorService.matchSoleTraderDetails(soleTraderDetails, journeyConfig).map {
+                authenticatorService.matchSoleTraderDetails(authenticatorDetails, journeyConfig).flatMap {
                   case Right(Matched) =>
-                    Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
+                    authenticatorDetails.optSautr match {
+                      case Some(sautr) => Future.successful(Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId)))
+                      case None =>
+                        soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged).flatMap {
+                          _ => Future.successful(Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId"))
+                        }
+                    }
                   case _ =>
-                    Redirect(routes.PersonalInformationErrorController.show(journeyId))
+                    Future.successful(Redirect(routes.PersonalInformationErrorController.show(journeyId)))
                 }
             }
           case _ =>

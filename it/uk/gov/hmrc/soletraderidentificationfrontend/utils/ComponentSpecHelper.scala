@@ -65,8 +65,11 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.sole-trader-identification.host" -> mockHost,
     "microservice.services.sole-trader-identification.port" -> mockPort,
     "microservice.services.authenticator.host" -> mockHost,
-    "microservice.services.authenticator.port" -> mockPort
+    "microservice.services.authenticator.port" -> mockPort,
+    "microservice.services.business-verification.url" -> s"$mockUrl/business-verification"
   )
+
+  val baseUrl: String = "/identify-your-sole-trader-business"
 
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 

@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, FullName}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
@@ -44,7 +44,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -83,7 +83,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJsonNoSautr)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -123,10 +123,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = false
         ))
-        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsNoSautrJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJsonNoSautr)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testSoleTraderDetailsNoSautr)(OK, successfulMatchJson(testSoleTraderDetailsNoSautr))
-
+        stubMatch(testAuthenticatorDetailsNoSatur)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -146,16 +146,16 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             signOutUrl = testSignOutUrl,
             enableSautrCheck = true
           ))
-          stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
           stubAuth(OK, successfulAuthResponse())
-          stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
-
+          stubMatch(testAuthenticatorDetails)(OK, successfulMatchJson(testAuthenticatorDetails))
+          stubRetrieveSautr(testJourneyId)(OK, testSautr)
 
           lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
           result must have(
             httpStatus(SEE_OTHER),
-            redirectUri(s"$testContinueUrl?journeyId=$testJourneyId")
+            redirectUri(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
           )
         }
       }
@@ -170,10 +170,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             signOutUrl = testSignOutUrl,
             enableSautrCheck = true
           ))
-          stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsNoSautrJson)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJsonNoSautr)
           stubAuth(OK, successfulAuthResponse())
-          stubMatch(testSoleTraderDetailsNoSautr)(OK, successfulMatchJson(testSoleTraderDetailsNoSautr))
-
+          stubMatch(testAuthenticatorDetailsNoSatur)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
+          stubRetrieveSautr(testJourneyId)(NOT_FOUND)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
 
           lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -195,9 +196,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = true
         ))
-        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetailsNoSautr))
+        stubMatch(testAuthenticatorDetails)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -208,16 +209,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "the user has provided an sautr that does not match what is returned from authenticator" in {
-        val invalidSoleTraderDetails: SoleTraderDetails = testSoleTraderDetails.copy(optSautr = Some("0000000000"))
-        val invalidSoleTraderDetailsJson = Json.obj("fullName" -> Json.obj(
-          "firstName" -> invalidSoleTraderDetails.firstName,
-          "lastName" -> invalidSoleTraderDetails.lastName
-        ),
-          "dateOfBirth" -> invalidSoleTraderDetails.dateOfBirth,
-          "nino" -> invalidSoleTraderDetails.nino,
-          "sautr" -> "0000000000"
-        )
-
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
@@ -226,9 +217,20 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = true
         ))
-        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = invalidSoleTraderDetailsJson)
+
+        val testAuthenticatorDetailsJson: JsObject = {
+          Json.obj("fullName" -> Json.obj(
+            "firstName" -> testFirstName,
+            "lastName" -> testLastName
+          ),
+            "dateOfBirth" -> testDateOfBirth,
+            "nino" -> testNino,
+            "sautr" -> "0000000000"
+          )
+        }
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(invalidSoleTraderDetails)(OK, successfulMatchJson(testSoleTraderDetails))
+        stubMatch(testAuthenticatorDetails)(UNAUTHORIZED, mismatchErrorJson)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -247,9 +249,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = false
         ))
-        stubRetrieveSoleTraderDetails(testJourneyId)(status = OK, body = testSoleTraderDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testSoleTraderDetails)(UNAUTHORIZED, mismatchErrorJson)
+        stubMatch(testAuthenticatorDetails)(UNAUTHORIZED, mismatchErrorJson)
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
         result must have(

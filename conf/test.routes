@@ -13,3 +13,7 @@ GET        /api/feature-switches                                                
 POST       /api/feature-switches                                                            uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 + nocsrf
 POST       /authenticator/match                                                             uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers.StubAuthenticatorMatchController.stubMatch
+
+GET        /business-verification/journey/:journeyId/status                                 uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers.BusinessVerificationStubController.retrieveVerificationResult(journeyId)
++ nocsrf
+POST       /business-verification/journey                                                   uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers.BusinessVerificationStubController.createBusinessVerificationJourney

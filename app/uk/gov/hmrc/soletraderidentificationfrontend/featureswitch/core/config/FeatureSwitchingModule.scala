@@ -16,15 +16,16 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config
 
-import javax.inject.Singleton
 import play.api.inject.{Binding, Module}
 import play.api.{Configuration, Environment}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
 
+import javax.inject.Singleton
+
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(AuthenticatorStub)
+  val switches = Seq(AuthenticatorStub, BusinessVerificationStub)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -36,4 +37,9 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 case object AuthenticatorStub extends FeatureSwitch {
   override val configName: String = "feature-switch.authenticator-stub"
   override val displayName: String = "Use stub for Authenticator API"
+}
+
+case object BusinessVerificationStub extends FeatureSwitch {
+  override val configName: String = "feature-switch.business-verification-stub"
+  override val displayName: String = "Use stub for Business Verification flow"
 }

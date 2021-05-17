@@ -17,9 +17,10 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => Routes}
-@import uk.gov.hmrc.soletraderidentificationfrontend.models.{PageConfig, SoleTraderDetails}
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.{PageConfig, AuthenticatorDetails}
 @import uk.gov.hmrc.soletraderidentificationfrontend.utils.DateHelper.checkYourAnswersFormat
 @import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
+@import java.time.LocalDate
 
 
 @this(layout: govuk_template,
@@ -29,7 +30,7 @@
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
 
-@(pageConfig: PageConfig, formAction: Call, journeyId: String, soleTraderDetails: SoleTraderDetails)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(pageConfig: PageConfig, formAction: Call, journeyId: String, authenticatorDetails: AuthenticatorDetails)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, title = messages("check-your-answers.title")) {
 
@@ -50,7 +51,7 @@
     rows = Seq(
         SummaryListRow(
             key = Key(content = Text(Messages("check-your-answers.first_name"))),
-            value = Value(content = Text(soleTraderDetails.firstName)),
+            value = Value(content = Text(authenticatorDetails.firstName)),
             actions = Some(Actions(items = Seq(
                 ActionItem(
                     href = Routes.CaptureFullNameController.show(journeyId).url,
@@ -61,7 +62,7 @@
         ),
         SummaryListRow(
             key = Key(content = Text(Messages("check-your-answers.last_name"))),
-            value = Value(content = Text(soleTraderDetails.lastName)),
+            value = Value(content = Text(authenticatorDetails.lastName)),
             actions = Some(Actions(items = Seq(
                 ActionItem(
                     href = Routes.CaptureFullNameController.show(journeyId).url,
@@ -72,7 +73,7 @@
         ),
         SummaryListRow(
             key = Key(content = Text(Messages("check-your-answers.dob"))),
-            value = Value(content = Text(soleTraderDetails.dateOfBirth.format(checkYourAnswersFormat))),
+            value = Value(content = Text(authenticatorDetails.dateOfBirth.format(checkYourAnswersFormat))),
             actions = Some(Actions(items = Seq(
                 ActionItem(
                     href = Routes.CaptureDateOfBirthController.show(journeyId).url,
@@ -83,7 +84,7 @@
         ),
         SummaryListRow(
             key = Key(content = Text(Messages("check-your-answers.nino"))),
-            value = Value(content = Text(soleTraderDetails.nino.grouped(2).mkString(" "))),
+            value = Value(content = Text(authenticatorDetails.nino.grouped(2).mkString(" "))),
             actions = Some(Actions(items = Seq(
                 ActionItem(
                     href = Routes.CaptureNinoController.show(journeyId).url,
@@ -95,7 +96,7 @@
         Seq(SummaryListRow(
             key = Key(content = Text(Messages("check-your-answers.sautr"))),
             value = Value(content = Text(
-                soleTraderDetails.optSautr match {
+                authenticatorDetails.optSautr match {
                     case Some(utr) => utr
                     case None => Messages("check-your-answers.no_sautr")
                 }

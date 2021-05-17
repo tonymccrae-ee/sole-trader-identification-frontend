@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.assets
 
+import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{AuthenticatorDetails, BusinessVerificationPass, BusinessVerificationUnchallenged, SoleTraderDetails}
+
 import java.time.LocalDate
 import java.util.UUID
-
-import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
 
 object TestConstants {
 
@@ -31,6 +31,7 @@ object TestConstants {
   val testNino: String = "AA111111A"
   val testSautr: String = "1234567890"
   val testContinueUrl = "/test-continue-url"
+  val testBusinessVerificationJourneyId = "TestBusinessVerificationJourneyId"
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
@@ -38,7 +39,8 @@ object TestConstants {
       testLastName,
       testDateOfBirth,
       testNino,
-      Some(testSautr)
+      Some(testSautr),
+      BusinessVerificationPass
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
@@ -47,10 +49,29 @@ object TestConstants {
       testLastName,
       testDateOfBirth,
       testNino,
+      None,
+      BusinessVerificationUnchallenged
+    )
+
+  val testAuthenticatorDetails: AuthenticatorDetails =
+    AuthenticatorDetails(
+      testFirstName,
+      testLastName,
+      testDateOfBirth,
+      testNino,
+      Some(testSautr)
+    )
+
+  val testAuthenticatorDetailsNoSatur: AuthenticatorDetails =
+    AuthenticatorDetails(
+      testFirstName,
+      testLastName,
+      testDateOfBirth,
+      testNino,
       None
     )
 
-  val testSoleTraderDetailsJson: JsObject =
+  val testSoleTraderDetailsJson: JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName
@@ -58,7 +79,10 @@ object TestConstants {
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino,
       "sautr" -> testSautr
-    )
+    ) ++ Json.obj("businessVerification" -> Json.obj(
+      "verificationStatus" -> "PASS"
+    ))
+  }
 
   val testSoleTraderDetailsNoSautrJson: JsObject =
     Json.obj("fullName" -> Json.obj(
@@ -67,7 +91,30 @@ object TestConstants {
     ),
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino
+    ) ++ Json.obj("businessVerification" -> Json.obj(
+      "verificationStatus" -> "UNCHALLENGED"
+    ))
+
+  val testAuthenticatorDetailsJson: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "nino" -> testNino,
+      "sautr" -> testSautr
     )
+  }
+
+  val testAuthenticatorDetailsJsonNoSautr: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "nino" -> testNino
+    )
+  }
 
   val testCredentialId: String = UUID.randomUUID().toString
   val testGGProviderId: String = UUID.randomUUID().toString

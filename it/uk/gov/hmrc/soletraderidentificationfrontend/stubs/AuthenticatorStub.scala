@@ -17,20 +17,20 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.WireMockMethods
 
 import java.time.format.DateTimeFormatter.ofPattern
 
 trait AuthenticatorStub extends WireMockMethods {
-  def stubMatch(soleTraderDetails: SoleTraderDetails)(status: Int, body: JsObject): Unit = {
+  def stubMatch(authenticatorDetails: AuthenticatorDetails)(status: Int, body: JsObject): Unit = {
     when(method = POST,
       uri = s"/authenticator/match",
       body = Json.obj(
-        "firstName" -> soleTraderDetails.firstName,
-        "lastName" -> soleTraderDetails.lastName,
-        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-        "nino" -> soleTraderDetails.nino
+        "firstName" -> authenticatorDetails.firstName,
+        "lastName" -> authenticatorDetails.lastName,
+        "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
+        "nino" -> authenticatorDetails.nino
       )
     ).thenReturn(
       status = status,
@@ -38,14 +38,14 @@ trait AuthenticatorStub extends WireMockMethods {
     )
   }
 
-  def stubMatchStub(soleTraderDetails: SoleTraderDetails)(status: Int, body: JsObject): Unit = {
+  def stubMatchStub(authenticatorDetails: AuthenticatorDetails)(status: Int, body: JsObject): Unit = {
     when(method = POST,
       uri = s"/identify-your-sole-trader-business/test-only/authenticator/match",
       body = Json.obj(
-        "firstName" -> soleTraderDetails.firstName,
-        "lastName" -> soleTraderDetails.lastName,
-        "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-        "nino" -> soleTraderDetails.nino
+        "firstName" -> authenticatorDetails.firstName,
+        "lastName" -> authenticatorDetails.lastName,
+        "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
+        "nino" -> authenticatorDetails.nino
       )
     ).thenReturn(
       status = status,
@@ -53,13 +53,13 @@ trait AuthenticatorStub extends WireMockMethods {
     )
   }
 
-  def successfulMatchJson(soleTraderDetails: SoleTraderDetails): JsObject = Json.obj(
-    "firstName" -> soleTraderDetails.firstName,
-    "lastName" -> soleTraderDetails.lastName,
-    "dateOfBirth" -> soleTraderDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-    "nino" -> soleTraderDetails.nino
+  def successfulMatchJson(authenticatorDetails: AuthenticatorDetails): JsObject = Json.obj(
+    "firstName" -> authenticatorDetails.firstName,
+    "lastName" -> authenticatorDetails.lastName,
+    "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
+    "nino" -> authenticatorDetails.nino
   ) ++ {
-    soleTraderDetails.optSautr match {
+    authenticatorDetails.optSautr match {
       case Some(sautr) => Json.obj("saUtr" -> sautr)
       case None => Json.obj()
     }
