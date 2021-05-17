@@ -20,7 +20,7 @@ import play.api.http.Status.{FAILED_DEPENDENCY, OK, UNAUTHORIZED}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsError, JsPath, JsSuccess, Reads}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching._
 
 import java.time.LocalDate
@@ -33,19 +33,19 @@ object SoleTraderVerificationResultHttpParser {
   private val SautrKey = "saUtr"
   private val DateOfBirthKey = "dateOfBirth"
 
-  private val authenticatorReads: Reads[SoleTraderDetails] = (
+  private val authenticatorReads: Reads[AuthenticatorDetails] = (
     (JsPath \ FirstNameKey).read[String] and
       (JsPath \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).read[String] and
       (JsPath \ SautrKey).readNullable[String]
-    )(SoleTraderDetails.apply _)
+    ) (AuthenticatorDetails.apply _)
 
   implicit object SoleTraderVerificationResultReads extends HttpReads[AuthenticatorResponse] {
     override def read(method: String, url: String, response: HttpResponse): AuthenticatorResponse =
       response.status match {
         case OK =>
-          response.json.validate[SoleTraderDetails](authenticatorReads) match {
+          response.json.validate[AuthenticatorDetails](authenticatorReads) match {
             case JsSuccess(details, _) =>
               Right(details)
             case JsError(errors) =>

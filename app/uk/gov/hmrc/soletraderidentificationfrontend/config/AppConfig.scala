@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, FeatureSwitching}
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, BusinessVerificationStub, FeatureSwitching}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
@@ -67,5 +68,21 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   def betaFeedbackUrl(serviceIdentifier: String): String = s"$contactHost/contact/beta-feedback?service=$serviceIdentifier"
 
   lazy val defaultServiceName: String = servicesConfig.getString("defaultServiceName")
+
+  private lazy val businessVerificationUrl = servicesConfig.getString("microservice.services.business-verification.url")
+
+  def createBusinessVerificationJourneyUrl: String = {
+    if (isEnabled(BusinessVerificationStub))
+      s"$selfBaseUrl/identify-your-sole-trader-business/test-only/business-verification/journey"
+    else
+      s"$businessVerificationUrl/journey"
+  }
+
+  def getBusinessVerificationResultUrl(journeyId: String): String = {
+    if (isEnabled(BusinessVerificationStub))
+      s"$selfBaseUrl/identify-your-sole-trader-business/test-only/business-verification/journey/$journeyId/status"
+    else
+      s"$businessVerificationUrl/journey/$journeyId/status"
+  }
 
 }

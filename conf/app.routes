@@ -20,5 +20,7 @@ POST        /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderi
 
 GET         /:journeyId/personal-information-error       uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalInformationErrorController.show(journeyId: String)
 
+GET         /:journeyId/start-business-verification      uk.gov.hmrc.soletraderidentificationfrontend.controllers.BusinessVerificationController.startBusinessVerificationJourney(journeyId)
+GET         /:journeyId/business-verification-result     uk.gov.hmrc.soletraderidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
 
 ->          /govuk-frontend                              govuk.Routes

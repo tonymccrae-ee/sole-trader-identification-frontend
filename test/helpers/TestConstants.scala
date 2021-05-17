@@ -16,7 +16,7 @@
 
 package helpers
 
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import java.time.LocalDate
 import java.util.UUID
@@ -39,11 +39,31 @@ object TestConstants {
       testLastName,
       testDateOfBirth,
       testNino,
-      Some(testSautr)
+      Some(testSautr),
+      BusinessVerificationPass
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
     SoleTraderDetails(
+      testFirstName,
+      testLastName,
+      testDateOfBirth,
+      testNino,
+      None,
+      BusinessVerificationUnchallenged
+    )
+
+  val testAuthenticatorDetails: AuthenticatorDetails =
+    AuthenticatorDetails(
+      testFirstName,
+      testLastName,
+      testDateOfBirth,
+      testNino,
+      Some(testSautr)
+    )
+
+  val testAuthenticatorDetailsNoSautr: AuthenticatorDetails =
+    AuthenticatorDetails(
       testFirstName,
       testLastName,
       testDateOfBirth,

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
 object SoleTraderDetailsMatching {
-  type AuthenticatorResponse = Either[SoleTraderDetailsMatchFailure, SoleTraderDetails]
+  type AuthenticatorResponse = Either[SoleTraderDetailsMatchFailure, AuthenticatorDetails]
 
   type SoleTraderVerificationResult = Either[SoleTraderDetailsMatchFailure, Matched.type]
 

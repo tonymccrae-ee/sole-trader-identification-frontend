@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
 
 import javax.inject.{Inject, Singleton}
 
@@ -28,26 +28,26 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
 
   val stubMatch: Action[JsValue] = Action(parse.json) {
     request =>
-      val soleTraderDetails = request.body.as[SoleTraderDetails]
+      val authenticatorDetails = request.body.as[AuthenticatorDetails]
 
-      soleTraderDetails.lastName.toLowerCase match {
+      authenticatorDetails.lastName.toLowerCase match {
         case "fail" =>
           Unauthorized(Json.obj("errors" -> "DOB does not exist in CID"))
         case "deceased" =>
           FailedDependency
         case "no-sautr" =>
           Ok(Json.obj(
-            "firstName" -> soleTraderDetails.firstName,
-            "lastName" -> soleTraderDetails.lastName,
-            "dateOfBirth" -> soleTraderDetails.dateOfBirth,
-            "nino" -> soleTraderDetails.nino
+            "firstName" -> authenticatorDetails.firstName,
+            "lastName" -> authenticatorDetails.lastName,
+            "dateOfBirth" -> authenticatorDetails.dateOfBirth,
+            "nino" -> authenticatorDetails.nino
           ))
         case _ =>
           Ok(Json.obj(
-            "firstName" -> soleTraderDetails.firstName,
-            "lastName" -> soleTraderDetails.lastName,
-            "dateOfBirth" -> soleTraderDetails.dateOfBirth,
-            "nino" -> soleTraderDetails.nino,
+            "firstName" -> authenticatorDetails.firstName,
+            "lastName" -> authenticatorDetails.lastName,
+            "dateOfBirth" -> authenticatorDetails.dateOfBirth,
+            "nino" -> authenticatorDetails.nino,
             "saUtr" -> "1234567890"
           ))
       }

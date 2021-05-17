@@ -18,28 +18,27 @@ package uk.gov.hmrc.soletraderidentificationfrontend.httpParsers
 
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.functional.syntax._
-import play.api.libs.json.Format.GenericFormat
-import play.api.libs.json._
+import play.api.libs.json.{JsError, JsPath, JsSuccess, Reads}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationStatus, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
 
 import java.time.LocalDate
 
-object RetrieveSoleTraderDetailsHttpParser {
+object RetrieveAuthenticatorDetailsHttpParser {
 
-  implicit object RetrieveSoleTraderDetailsHttpReads extends HttpReads[Option[SoleTraderDetails]] {
-    override def read(method: String, url: String, response: HttpResponse): Option[SoleTraderDetails] = {
+  implicit object RetrieveAuthenticatorDetailsHttpReads extends HttpReads[Option[AuthenticatorDetails]] {
+    override def read(method: String, url: String, response: HttpResponse): Option[AuthenticatorDetails] = {
       response.status match {
         case OK =>
-          response.json.validate[SoleTraderDetails](soleTraderDetailsReads) match {
-            case JsSuccess(soleTraderDetails, _) => Some(soleTraderDetails)
+          response.json.validate[AuthenticatorDetails](authenticatorDetailsReads) match {
+            case JsSuccess(authenticatorDetails, _) => Some(authenticatorDetails)
             case JsError(errors) =>
-              throw new InternalServerException(s"`Failed to read Sole Trader Details with the following error/s: $errors")
+              throw new InternalServerException(s"`Failed to read Authenticator Details with the following error/s: $errors")
           }
         case NOT_FOUND =>
           None
         case status =>
-          throw new InternalServerException(s"Unexpected status from Sole Trader Details retrieval. Status returned - $status")
+          throw new InternalServerException(s"Unexpected status from Authenticator Details retrieval. Status returned - $status")
       }
     }
   }
@@ -50,15 +49,13 @@ object RetrieveSoleTraderDetailsHttpParser {
   private val NinoKey = "nino"
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
-  private val BusinessVerificationKey = "businessVerification"
 
-  val soleTraderDetailsReads: Reads[SoleTraderDetails] = (
+  val authenticatorDetailsReads: Reads[AuthenticatorDetails] = (
     (JsPath \ FullNameKey \ FirstNameKey).read[String] and
       (JsPath \ FullNameKey \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).read[String] and
-      (JsPath \ SautrKey).readNullable[String] and
-      (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus]
-    ) (SoleTraderDetails.apply _)
+      (JsPath \ SautrKey).readNullable[String]
+    ) (AuthenticatorDetails.apply _)
 
 }
