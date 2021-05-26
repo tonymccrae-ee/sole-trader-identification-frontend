@@ -85,4 +85,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
       s"$businessVerificationUrl/journey/$journeyId/status"
   }
 
+  def registerUrl: String = s"$backendUrl/sole-trader-identification/register"
+
 }

@@ -25,32 +25,34 @@ import java.util.UUID
 object TestConstants {
 
   val testJourneyId: String = UUID.randomUUID().toString
+  val testSafeId: String = UUID.randomUUID().toString
   val testSautr: String = "1234567890"
   val testContinueUrl: String = "/test"
   val testSignOutUrl: String = "/sign-out"
   val testDateOfBirth: LocalDate = LocalDate.now().minusYears(17)
   val testFirstName: String = "John"
   val testLastName: String = "Smith"
+  val testFullName: FullName = FullName(testFirstName, testLastName)
   val testNino: String = "AA111111A"
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
-      testFirstName,
-      testLastName,
+      testFullName,
       testDateOfBirth,
       testNino,
       Some(testSautr),
-      BusinessVerificationPass
+      BusinessVerificationPass,
+      Registered(testSafeId)
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
     SoleTraderDetails(
-      testFirstName,
-      testLastName,
+      testFullName,
       testDateOfBirth,
       testNino,
       None,
-      BusinessVerificationUnchallenged
+      BusinessVerificationUnchallenged,
+      RegistrationNotCalled
     )
 
   val testAuthenticatorDetails: AuthenticatorDetails =

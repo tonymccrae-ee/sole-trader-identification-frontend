@@ -39,7 +39,13 @@ class FeatureSwitchProviderConfig @Inject()(configuration: Configuration) {
     url = selfFeatureSwitchUrl
   )
 
+  lazy val soleTraderIdentificationFeatureSwitchProvider: FeatureSwitchProvider = FeatureSwitchProvider(
+    id = "sole-trader-identification",
+    appName = "Sole Trader Identification",
+    url = soleTraderIdentificationFeatureSwitchUrl
+  )
+
   lazy val featureSwitchProviders: Seq[FeatureSwitchProvider] =
-    Seq(selfFeatureSwitchProvider)
+    Seq(selfFeatureSwitchProvider, soleTraderIdentificationFeatureSwitchProvider)
 
 }

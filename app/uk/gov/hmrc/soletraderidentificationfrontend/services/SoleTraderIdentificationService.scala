@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{AuthenticatorDetails, BusinessVerificationStatus, FullName, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{AuthenticatorDetails, BusinessVerificationStatus, FullName, RegistrationStatus, SoleTraderDetails}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
 import java.time.LocalDate
@@ -43,6 +43,16 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, SautrKey, sautr)
 
+  def storeBusinessVerificationStatus(journeyId: String,
+                                      businessVerification: BusinessVerificationStatus
+                                     )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[BusinessVerificationStatus](journeyId, verificationStatusKey, businessVerification)
+
+  def storeRegistrationStatus(journeyId: String,
+                              registrationStatus: RegistrationStatus
+                             )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[RegistrationStatus](journeyId, registrationKey, registrationStatus)
+
   def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullName]] =
     connector.retrieveSoleTraderIdentification[FullName](journeyId, FullNameKey)
 
@@ -61,20 +71,20 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def retrieveAuthenticatorDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[AuthenticatorDetails]] =
     connector.retrieveAuthenticatorDetails(journeyId)
 
+  def retrieveBusinessVerificationStatus(journeyId: String
+                                        )(implicit hc: HeaderCarrier): Future[Option[BusinessVerificationStatus]] =
+    connector.retrieveSoleTraderIdentification[BusinessVerificationStatus](journeyId, verificationStatusKey)
+
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderIdentification(journeyId, SautrKey)
-
-  def storeBusinessVerificationStatus(journeyId: String,
-                                      businessVerification: BusinessVerificationStatus
-                                     )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
-    connector.storeData[BusinessVerificationStatus](journeyId, verificationStatusKey, businessVerification)
 
 }
 
 object SoleTraderIdentificationService {
-  private val FullNameKey = "fullName"
-  private val NinoKey = "nino"
-  private val SautrKey = "sautr"
-  private val DateOfBirthKey = "dateOfBirth"
-  private val verificationStatusKey = "businessVerification"
+  val FullNameKey = "fullName"
+  val NinoKey = "nino"
+  val SautrKey = "sautr"
+  val DateOfBirthKey = "dateOfBirth"
+  val verificationStatusKey = "businessVerification"
+  val registrationKey: String = "registration"
 }

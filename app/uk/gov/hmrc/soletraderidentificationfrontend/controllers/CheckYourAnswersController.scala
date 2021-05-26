@@ -21,7 +21,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.models.BusinessVerificationUnchallenged
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Matched
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuthenticatorService, JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
@@ -70,11 +70,14 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                 authenticatorService.matchSoleTraderDetails(authenticatorDetails, journeyConfig).flatMap {
                   case Right(Matched) =>
                     authenticatorDetails.optSautr match {
-                      case Some(sautr) => Future.successful(Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId)))
+                      case Some(_) =>
+                        Future.successful(Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId)))
                       case None =>
-                        soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged).flatMap {
-                          _ => Future.successful(Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId"))
-                        }
+                        for {
+                          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                        } yield
+                          Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
                     }
                   case _ =>
                     Future.successful(Redirect(routes.PersonalInformationErrorController.show(journeyId)))

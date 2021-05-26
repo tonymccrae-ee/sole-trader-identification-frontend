@@ -64,10 +64,14 @@ Example response body:
 "lastName": "Smith",
 "dateOfBirth": 1978-01-05,
 "nino": "AA111111A",
-"sautr": "1234567890",
+"sautr": "1234567890"
 "businessVerification": {
-   "verificationStatus":"PASS"
-   }
+    "verificationStatus":"PASS"
+  },
+"registration": {
+    "registrationStatus":"REGISTERED",
+    "registeredBusinessPartnerId":"X00000123456789"
+  }
 }
 ```
 

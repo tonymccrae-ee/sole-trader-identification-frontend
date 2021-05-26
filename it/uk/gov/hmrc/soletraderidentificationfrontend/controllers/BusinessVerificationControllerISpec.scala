@@ -38,7 +38,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
   "GET /business-verification-result" when {
     s"the $BusinessVerificationStub feature switch is enabled" should {
-      "redirect to the continue url if BV status is stored successfully" in {
+      "redirect to the registration controller if BV status is stored successfully" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
@@ -56,7 +56,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(s"$testContinueUrl?journeyId=$testJourneyId"))
+          redirectUri(routes.RegistrationController.register(testJourneyId).url))
         verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
       }
 
@@ -80,7 +80,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
     }
 
     s"the $BusinessVerificationStub feature switch is disabled" should {
-      "redirect to the continue url if BV status is stored successfully" in {
+      "redirect to the registration controller if BV status is stored successfully" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
@@ -98,7 +98,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(s"$testContinueUrl?journeyId=$testJourneyId"))
+          redirectUri(routes.RegistrationController.register(testJourneyId).url))
         verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
       }
 
@@ -129,7 +129,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
         }
       }
 
-      "store a verification state of UNCHALLENGED and redirect to the continue url" when {
+      "store a verification state of UNCHALLENGED and redirect to the registration controller" when {
         "business verification does not have enough information to create a verification journey" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
@@ -149,11 +149,11 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
           result must have(
             httpStatus(SEE_OTHER),
-            redirectUri(s"$testContinueUrl?journeyId=$testJourneyId"))
+            redirectUri(routes.RegistrationController.register(testJourneyId).url))
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
         }
       }
-      "store a verification state of FAIL and redirect to the continue url" when {
+      "store a verification state of FAIL and redirect to the registration controller" when {
         "business verification reports the user is locked out" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
@@ -173,7 +173,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
           result must have(
             httpStatus(SEE_OTHER),
-            redirectUri(s"$testContinueUrl?journeyId=$testJourneyId"))
+            redirectUri(routes.RegistrationController.register(testJourneyId).url))
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)
         }
       }
@@ -212,7 +212,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
           result must have(
             httpStatus(SEE_OTHER),
-            redirectUri(s"$testContinueUrl?journeyId=$testJourneyId"))
+            redirectUri(routes.RegistrationController.register(testJourneyId).url))
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
         }
       }
@@ -235,7 +235,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
 
           result must have(
             httpStatus(SEE_OTHER),
-            redirectUri(s"$testContinueUrl?journeyId=$testJourneyId"))
+            redirectUri(routes.RegistrationController.register(testJourneyId).url))
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)
         }
       }
