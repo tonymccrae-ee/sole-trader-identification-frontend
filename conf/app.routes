@@ -23,4 +23,8 @@ GET         /:journeyId/personal-information-error       uk.gov.hmrc.soletraderi
 GET         /:journeyId/start-business-verification      uk.gov.hmrc.soletraderidentificationfrontend.controllers.BusinessVerificationController.startBusinessVerificationJourney(journeyId)
 GET         /:journeyId/business-verification-result     uk.gov.hmrc.soletraderidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
 
+GET         /journey/redirect/:journeyId                 uk.gov.hmrc.soletraderidentificationfrontend.controllers.JourneyRedirectController.redirectToContinueUrl(journeyId)
+
+GET         /:journeyId/register                         uk.gov.hmrc.soletraderidentificationfrontend.controllers.RegistrationController.register(journeyId)
+
 ->          /govuk-frontend                              govuk.Routes

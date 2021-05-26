@@ -20,7 +20,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, FullName}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
@@ -127,6 +127,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse())
         stubMatch(testAuthenticatorDetailsNoSatur)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+        stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -175,6 +176,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubMatch(testAuthenticatorDetailsNoSatur)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
           stubRetrieveSautr(testJourneyId)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+          stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
 
           lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 

@@ -21,7 +21,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser._
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RetrieveAuthenticatorDetailsHttpParser.RetrieveAuthenticatorDetailsHttpReads
-import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RetrieveSoleTraderDetailsHttpParser.RetrieveSoleTraderDetailsHttpReads
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser._
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{AuthenticatorDetails, SoleTraderDetails}
 
@@ -42,7 +41,7 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
 
   def retrieveSoleTraderIdentification(journeyId: String
                                       )(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
-    http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))(RetrieveSoleTraderDetailsHttpReads, hc, ec)
+    http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))
 
   def retrieveAuthenticatorDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[AuthenticatorDetails]] =
     http.GET[Option[AuthenticatorDetails]](appConfig.soleTraderIdentificationUrl(journeyId))(RetrieveAuthenticatorDetailsHttpReads, hc, ec)

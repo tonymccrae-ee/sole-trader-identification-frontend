@@ -43,10 +43,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
               case Some(redirectUri) =>
                 Future.successful(Redirect(redirectUri))
               case None =>
-                journeyService.getJourneyConfig(journeyId).flatMap {
-                  journeyConfig =>
-                    Future.successful(Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")) //Update when call to Register API is implemented
-                }
+                Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
             }
           case None =>
             throw new InternalServerException(s"There is no SAUTR for $journeyId")
@@ -63,11 +60,8 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
           case Some(businessVerificationJourneyId) =>
             businessVerificationService.retrieveBusinessVerificationStatus(businessVerificationJourneyId).flatMap {
               verificationStatus =>
-                soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, verificationStatus).flatMap {
-                  _ =>
-                    journeyService.getJourneyConfig(journeyId).map {
-                      journeyConfig => Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId") //Update when call to Register API is implemented
-                    }
+                soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, verificationStatus).map {
+                  _ => Redirect(routes.RegistrationController.register(journeyId))
                 }
             }
           case None =>
