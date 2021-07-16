@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testContinueUrl, testDeskProServiceId, testInternalId, testJourneyId, testSignOutUrl}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testContinueUrl, testDeskProServiceId, testJourneyId, testSignOutUrl}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.AuthStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
