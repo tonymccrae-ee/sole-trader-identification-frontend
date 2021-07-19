@@ -20,15 +20,19 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
 @import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
 
 @this(govukLayout: GovukLayout,
         hmrcHeader: HmrcHeader,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
         footer: govukFooter,
-        phaseBanner: phaseBanner)
+        phaseBanner: phaseBanner,
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
 
 @(pageConfig: PageConfig, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages, appConfig: AppConfig)
+
+@hmrcTrackingConsentSnippet()
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
