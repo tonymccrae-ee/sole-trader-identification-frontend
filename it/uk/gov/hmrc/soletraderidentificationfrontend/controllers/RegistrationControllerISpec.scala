@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testJourneyId, testNino, testSafeId, testSautr}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass, Registered, RegistrationFailed}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, Registered, RegistrationFailed}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, RegisterStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 
@@ -74,7 +74,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubAuth(OK, successfulAuthResponse())
         stubRetrieveNino(testJourneyId)(status = OK, body = testNino)
         stubRetrieveSautr(testJourneyId)(status = OK, body = testSautr)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = BAD_REQUEST)
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
@@ -84,7 +84,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubAuth(OK, successfulAuthResponse())
         stubRetrieveNino(testJourneyId)(status = NOT_FOUND)
         stubRetrieveSautr(testJourneyId)(status = OK, body = testSautr)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
@@ -94,7 +94,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubAuth(OK, successfulAuthResponse())
         stubRetrieveNino(testJourneyId)(status = OK, body = testNino)
         stubRetrieveSautr(testJourneyId)(status = NOT_FOUND)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
