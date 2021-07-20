@@ -10,7 +10,7 @@ This is a Scala/Play frontend to allow Sole Traders to provide their information
 `sbt 'run 9717 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
 ### End-Points
-#### POST /journey
+#### POST /sole-trader-identification/api/journey
 
 ---
 Creates a new journey, storing the journeyConfig against the journeyId.
@@ -42,7 +42,7 @@ Example Response body:
 {“journeyStartUrl” : "/testUrl"}
 ```
 
-#### GET /journey/:journeyId
+#### GET /sole-trader-identification/api/journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.
