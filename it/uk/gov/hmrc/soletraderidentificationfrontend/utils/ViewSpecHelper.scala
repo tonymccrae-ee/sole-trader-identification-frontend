@@ -64,6 +64,8 @@ object ViewSpecHelper {
 
     def getBulletPointList: Elements = element.select("ul[class=list list-bullet]")
 
+    def getDetailsSummary: String = element.getElementsByClass("govuk-details__summary-text").text()
+
     def getSummaryListQuestion: String = element.getElementsByClass("govuk-summary-list__key").text
 
     def getSummaryListAnswer: String = element.getElementsByClass("govuk-summary-list__value").text

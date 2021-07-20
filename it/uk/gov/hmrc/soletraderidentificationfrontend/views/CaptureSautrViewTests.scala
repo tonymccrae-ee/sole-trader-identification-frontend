@@ -62,7 +62,7 @@ trait CaptureSautrViewTests {
     }
 
     "have a correct details element" in {
-      doc.getSpan("details-summary-text").text mustBe messages.line_2
+      doc.getDetailsSummary mustBe messages.line_2
       doc.getParagraphs.get(2).text mustBe messages.details_line_1
       doc.getParagraphs.get(3).text mustBe messages.details_line_2
       doc.getParagraphs.get(4).text mustBe messages.details_line_3

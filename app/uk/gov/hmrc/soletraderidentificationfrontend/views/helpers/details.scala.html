@@ -14,12 +14,11 @@
  * limitations under the License.
  *@
 
-@this()
+@this(govukDetails: GovukDetails)
 
-@(content: Html, classes: String = "govuk-body", id: Option[String] = None)
+@(summary: String, content: Html)
 
-@if(id.isDefined){
-    <p class="@classes" id ="@id">@content</p>
-} else {
-    <p class="@classes">@content</p>
-}
+@govukDetails(Details(
+    summary = Text(summary),
+    content = HtmlContent(content)
+))

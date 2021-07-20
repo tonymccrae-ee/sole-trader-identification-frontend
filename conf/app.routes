@@ -28,3 +28,4 @@ GET         /journey/redirect/:journeyId                 uk.gov.hmrc.soletraderi
 GET         /:journeyId/register                         uk.gov.hmrc.soletraderidentificationfrontend.controllers.RegistrationController.register(journeyId)
 
 ->          /govuk-frontend                              govuk.Routes
+->          /hmrc-frontend                               hmrcfrontend.Routes

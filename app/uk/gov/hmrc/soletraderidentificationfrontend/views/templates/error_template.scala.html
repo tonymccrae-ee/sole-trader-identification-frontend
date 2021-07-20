@@ -16,12 +16,20 @@
 
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
 
-@this(layout: govuk_template)
+@this(layout: govuk_template,
+        h1: h1,
+        p: p)
 
 @(pageTitle: String, heading: String, message: String)(implicit messages: Messages, appConfig: AppConfig)
 
 @layout(PageConfig(Some(appConfig.defaultServiceName), "vrs", appConfig.vatRegFeedbackUrl), pageTitle) {
-    <h1>@heading</h1>
-    <p>@message</p>
+
+    @h1(heading)
+
+    @p{
+        message
+    }
+
 }
