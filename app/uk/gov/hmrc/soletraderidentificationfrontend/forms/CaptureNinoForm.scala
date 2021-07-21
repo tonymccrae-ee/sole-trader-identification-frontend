@@ -27,7 +27,7 @@ object CaptureNinoForm {
 
   val form: Form[String] =
     Form(
-      "nino" -> text.verifying(ninoErrorKey, _.matches(ninoRegex.regex))
+      "nino" -> text.verifying(ninoErrorKey, _.toUpperCase.matches(ninoRegex.regex))
     )
 
 }
