@@ -16,6 +16,7 @@
 
 package helpers
 
+import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.SoleTrader
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -26,6 +27,7 @@ object TestConstants {
 
   val testJourneyId: String = UUID.randomUUID().toString
   val testSafeId: String = UUID.randomUUID().toString
+  val testInternalId: String = UUID.randomUUID().toString
   val testSautr: String = "1234567890"
   val testContinueUrl: String = "/test"
   val testSignOutUrl: String = "/sign-out"
@@ -73,14 +75,15 @@ object TestConstants {
       None
     )
 
-  def testJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
+  def testSoleTraderJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
     pageConfig = PageConfig(
       optServiceName = None,
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl,
       enableSautrCheck = enableSautrCheck
-    )
+    ),
+    entityType = SoleTrader
   )
 
 }

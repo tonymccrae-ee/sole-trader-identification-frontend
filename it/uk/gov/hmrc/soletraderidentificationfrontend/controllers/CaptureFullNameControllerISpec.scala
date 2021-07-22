@@ -36,6 +36,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -75,6 +76,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       "redirect to the Capture Date of Birth page and store the data in the backend" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -100,6 +102,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -122,6 +125,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -144,6 +148,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -166,6 +171,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,

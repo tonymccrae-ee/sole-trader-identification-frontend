@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.repositories
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsResult, JsString, JsValue, Json, JsonValidationError, OFormat}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
@@ -24,7 +24,9 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.play.json._
 import uk.gov.hmrc.mongo.ReactiveRepository
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{EntityType, Individual, SoleTrader}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository._
 
 import java.time.Instant
 import javax.inject.{Inject, Singleton}
@@ -36,21 +38,22 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
                                        (implicit ec: ExecutionContext) extends ReactiveRepository[JourneyConfig, String](
   collectionName = "sole-trader-identification-frontend",
   mongo = reactiveMongoComponent.mongoConnector.db,
-  domainFormat = JourneyConfig.format,
+  domainFormat = journeyConfigMongoFormat,
   idFormat = implicitly[Format[String]]
 ) {
 
-  def insertJourneyConfig(journeyId: String, journeyConfig: JourneyConfig): Future[WriteResult] = {
+  def insertJourneyConfig(journeyId: String, authInternalId: String, journeyConfig: JourneyConfig): Future[WriteResult] = {
     val document = Json.obj(
-      "_id" -> journeyId,
-      "creationTimestamp" -> Json.obj("$date" -> Instant.now.toEpochMilli)
+      JourneyIdKey -> journeyId,
+      AuthInternalIdKey -> authInternalId,
+      CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
     ) ++ Json.toJsObject(journeyConfig)
 
     collection.insert(true).one(document)
   }
 
   private lazy val ttlIndex = Index(
-    Seq(("creationTimestamp", IndexType.Ascending)),
+    Seq((CreationTimestampKey, IndexType.Ascending)),
     name = Some("IncorporatedEntityInformationExpires"),
     options = BSONDocument("expireAfterSeconds" -> appConfig.timeToLiveSeconds)
   )
@@ -69,4 +72,26 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
       r
     }
 
+}
+
+object JourneyConfigRepository {
+  val JourneyIdKey = "_id"
+  val AuthInternalIdKey = "authInternalId"
+  val CreationTimestampKey = "creationTimestamp"
+  val BusinessEntityKey = "businessEntity"
+  val SoleTraderKey = "soleTrader"
+  val IndividualKey = "individual"
+
+  implicit val partnershipTypeMongoFormat: Format[EntityType] = new Format[EntityType] {
+    override def reads(json: JsValue): JsResult[EntityType] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {
+      case SoleTraderKey => SoleTrader
+      case IndividualKey => Individual
+    }
+
+    override def writes(entityType: EntityType): JsValue = entityType match {
+      case SoleTrader => JsString(SoleTraderKey)
+      case Individual => JsString(IndividualKey)
+    }
+  }
+  implicit val journeyConfigMongoFormat: OFormat[JourneyConfig] = Json.format[JourneyConfig]
 }

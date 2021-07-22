@@ -29,11 +29,11 @@ class JourneyService @Inject()(createJourneyConnector: CreateJourneyConnector,
                                journeyConfigRepository: JourneyConfigRepository
                               )(implicit ec: ExecutionContext) {
 
-  def createJourney(journeyConfig: JourneyConfig)
+  def createJourney(journeyConfig: JourneyConfig, authInternalId: String)
                    (implicit headerCarrier: HeaderCarrier): Future[String] =
     for {
       journeyId <- createJourneyConnector.createJourney()
-      _ <- journeyConfigRepository.insertJourneyConfig(journeyId, journeyConfig)
+      _ <- journeyConfigRepository.insertJourneyConfig(journeyId, authInternalId, journeyConfig)
     } yield journeyId
 
   def getJourneyConfig(journeyId: String): Future[JourneyConfig] =

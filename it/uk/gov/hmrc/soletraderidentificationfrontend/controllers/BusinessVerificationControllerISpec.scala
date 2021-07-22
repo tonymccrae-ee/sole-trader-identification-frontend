@@ -41,6 +41,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
       "redirect to the registration controller if BV status is stored successfully" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -66,6 +67,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
         stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -83,6 +85,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
       "redirect to the registration controller if BV status is stored successfully" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -133,6 +136,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
         "business verification does not have enough information to create a verification journey" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            internalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -157,6 +161,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
         "business verification reports the user is locked out" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            internalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -197,6 +202,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
         "business verification does not have enough information to create a verification journey" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            internalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -220,6 +226,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with Featu
         "business verification reports the user is locked out" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            internalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,

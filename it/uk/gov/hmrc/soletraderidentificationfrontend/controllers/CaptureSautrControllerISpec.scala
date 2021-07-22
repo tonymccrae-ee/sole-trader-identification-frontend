@@ -32,6 +32,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -71,6 +72,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
       "redirect to Check Your Answers Page and store the data in the backend" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -93,6 +95,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -114,6 +117,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -137,6 +141,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
       "the sautr is successfully removed" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -159,6 +164,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
       "the backend returns a failure" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,

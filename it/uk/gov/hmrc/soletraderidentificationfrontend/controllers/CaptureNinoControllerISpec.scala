@@ -32,6 +32,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -70,6 +71,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     "redirect to check your answers page" in {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -92,6 +94,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -113,6 +116,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -133,6 +137,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
   "redirect to the capture sautr page" in {
     await(insertJourneyConfig(
       journeyId = testJourneyId,
+      internalId = testInternalId,
       continueUrl = testContinueUrl,
       optServiceName = None,
       deskProServiceId = testDeskProServiceId,

@@ -8,28 +8,53 @@ This is a Scala/Play frontend to allow Sole Traders to provide their information
 2. Stop the frontend in service manager using `sm --stop SOLE_TRADER_IDENTIFICATION_FRONTEND`
 3. Run the frontend locally using
 `sbt 'run 9717 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
-
-### End-Points
-#### POST /sole-trader-identification/api/journey
+   
+## Testing
 
 ---
-Creates a new journey, storing the journeyConfig against the journeyId.
+See [TestREADME](TestREADME.md) for more information about test data and endpoints
+
+## End-Points
+
+### POST /sole-trader-identification/api/sole-trader-journey
+
+---
+Creates a new journey for a Sole Trader, storing the journeyConfig against the journeyId.
 #### Request:
 
 optServiceName will default to `Entity Validation Service` if the field is not provided.
 
-The enableSautrCheck field allows the calling service to decide whether to ask the user to provide 
+The enableSautrCheck field allows the calling service to decide whether to ask the user to provide
 an SAUTR that will be verified. By default "enableSautrCheck" will be false.
 
-All other fields must be provided. 
+All other fields must be provided.
 
 ```
 {
-"continueUrl" : "/test",
-"optServiceName" : "Service Name",
-"deskProServiceId" : "abc",
-"signOutUrl" : "/sign-out",
-"enableSautrCheck" : "true"
+    "continueUrl" : "/test",
+    "optServiceName" : "Service Name",
+    "deskProServiceId" : "abc",
+    "signOutUrl" : "/sign-out",
+    "enableSautrCheck" : "true"
+}
+```
+
+### POST /sole-trader-identification/api/individual-journey
+
+---
+Creates a new journey for an Individual, storing the journeyConfig against the journeyId.
+#### Request:
+
+optServiceName will default to `Entity Validation Service` if the field is not provided.
+
+All other fields must be provided.
+
+```
+{
+    "continueUrl" : "/test",
+    "optServiceName" : "Service Name",
+    "deskProServiceId" : "abc",
+    "signOutUrl" : "/sign-out"
 }
 ```
 
@@ -42,7 +67,7 @@ Example Response body:
 {“journeyStartUrl” : "/testUrl"}
 ```
 
-#### GET /sole-trader-identification/api/journey/:journeyId
+### GET /sole-trader-identification/api/journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.
@@ -60,18 +85,42 @@ Status:
 Example response body:
 ```
 {
-"firstName": "John",
-"lastName": "Smith",
-"dateOfBirth": 1978-01-05,
-"nino": "AA111111A",
-"sautr": "1234567890"
-"businessVerification": {
-    "verificationStatus":"PASS"
-  },
-"registration": {
-    "registrationStatus":"REGISTERED",
-    "registeredBusinessPartnerId":"X00000123456789"
-  }
+    "firstName": "John",
+    "lastName": "Smith",
+    "dateOfBirth": 1978-01-05,
+    "nino": "AA111111A",
+    "sautr": "1234567890"
+    "businessVerification": {
+        "verificationStatus":"PASS"
+      },
+    "registration": {
+        "registrationStatus":"REGISTERED",
+        "registeredBusinessPartnerId":"X00000123456789"
+      }
+}
+```
+
+### POST /sole-trader-identification/api/journey
+### Deprecated - use POST /sole-trader-identification/api/sole-trader-journey instead
+
+---
+Creates a new journey for a Sole Trader, storing the journeyConfig against the journeyId.
+#### Request:
+
+optServiceName will default to `Entity Validation Service` if the field is not provided.
+
+The enableSautrCheck field allows the calling service to decide whether to ask the user to provide
+an SAUTR that will be verified. By default "enableSautrCheck" will be false.
+
+All other fields must be provided.
+
+```
+{
+    "continueUrl" : "/test",
+    "optServiceName" : "Service Name",
+    "deskProServiceId" : "abc",
+    "signOutUrl" : "/sign-out",
+    "enableSautrCheck" : "true"
 }
 ```
 

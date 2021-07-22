@@ -34,6 +34,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -56,6 +57,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       "the user is UNAUTHORISED" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -81,6 +83,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       "redirect to the Capture Nino page and store the data in the backend" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -107,6 +110,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -130,6 +134,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -153,6 +158,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -176,6 +182,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -199,6 +206,7 @@ class CaptureDateOfBirthControllerISpec extends ComponentSpecHelper
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,

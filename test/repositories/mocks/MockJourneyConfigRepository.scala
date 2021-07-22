@@ -39,10 +39,12 @@ trait MockJourneyConfigRepository extends MockitoSugar with BeforeAndAfterEach {
   }
 
   def mockInsertJourneyConfig(journeyId: String,
+                              internalId: String,
                               journeyConfig: JourneyConfig
                              )(response: Future[WriteResult]): OngoingStubbing[_] = {
     when(mockJourneyConfigRepository.insertJourneyConfig(
       ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(internalId),
       ArgumentMatchers.eq(journeyConfig)
     )).thenReturn(response)
   }
@@ -57,9 +59,11 @@ trait MockJourneyConfigRepository extends MockitoSugar with BeforeAndAfterEach {
   }
 
   def verifyInsertJourneyConfig(journeyId: String,
+                                internalId: String,
                                 journeyConfig: JourneyConfig): Unit =
     verify(mockJourneyConfigRepository).insertJourneyConfig(
       ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(internalId),
       ArgumentMatchers.eq(journeyConfig)
     )
 

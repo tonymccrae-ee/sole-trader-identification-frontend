@@ -37,6 +37,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       lazy val result: WSResponse = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -76,6 +77,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       lazy val result: WSResponse = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -117,6 +119,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "the user has only provided a nino and the calling service has not enabled the sautr check" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -141,6 +144,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         "the calling service has enabled the sautr check" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            internalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -165,6 +169,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         "the calling service has enabled the sautr check" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            internalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -192,6 +197,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "the user has provided an sautr that does not exist in authenticator" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -213,6 +219,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "the user has provided an sautr that does not match what is returned from authenticator" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -245,6 +252,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "when authenticator returns a mismatch" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          internalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
