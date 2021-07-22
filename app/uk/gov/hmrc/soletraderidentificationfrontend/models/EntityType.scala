@@ -16,6 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.EntityType
+object EntityType {
+  sealed trait EntityType
 
-case class JourneyConfig(continueUrl: String, pageConfig: PageConfig, entityType: EntityType)
+  case object SoleTrader extends EntityType
+  case object Individual extends EntityType
+
+}

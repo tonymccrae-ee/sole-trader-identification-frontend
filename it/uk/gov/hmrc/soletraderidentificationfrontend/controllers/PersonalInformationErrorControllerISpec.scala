@@ -32,6 +32,7 @@ class PersonalInformationErrorControllerISpec extends ComponentSpecHelper
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        internalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
