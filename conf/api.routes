@@ -1,7 +1,7 @@
 # microservice specific routes
 
 + nocsrf
-POST       /journey                                         uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController.createSoleTraderJourney()
+POST       /journey                                         uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController.createJourney()
 + nocsrf
 POST       /sole-trader-journey                             uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController.createSoleTraderJourney()
 + nocsrf

@@ -40,11 +40,34 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                  )(implicit ec: ExecutionContext,
                                    appConfig: AppConfig) extends BackendController(controllerComponents) with AuthorisedFunctions {
 
-  def createSoleTraderJourney: Action[JourneyConfig] = createJourney(SoleTrader)
+  def createSoleTraderJourney: Action[JourneyConfig] = createJourney(enableSautrCheck = true, SoleTrader)
 
-  def createIndividualJourney: Action[JourneyConfig] = createJourney(Individual)
+  def createIndividualJourney: Action[JourneyConfig] = createJourney(enableSautrCheck = false, Individual)
 
-  def createJourney(entityType: EntityType): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig] {
+  def createJourney(enableSautrCheck: Boolean, entityType: EntityType): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig] {
+    json =>
+      for {
+        continueUrl <- (json \ continueUrlKey).validate[String]
+        optServiceName <- (json \ optServiceNameKey).validateOpt[String]
+        deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
+        signOutUrl <- (json \ signOutUrlKey).validate[String]
+      } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck), entityType)
+  }) {
+    implicit req =>
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.createJourney(req.body, authInternalId).map(
+            journeyId =>
+              Created(Json.obj(
+                "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureFullNameController.show(journeyId).url}"
+              ))
+          )
+        case _ =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
+      }
+  }
+
+  def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig] {
     json =>
       for {
         continueUrl <- (json \ continueUrlKey).validate[String]
@@ -52,17 +75,17 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         enableSautrCheck <- (json \ enableSautrCheckKey).validateOpt[Boolean]
-      } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck.getOrElse(false)), entityType)
+      } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck.getOrElse(false)), SoleTrader)
   }) {
     implicit req =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-        journeyService.createJourney(req.body, authInternalId).map(
-          journeyId =>
-            Created(Json.obj(
-              "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureFullNameController.show(journeyId).url}"
-            ))
-        )
+          journeyService.createJourney(req.body, authInternalId).map(
+            journeyId =>
+              Created(Json.obj(
+                "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureFullNameController.show(journeyId).url}"
+              ))
+          )
         case _ =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }

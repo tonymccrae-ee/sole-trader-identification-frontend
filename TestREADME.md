@@ -14,7 +14,7 @@
    - [Test Data](TestREADME.md#using-the-authenticator-stub)
    
 
-###GET test-only/feature-switches
+### GET test-only/feature-switches
 
 ---
 Shows all feature switches:
@@ -27,39 +27,58 @@ Shows all feature switches:
    
    - Use stub for get SA Reference
    - Use stub for submissions to DES
-   
-### GET /test-only/create-journey
-#### Deprecated - use GET /test-only/create-sole-trader-journey
+
+### GET /test-only/create-sole-trader-journey
 
 ---
 This is a test entry point which simulates a service by triggering the initial POST call to set up a journey for a Sole Trader.
 
 1. Continue URL (Required)
 
-    - Where to redirect the user after the journey has been completed
+   - Where to redirect the user after the journey has been completed
 
 2. Service Name (Optional)
 
-    - Service Name to use throughout the service
-    - Currently, this is empty by default, so the default service name will be used
+   - Service Name to use throughout the service
+   - Currently, this is empty by default, so the default service name will be used
 
 3. DeskPro Service ID (Required)
 
-    - Used for the `Get help with this page` link
-    - This is currently autofilled but can be changed
+   - Used for the `Get help with this page` link
+   - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
 
-    - Shown in the HMRC header - typically a link to a feedback questionnaire
-    - This is currently autofilled but can be changed
+   - Shown in the HMRC header - typically a link to a feedback questionnaire
+   - This is currently autofilled but can be changed
 
-5. Enable SAUTR Check (Optional)
+### GET /test-only/create-individual-journey
 
-    - Shows the user an extra page where they can enter an SAUTR
-    - This is currently defaulted to false unless otherwise specified
-    - If this is enabled, refer to Using the Authenticator Stub section below
+---
+This is a test entry point which simulates a service by triggering the initial POST call to set up a journey for an Individual.
 
-### GET /test-only/create-sole-trader-journey
+1. Continue URL (Required)
+
+   - Where to redirect the user after the journey has been completed
+
+2. Service Name (Optional)
+
+   - Service Name to use throughout the service
+   - Currently, this is empty by default, so the default service name will be used
+
+3. DeskPro Service ID (Required)
+
+   - Used for the `Get help with this page` link
+   - This is currently autofilled but can be changed
+
+4. Sign Out Link (Required)
+
+   - Shown in the HMRC header - typically a link to a feedback questionnaire
+   - This is currently autofilled but can be changed
+   
+
+### GET /test-only/create-journey
+#### Deprecated - use GET /test-only/create-sole-trader-journey
 
 ---
 This is a test entry point which simulates a service by triggering the initial POST call to set up a journey for a Sole Trader.
@@ -88,31 +107,6 @@ This is a test entry point which simulates a service by triggering the initial P
    - Shows the user an extra page where they can enter an SAUTR
    - This is currently defaulted to false unless otherwise specified
    - If this is enabled, refer to Using the Authenticator Stub section below
-
-### GET /test-only/create-individual-journey
-
----
-This is a test entry point which simulates a service by triggering the initial POST call to set up a journey for an Individual.
-
-1. Continue URL (Required)
-
-   - Where to redirect the user after the journey has been completed
-
-2. Service Name (Optional)
-
-   - Service Name to use throughout the service
-   - Currently, this is empty by default, so the default service name will be used
-
-3. DeskPro Service ID (Required)
-
-   - Used for the `Get help with this page` link
-   - This is currently autofilled but can be changed
-
-4. Sign Out Link (Required)
-
-   - Shown in the HMRC header - typically a link to a feedback questionnaire
-   - This is currently autofilled but can be changed
-   
 
 ### GET test-only/retrieve-journey/:journeyId or test-only/retrieve-journey
 

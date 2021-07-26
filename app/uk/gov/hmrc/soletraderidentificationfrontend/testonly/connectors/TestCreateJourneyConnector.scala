@@ -33,6 +33,14 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
                                            appConfig: AppConfig
                                           )(implicit ec: ExecutionContext) {
 
+  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = appConfig.selfBaseUrl + apiRoutes.JourneyController.createJourney().url
+
+    httpClient.POST(url, journeyConfig).map {
+      case response@HttpResponse(CREATED, _, _) => (response.json \ "journeyStartUrl").as[String]
+    }
+  }
+
   def createSoleTraderJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
     val url = appConfig.selfBaseUrl + apiRoutes.JourneyController.createSoleTraderJourney().url
 
