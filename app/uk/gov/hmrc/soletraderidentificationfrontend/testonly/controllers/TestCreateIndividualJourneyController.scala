@@ -41,7 +41,8 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
   private val defaultPageConfig = PageConfig(
     optServiceName = None,
     deskProServiceId = "vrs",
-    signOutUrl = appConfig.vatRegFeedbackUrl
+    signOutUrl = appConfig.vatRegFeedbackUrl,
+    enableSautrCheck = false
   )
 
   private val defaultJourneyConfig = JourneyConfig(
@@ -54,7 +55,7 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, form(Individual).fill(defaultJourneyConfig), routes.TestCreateIndividualJourneyController.submit()))
+          Ok(view(defaultPageConfig, form(Individual, enableSautrCheck = false).fill(defaultJourneyConfig), routes.TestCreateIndividualJourneyController.submit()))
         )
       }
   }
@@ -62,7 +63,7 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        form(Individual).bindFromRequest().fold(
+        form(Individual, enableSautrCheck = false).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
               BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateIndividualJourneyController.submit()))

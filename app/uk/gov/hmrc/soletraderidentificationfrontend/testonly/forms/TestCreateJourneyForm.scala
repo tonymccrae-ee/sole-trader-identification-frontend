@@ -23,7 +23,6 @@ import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.MappingUtil.{OTe
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.validate
 import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.EntityType
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
-import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm.enableSautrCheck
 
 object TestCreateJourneyForm {
 
@@ -55,7 +54,21 @@ object TestCreateJourneyForm {
     )
   )
 
-  def form(entityType: EntityType): Form[JourneyConfig] = {
+  def form(entityType: EntityType, enableSautrCheck: Boolean): Form[JourneyConfig] = {
+    Form(mapping(
+      continueUrl -> text.verifying(continueUrlEmpty),
+      serviceName -> optText,
+      deskProServiceId -> text.verifying(deskProServiceIdEmpty),
+      signOutUrl -> text.verifying(signOutUrlEmpty)
+    )((continueUrl, serviceName, deskProServiceId, signOutUrl) =>
+      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck), entityType)
+    )(journeyConfig =>
+      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
+        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl)
+    ))
+  }
+
+  def deprecatedForm(entityType: EntityType): Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
       serviceName -> optText,

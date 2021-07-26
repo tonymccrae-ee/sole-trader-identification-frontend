@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{Individual, SoleTrader}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{AuthenticatorDetails, BusinessVerificationPass, BusinessVerificationUnchallenged, FullName, JourneyConfig, PageConfig, Registered, RegistrationNotCalled, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import java.time.LocalDate
 import java.util.UUID
@@ -43,9 +43,8 @@ object TestConstants {
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 
-  val testSoleTraderJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), SoleTrader)
-  val testSoleTraderJourneyConfigSautrEnabled: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl, true), SoleTrader)
-  val testIndividualJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), Individual)
+  val testSoleTraderJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true), SoleTrader)
+  val testIndividualJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false), Individual)
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(

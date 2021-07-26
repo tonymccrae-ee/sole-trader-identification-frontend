@@ -28,51 +28,29 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with SoleTraderIdentificationStub with AuthStub {
 
-  val testJourneyConfigJson: JsObject = Json.obj(
-    "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
-    "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
-    "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
-    "enableSautrCheck" -> testSoleTraderJourneyConfig.pageConfig.enableSautrCheck
-  )
-
   "POST /api/journey" should {
-    "redirect to Capture Full Name Controller" when {
-      "enableSautrCheck is false" in {
+    val testSoleTraderJourneyConfigJson: JsObject = Json.obj(
+      "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
+      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
+      "enableSautrCheck"-> testSoleTraderJourneyConfig.pageConfig.enableSautrCheck
+    )
+    "redirect to Capture Full Name Controller" in {
         stubAuth(OK, successfulAuthResponse())
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/sole-trader-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/sole-trader-identification/api/journey", testSoleTraderJourneyConfigJson)
 
         (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
 
         await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfig)
-
-      }
-
-      "enableSautrCheck is true" in {
-        val testJourneyConfigJson: JsObject = Json.obj(
-          "continueUrl" -> testSoleTraderJourneyConfigSautrEnabled.continueUrl,
-          "deskProServiceId" -> testSoleTraderJourneyConfigSautrEnabled.pageConfig.deskProServiceId,
-          "signOutUrl" -> testSoleTraderJourneyConfigSautrEnabled.pageConfig.signOutUrl,
-          "enableSautrCheck" -> testSoleTraderJourneyConfigSautrEnabled.pageConfig.enableSautrCheck
-        )
-        stubAuth(OK, successfulAuthResponse())
-        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
-
-        lazy val result = post("/sole-trader-identification/api/journey", testJourneyConfigJson)
-
-        (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
-
-        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfigSautrEnabled)
-
-      }
     }
 
     "redirect to Sign In page" when {
       "the user is UNAUTHORISED" in {
         stubAuthFailure()
 
-        lazy val result = post("/sole-trader-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/sole-trader-identification/api/journey", testSoleTraderJourneyConfigJson)
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -86,37 +64,28 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
   }
 
   "POST /api/sole-trader-journey" should {
-    "redirect to Capture Full Name Controller" when {
-      "enableSautrCheck is false" in {
+    val testSoleTraderJourneyConfigJson: JsObject = Json.obj(
+      "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
+      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
+    )
+    "redirect to Capture Full Name Controller" in {
         stubAuth(OK, successfulAuthResponse())
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/sole-trader-identification/api/sole-trader-journey", testJourneyConfigJson)
+        lazy val result = post("/sole-trader-identification/api/sole-trader-journey", testSoleTraderJourneyConfigJson)
 
         (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
 
         await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfig)
 
       }
-
-      "enableSautrCheck is true" in {
-        stubAuth(OK, successfulAuthResponse())
-        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
-
-        lazy val result = post("/sole-trader-identification/api/sole-trader-journey", testJourneyConfigJson)
-
-        (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
-
-        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfig)
-
-      }
-    }
 
     "redirect to Sign In page" when {
       "the user is UNAUTHORISED" in {
         stubAuthFailure()
 
-        lazy val result = post("/sole-trader-identification/api/sole-trader-journey", testJourneyConfigJson)
+        lazy val result = post("/sole-trader-identification/api/sole-trader-journey", testSoleTraderJourneyConfigJson)
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -130,12 +99,12 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
   }
 
   "POST /api/individual-journey" should {
+    val testJourneyConfigJson: JsObject = Json.obj(
+      "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
+      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
+    )
     "redirect to Capture Full Name Controller" in {
-      val testJourneyConfigJson: JsObject = Json.obj(
-        "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
-        "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
-        "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
-      )
       stubAuth(OK, successfulAuthResponse())
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
