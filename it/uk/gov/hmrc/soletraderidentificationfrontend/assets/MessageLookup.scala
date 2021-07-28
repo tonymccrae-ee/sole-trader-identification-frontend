@@ -62,7 +62,7 @@ object MessageLookup {
 
     object Error {
       val noDobEntered = "Enter your date of birth"
-      val invalidDate =  "Enter a real date"
+      val invalidDate = "Enter a real date"
       val futureDate = "The date of birth must be in the past"
       val invalidAge = "You must be at least 16 years of age"
     }
@@ -101,6 +101,15 @@ object MessageLookup {
     val heading = "We could not identify you on our records"
     val line_1 = "This could have been because of a mistake when entering your name, date of birth or National Insurance number."
     val button = "Try again"
+  }
+
+  object DetailsNotFound {
+    val title = "The details you entered did not match our records"
+    val heading = "The details you entered did not match our records"
+    val line_1 = "You cannot continue to register using this service. You need to contact the National Insurance team (opens in a new tab)."
+    val link_1 = "contact the National Insurance team (opens in a new tab)"
+    val line_2 = "If you entered the wrong details, you can try again using different details."
+    val link_2 = "try again using different details."
   }
 
   object CheckYourAnswers {

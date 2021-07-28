@@ -73,6 +73,14 @@ personal-information-error.heading                          = We could not ident
 personal-information-error.line_1                           = This could have been because of a mistake when entering your name, date of birth or National Insurance number.
 personal-information-error.tryAgain                         = Try again
 
+## Details Not Found Page
+details-not-found-page.title                                = The details you entered did not match our records
+details-not-found-page.heading                              = The details you entered did not match our records
+details-not-found-page.line_1                               = You cannot continue to register using this service. You need to
+details-not-found-page.link_1                               = contact the National Insurance team (opens in a new tab)
+details-not-found-page.line_2                               = If you entered the wrong details, you can
+details-not-found-page.link_2                               = try again using different details.
+
 ## Errors
 error.no_entry_first_name                                   = Enter your first name
 error.invalid_first_name                                    = First name must be 99 characters or fewer

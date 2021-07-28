@@ -1,0 +1,35 @@
+@import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => Routes}
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
+
+@this(layout: govuk_template,
+      h1: h1,
+      p: p,
+      govUkHeader: GovukHeader,
+      link: link,
+      formWithCSRF: FormWithCSRF)
+
+@(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageConfig, title = messages("details-not-found-page.title")) {
+
+    @h1(messages("details-not-found-page.heading"))
+
+    @p {@messages("details-not-found-page.line_1")
+        <a class='govuk-link' href="@appConfig.ninoTeamUrl" id="ninoTeam" target="_blank">
+        @messages("details-not-found-page.link_1")</a>.
+    }
+
+    @p { @messages("details-not-found-page.line_2")
+    @link(Routes.CaptureFullNameController.show(journeyId).url,
+          messages("details-not-found-page.link_2"),
+          Some("TryAgain"))
+    }
+
+}
+
+
+
+
