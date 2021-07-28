@@ -20,25 +20,25 @@ import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsError, JsPath, JsSuccess, Reads}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 
 import java.time.LocalDate
 
-object RetrieveAuthenticatorDetailsHttpParser {
+object RetrieveIndividualDetailsHttpParser {
 
-  implicit object RetrieveAuthenticatorDetailsHttpReads extends HttpReads[Option[AuthenticatorDetails]] {
-    override def read(method: String, url: String, response: HttpResponse): Option[AuthenticatorDetails] = {
+  implicit object RetrieveIndividualDetailsHttpReads extends HttpReads[Option[IndividualDetails]] {
+    override def read(method: String, url: String, response: HttpResponse): Option[IndividualDetails] = {
       response.status match {
         case OK =>
-          response.json.validate[AuthenticatorDetails](authenticatorDetailsReads) match {
-            case JsSuccess(authenticatorDetails, _) => Some(authenticatorDetails)
+          response.json.validate[IndividualDetails](individualDetailsReads) match {
+            case JsSuccess(individualDetails, _) => Some(individualDetails)
             case JsError(errors) =>
-              throw new InternalServerException(s"`Failed to read Authenticator Details with the following error/s: $errors")
+              throw new InternalServerException(s"`Failed to read Individual Details with the following error/s: $errors")
           }
         case NOT_FOUND =>
           None
         case status =>
-          throw new InternalServerException(s"Unexpected status from Authenticator Details retrieval. Status returned - $status")
+          throw new InternalServerException(s"Unexpected status from Individual Details retrieval. Status returned - $status")
       }
     }
   }
@@ -50,12 +50,12 @@ object RetrieveAuthenticatorDetailsHttpParser {
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
 
-  val authenticatorDetailsReads: Reads[AuthenticatorDetails] = (
+  val individualDetailsReads: Reads[IndividualDetails] = (
     (JsPath \ FullNameKey \ FirstNameKey).read[String] and
       (JsPath \ FullNameKey \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).read[String] and
       (JsPath \ SautrKey).readNullable[String]
-    ) (AuthenticatorDetails.apply _)
+    ) (IndividualDetails.apply _)
 
 }

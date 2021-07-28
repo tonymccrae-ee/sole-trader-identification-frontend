@@ -38,17 +38,17 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
     "return Right(Matched)" when {
       "the provided details match those from authenticator" when {
         "the enableSautrCheck is true and the sautr matches the returned one" in {
-          mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Right(testAuthenticatorDetails)))
+          mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Right(testIndividualDetails)))
 
-          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testSoleTraderJourneyConfig(enableSautrCheck = true)))
+          val result = await(TestService.matchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig(enableSautrCheck = true)))
 
           result mustBe Right(Matched)
         }
 
         "the enableSautrCheck is false and the sautr is not provided" in {
-          mockMatchSoleTraderDetails(testAuthenticatorDetailsNoSautr)(Future.successful(Right(testAuthenticatorDetailsNoSautr)))
+          mockMatchSoleTraderDetails(testIndividualDetailsNoSautr)(Future.successful(Right(testIndividualDetailsNoSautr)))
 
-          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetailsNoSautr, testSoleTraderJourneyConfig()))
+          val result = await(TestService.matchSoleTraderDetails(testIndividualDetailsNoSautr, testSoleTraderJourneyConfig()))
 
           result mustBe Right(Matched)
         }
@@ -58,42 +58,42 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
     "return Left(Mismatch)" when {
       "the provided details do not match those from authenticator" when {
         "the enableSautrCheck is true and the sautr is provided" in {
-          mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(Mismatch)))
+          mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(Mismatch)))
 
-          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testSoleTraderJourneyConfig(enableSautrCheck = true)))
+          val result = await(TestService.matchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig(enableSautrCheck = true)))
 
           result mustBe Left(Mismatch)
         }
 
         "the enableSautrCheck is false and the sautr is not provided" in {
-          mockMatchSoleTraderDetails(testAuthenticatorDetailsNoSautr)(Future.successful(Left(Mismatch)))
+          mockMatchSoleTraderDetails(testIndividualDetailsNoSautr)(Future.successful(Left(Mismatch)))
 
-          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetailsNoSautr, testSoleTraderJourneyConfig()))
+          val result = await(TestService.matchSoleTraderDetails(testIndividualDetailsNoSautr, testSoleTraderJourneyConfig()))
 
           result mustBe Left(Mismatch)
         }
 
         "the enableSautrCheck is false and the sautr is provided" in {
-          mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(Mismatch)))
+          mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(Mismatch)))
 
-          val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testSoleTraderJourneyConfig()))
+          val result = await(TestService.matchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig()))
 
           result mustBe Left(Mismatch)
         }
       }
 
       "the provided sautr does not exist on authenticator" in {
-        mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Right(testAuthenticatorDetailsNoSautr)))
+        mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Right(testIndividualDetailsNoSautr)))
 
-        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testSoleTraderJourneyConfig(enableSautrCheck = true)))
+        val result = await(TestService.matchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig(enableSautrCheck = true)))
 
         result mustBe Left(Mismatch)
       }
 
       "the user has not provided an sautr but one is returned from authenticator" in {
-        mockMatchSoleTraderDetails(testAuthenticatorDetailsNoSautr)(Future.successful(Right(testAuthenticatorDetails)))
+        mockMatchSoleTraderDetails(testIndividualDetailsNoSautr)(Future.successful(Right(testIndividualDetails)))
 
-        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetailsNoSautr, testSoleTraderJourneyConfig(enableSautrCheck = true)))
+        val result = await(TestService.matchSoleTraderDetails(testIndividualDetailsNoSautr, testSoleTraderJourneyConfig(enableSautrCheck = true)))
 
         result mustBe Left(Mismatch)
       }
@@ -101,9 +101,9 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
 
     "return Left(NotFound)" when {
       "the users details are not found by authenticator" in {
-        mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(NotFound)))
+        mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(NotFound)))
 
-        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testSoleTraderJourneyConfig()))
+        val result = await(TestService.matchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig()))
 
         result mustBe Left(NotFound)
       }
@@ -111,9 +111,9 @@ class AuthenticatorServiceSpec extends AnyWordSpec with Matchers with MockAuthen
 
     "return Left(Deceased)" when {
       "the users details are not found by authenticator" in {
-        mockMatchSoleTraderDetails(testAuthenticatorDetails)(Future.successful(Left(Deceased)))
+        mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(Deceased)))
 
-        val result = await(TestService.matchSoleTraderDetails(testAuthenticatorDetails, testSoleTraderJourneyConfig()))
+        val result = await(TestService.matchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig()))
 
         result mustBe Left(Deceased)
       }

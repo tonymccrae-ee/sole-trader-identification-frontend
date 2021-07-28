@@ -134,17 +134,30 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
   "GET /api/journey/:journeyId" should {
     "return captured data" when {
-      "the journeyId exists" in {
+      "the journeyId exists and the identifiers match" in {
         stubAuth(OK, successfulAuthResponse())
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = testSoleTraderDetailsJson
+          body = testSoleTraderDetailsJson(identifiersMatch = true)
         )
 
         lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
 
         result.status mustBe OK
-        result.json mustBe Json.toJsObject(testSoleTraderDetails)
+        result.json mustBe Json.toJsObject(testSoleTraderDetails(identifiersMatch = true))
+      }
+
+      "the journeyId exists and the identifiers do not match" in {
+        stubAuth(OK, successfulAuthResponse())
+        stubRetrieveSoleTraderDetails(testJourneyId)(
+          status = OK,
+          body = testSoleTraderDetailsJson()
+        )
+
+        lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+        result.json mustBe Json.toJsObject(testSoleTraderDetails())
       }
     }
 

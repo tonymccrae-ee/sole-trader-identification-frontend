@@ -39,43 +39,66 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
   }
 
   def mockRetrieveSautr(journeyId: String)
-                       (response: Future[Option[String]]): OngoingStubbing[_] = {
+                       (response: Future[Option[String]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveSautr(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
-  }
 
   def mockRetrieveNino(journeyId: String)
-                      (response: Future[Option[String]]): OngoingStubbing[_] = {
+                      (response: Future[Option[String]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveNino(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
-  }
 
   def mockRetrieveBusinessVerificationResponse(journeyId: String)
-                                              (response: Future[Option[BusinessVerificationStatus]]): OngoingStubbing[_] = {
+                                              (response: Future[Option[BusinessVerificationStatus]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveBusinessVerificationStatus(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
-  }
 
   def mockStoreRegistrationResponse(journeyId: String, registrationStatus: RegistrationStatus)
-                                   (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] = {
+                                   (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.storeRegistrationStatus(
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(registrationStatus)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
-  }
 
-  def verifyStoreRegistrationResponse(journeyId: String, registrationStatus: RegistrationStatus): Unit = {
+  def mockStoreBusinessVerificationStatus(journeyId: String, businessVerificationStatus: BusinessVerificationStatus)
+                                         (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.storeBusinessVerificationStatus(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(businessVerificationStatus)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
+  def mockStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)
+                               (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.storeIdentifiersMatch(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(identifiersMatch)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
+  def verifyStoreRegistrationResponse(journeyId: String, registrationStatus: RegistrationStatus): Unit =
     verify(mockSoleTraderIdentificationService).storeRegistrationStatus(
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(registrationStatus)
     )(ArgumentMatchers.any[HeaderCarrier])
-  }
+
+  def verifyStoreBusinessVerificationStatus(journeyId: String, businessVerificationStatus: BusinessVerificationStatus): Unit =
+    verify(mockSoleTraderIdentificationService).storeBusinessVerificationStatus(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(businessVerificationStatus)
+    )(ArgumentMatchers.any[HeaderCarrier])
+
+  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean): Unit =
+    verify(mockSoleTraderIdentificationService).storeIdentifiersMatch(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(identifiersMatch)
+    )(ArgumentMatchers.any[HeaderCarrier])
 
 }

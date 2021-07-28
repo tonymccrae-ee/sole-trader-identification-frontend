@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 
 import javax.inject.{Inject, Singleton}
 
@@ -28,7 +28,7 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
 
   val stubMatch: Action[JsValue] = Action(parse.json) {
     request =>
-      val authenticatorDetails = request.body.as[AuthenticatorDetails]
+      val authenticatorDetails = request.body.as[IndividualDetails]
 
       authenticatorDetails.lastName.toLowerCase match {
         case "fail" =>

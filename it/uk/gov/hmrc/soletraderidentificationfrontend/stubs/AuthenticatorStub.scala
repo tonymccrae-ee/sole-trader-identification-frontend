@@ -17,13 +17,13 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.WireMockMethods
 
 import java.time.format.DateTimeFormatter.ofPattern
 
 trait AuthenticatorStub extends WireMockMethods {
-  def stubMatch(authenticatorDetails: AuthenticatorDetails)(status: Int, body: JsObject): Unit = {
+  def stubMatch(authenticatorDetails: IndividualDetails)(status: Int, body: JsObject): Unit = {
     when(method = POST,
       uri = s"/authenticator/match",
       body = Json.obj(
@@ -38,7 +38,7 @@ trait AuthenticatorStub extends WireMockMethods {
     )
   }
 
-  def stubMatchStub(authenticatorDetails: AuthenticatorDetails)(status: Int, body: JsObject): Unit = {
+  def stubMatchStub(authenticatorDetails: IndividualDetails)(status: Int, body: JsObject): Unit = {
     when(method = POST,
       uri = s"/identify-your-sole-trader-business/test-only/authenticator/match",
       body = Json.obj(
@@ -53,7 +53,7 @@ trait AuthenticatorStub extends WireMockMethods {
     )
   }
 
-  def successfulMatchJson(authenticatorDetails: AuthenticatorDetails): JsObject = Json.obj(
+  def successfulMatchJson(authenticatorDetails: IndividualDetails): JsObject = Json.obj(
     "firstName" -> authenticatorDetails.firstName,
     "lastName" -> authenticatorDetails.lastName,
     "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
