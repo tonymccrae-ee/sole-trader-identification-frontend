@@ -42,13 +42,45 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
             "nino" -> authenticatorDetails.nino
           ))
-        case "bv-test" =>
+        case "bv-test-1" =>
+          Ok(Json.obj(
+            "firstName" -> authenticatorDetails.firstName,
+            "lastName" -> authenticatorDetails.lastName,
+            "dateOfBirth" -> authenticatorDetails.dateOfBirth,
+            "nino" -> authenticatorDetails.nino,
+            "saUtr" -> "1188662968"
+          ))
+        case "bv-test-2" =>
+          Ok(Json.obj(
+            "firstName" -> authenticatorDetails.firstName,
+            "lastName" -> authenticatorDetails.lastName,
+            "dateOfBirth" -> authenticatorDetails.dateOfBirth,
+            "nino" -> authenticatorDetails.nino,
+            "saUtr" -> "3550699947"
+          ))
+        case "bv-test-3" =>
+          Ok(Json.obj(
+            "firstName" -> authenticatorDetails.firstName,
+            "lastName" -> authenticatorDetails.lastName,
+            "dateOfBirth" -> authenticatorDetails.dateOfBirth,
+            "nino" -> authenticatorDetails.nino,
+            "saUtr" -> "8113878100"
+          ))
+        case "bv-test-4" =>
           Ok(Json.obj(
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
             "nino" -> authenticatorDetails.nino,
             "saUtr" -> "9083735242"
+          ))
+        case "bv-test-5" =>
+          Ok(Json.obj(
+            "firstName" -> authenticatorDetails.firstName,
+            "lastName" -> authenticatorDetails.lastName,
+            "dateOfBirth" -> authenticatorDetails.dateOfBirth,
+            "nino" -> authenticatorDetails.nino,
+            "saUtr" -> "1021150603"
           ))
         case _ =>
           Ok(Json.obj(
