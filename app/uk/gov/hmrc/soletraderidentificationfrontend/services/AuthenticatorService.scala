@@ -21,26 +21,31 @@ import uk.gov.hmrc.soletraderidentificationfrontend.connectors.AuthenticatorConn
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{Matched, Mismatch, SoleTraderVerificationResult}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, JourneyConfig}
 
-
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuthenticatorService @Inject()(authenticatorConnector: AuthenticatorConnector)(implicit ec: ExecutionContext) {
+class AuthenticatorService @Inject()(authenticatorConnector: AuthenticatorConnector,
+                                     soleTraderIdentificationService: SoleTraderIdentificationService)(implicit ec: ExecutionContext) {
 
-  def matchSoleTraderDetails(userDetails: IndividualDetails,
+  def matchSoleTraderDetails(journeyId: String,
+                             userDetails: IndividualDetails,
                              journeyConfig: JourneyConfig
                             )(implicit hc: HeaderCarrier): Future[SoleTraderVerificationResult] =
-    authenticatorConnector.matchSoleTraderDetails(userDetails).map {
+    authenticatorConnector.matchSoleTraderDetails(userDetails).flatMap {
       case Right(authenticatorDetails) if journeyConfig.pageConfig.enableSautrCheck =>
-        if (authenticatorDetails.optSautr == userDetails.optSautr)
-          Right(Matched)
-        else
-          Left(Mismatch)
-      case Right(_) =>
-        Right(Matched)
+        if (authenticatorDetails.optSautr == userDetails.optSautr) {
+          soleTraderIdentificationService.storeAuthenticatorDetails(journeyId, authenticatorDetails).map {
+            _ => Right(Matched)
+          }
+        } else
+          Future.successful(Left(Mismatch))
+      case Right(authenticatorDetails) =>
+        soleTraderIdentificationService.storeAuthenticatorDetails(journeyId, authenticatorDetails).map {
+          _ => Right(Matched)
+        }
       case Left(failureReason) =>
-        Left(failureReason)
+        Future.successful(Left(failureReason))
     }
 
 }

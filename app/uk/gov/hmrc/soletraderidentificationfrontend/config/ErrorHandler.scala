@@ -16,12 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
-import play.api.{Configuration, Environment, Logging}
-
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.NotFound
 import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.{Configuration, Environment, Logging}
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.NotFoundException
@@ -29,6 +27,7 @@ import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.error_template
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

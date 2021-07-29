@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
@@ -23,6 +25,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAudit}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CheckYourAnswersViewTests
 
 
@@ -31,6 +34,16 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   with SoleTraderIdentificationStub
   with AuthStub
   with AuthenticatorStub {
+
+  def extraConfig = Map(
+    "auditing.enabled" -> "true",
+    "auditing.consumer.baseUri.host" -> mockHost,
+    "auditing.consumer.baseUri.port" -> mockPort
+  )
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(config ++ extraConfig)
+    .build
 
   "GET /check-your-answers-business" when {
     "the applicant has a nino and an sautr" should {
@@ -45,6 +58,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
@@ -60,6 +74,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to sign in page" when {
         "the user is UNAUTHORISED" in {
           stubAuthFailure()
+          stubAudit()
+
           lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
 
           result must have(
@@ -85,6 +101,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
@@ -100,6 +117,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to sign in page" when {
         "the user is UNAUTHORISED" in {
           stubAuthFailure()
+          stubAudit()
+
           lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
 
           result must have(
@@ -128,7 +147,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubMatch(testIndividualDetailsNoSautr)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
+        stubStoreAuthenticatorDetails(testJourneyId, testIndividualDetailsNoSautr)(OK)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
@@ -141,6 +162,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         )
 
         verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+        verifyAudit()
       }
 
       "the user has only provided a nino and does not have an sautr that matches what is held in the database" when {
@@ -156,7 +178,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           ))
           stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
           stubAuth(OK, successfulAuthResponse())
+          stubAudit()
           stubMatch(testIndividualDetailsNoSautr)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
+          stubStoreAuthenticatorDetails(testJourneyId, testIndividualDetailsNoSautr)(OK)
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
           stubRetrieveSautr(testJourneyId)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
@@ -188,7 +212,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           ))
           stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
           stubAuth(OK, successfulAuthResponse())
+          stubAudit()
           stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+          stubStoreAuthenticatorDetails(testJourneyId, testIndividualDetails)(OK)
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
           stubRetrieveSautr(testJourneyId)(OK, testSautr)
 
@@ -217,6 +243,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
 
@@ -253,6 +280,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
 
@@ -279,6 +307,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
 
@@ -290,7 +319,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         )
 
         verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyAudit()
       }
+
       "when authenticator returns a details not found" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -303,6 +334,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubAuth(OK, successfulAuthResponse())
+        stubAudit()
         stubMatch(testIndividualDetails)(UNAUTHORIZED, notFoundErrorJson)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
 
@@ -312,6 +344,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           httpStatus(SEE_OTHER),
           redirectUri(routes.DetailsNotFoundController.show(testJourneyId).url)
         )
+        verifyAudit()
       }
     }
   }

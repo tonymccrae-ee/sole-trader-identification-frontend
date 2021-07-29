@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.views.helpers
 
-import javax.inject.Inject
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.footer.FooterItem
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+
+import javax.inject.Inject
 
 class FooterLinks @Inject()(implicit appConfig: AppConfig) {
 

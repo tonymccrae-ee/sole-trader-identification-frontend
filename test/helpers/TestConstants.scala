@@ -16,7 +16,8 @@
 
 package helpers
 
-import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.SoleTrader
+import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{EntityType, SoleTrader}
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -77,7 +78,7 @@ object TestConstants {
       optSautr = None
     )
 
-  def testSoleTraderJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
+  def testJourneyConfig(enableSautrCheck: Boolean = false, entityType: EntityType = SoleTrader): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
     pageConfig = PageConfig(
       optServiceName = None,
@@ -85,7 +86,17 @@ object TestConstants {
       signOutUrl = testSignOutUrl,
       enableSautrCheck = enableSautrCheck
     ),
-    entityType = SoleTrader
+    entityType = entityType
   )
+
+  def testIndividualAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "dateOfBirth" -> testDateOfBirth,
+    "nino" -> testNino,
+    "identifiersMatch" -> identifiersMatch,
+    "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr)
+  )
+
 
 }

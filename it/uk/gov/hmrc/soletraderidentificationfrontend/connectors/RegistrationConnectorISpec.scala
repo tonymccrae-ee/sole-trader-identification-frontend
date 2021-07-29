@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
 import play.api.test.Helpers.{INTERNAL_SERVER_ERROR, OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testNino, testSautr, testSafeId}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testNino, testSafeId, testSautr}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{Registered, RegistrationFailed}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.RegisterStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper

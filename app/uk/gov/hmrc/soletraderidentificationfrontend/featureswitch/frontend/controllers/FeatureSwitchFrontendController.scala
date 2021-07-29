@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -25,6 +24,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.Fe
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.services.FeatureSwitchRetrievalService
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.views.html.feature_switch
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

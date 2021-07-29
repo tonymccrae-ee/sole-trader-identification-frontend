@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.testonly.connectors
 import play.api.http.Status._
 import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController.{continueUrlKey, deskProServiceIdKey, enableSautrCheckKey, optServiceNameKey, signOutUrlKey}
+import uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.{routes => apiRoutes}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig

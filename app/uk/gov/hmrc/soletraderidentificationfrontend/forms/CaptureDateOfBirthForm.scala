@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.forms
 
-import java.time.LocalDate
-
 import play.api.data.Forms.{of, single}
 import play.api.data.format.Formatter
 import play.api.data.validation.Constraint
@@ -25,6 +23,7 @@ import play.api.data.{Form, FormError}
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ConstraintUtil.constraint
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.validateNot
 
+import java.time.LocalDate
 import scala.util.Try
 
 object CaptureDateOfBirthForm {

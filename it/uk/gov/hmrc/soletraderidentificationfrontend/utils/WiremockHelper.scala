@@ -87,6 +87,11 @@ object WiremockHelper extends Eventually with IntegrationPatience {
       )
     )
 
+  def stubAudit(): StubMapping = {
+    stubPost("/write/audit", 200, "{}")
+    stubPost("/write/audit/merged", 200, "{}")
+  }
+
   def verifyPut(uri: String, optBody: Option[String] = None): Unit = {
     val uriMapping = putRequestedFor(urlEqualTo(uri))
     val putRequest = optBody match {
@@ -95,6 +100,9 @@ object WiremockHelper extends Eventually with IntegrationPatience {
     }
     verify(putRequest)
   }
+
+  def verifyAudit(): Unit = verifyPost("/write/audit")
+
 }
 
 trait WiremockHelper {

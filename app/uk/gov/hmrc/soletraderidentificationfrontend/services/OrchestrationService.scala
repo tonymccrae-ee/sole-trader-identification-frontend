@@ -26,7 +26,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class OrchestrationService @Inject()(journeyService: JourneyService,
                                      authenticatorService: AuthenticatorService,
-                                     soleTraderIdentificationService: SoleTraderIdentificationService) {
+                                     soleTraderIdentificationService: SoleTraderIdentificationService,
+                                     auditService: AuditService) {
 
   def orchestrate(journeyId: String,
                   individualDetails: IndividualDetails
@@ -35,7 +36,7 @@ class OrchestrationService @Inject()(journeyService: JourneyService,
 
     journeyService.getJourneyConfig(journeyId).flatMap {
       journeyConfig =>
-        authenticatorService.matchSoleTraderDetails(individualDetails, journeyConfig).flatMap {
+        authenticatorService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig).flatMap {
           case Right(Matched) =>
             individualDetails.optSautr match {
               case Some(_) =>
@@ -47,10 +48,13 @@ class OrchestrationService @Inject()(journeyService: JourneyService,
                   _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
                   _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                   _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                } yield
+
+                } yield {
+                  auditService.auditIndividualJourney(journeyId)
                   NoSautrProvided
+                }
             }
-          case Left(NotFound) => soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
+          case Left(SoleTraderDetailsMatching.NotFound) => soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
             _ => DetailsNotFound
           }
           case _ =>
