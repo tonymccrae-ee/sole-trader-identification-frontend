@@ -39,40 +39,42 @@ object TestConstants {
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
-      testFullName,
-      testDateOfBirth,
-      testNino,
-      Some(testSautr),
-      BusinessVerificationPass,
-      Registered(testSafeId)
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = Some(testSautr),
+      identifiersMatch = true,
+      businessVerification = BusinessVerificationPass,
+      registrationStatus = Registered(testSafeId)
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
     SoleTraderDetails(
-      testFullName,
-      testDateOfBirth,
-      testNino,
-      None,
-      BusinessVerificationUnchallenged,
-      RegistrationNotCalled
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = None,
+      identifiersMatch = true,
+      businessVerification = BusinessVerificationUnchallenged,
+      registrationStatus = RegistrationNotCalled
     )
 
-  val testAuthenticatorDetails: AuthenticatorDetails =
-    AuthenticatorDetails(
-      testFirstName,
-      testLastName,
-      testDateOfBirth,
-      testNino,
-      Some(testSautr)
+  val testIndividualDetails: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = Some(testSautr)
     )
 
-  val testAuthenticatorDetailsNoSautr: AuthenticatorDetails =
-    AuthenticatorDetails(
-      testFirstName,
-      testLastName,
-      testDateOfBirth,
-      testNino,
-      None
+  val testIndividualDetailsNoSautr: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = None
     )
 
   def testSoleTraderJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(

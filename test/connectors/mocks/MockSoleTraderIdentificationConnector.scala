@@ -41,7 +41,7 @@ trait MockSoleTraderIdentificationConnector extends MockitoSugar with BeforeAndA
   def mockRetrieveSoleTraderInformation[T](journeyId: String,
                                            dataKey: String
                                           )(response: Future[Option[T]]): OngoingStubbing[_] =
-    when(mockSoleTraderIdentificationConnector.retrieveSoleTraderIdentification[T](
+    when(mockSoleTraderIdentificationConnector.retrieveSoleTraderDetails[T](
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(dataKey)
     )(ArgumentMatchers.any[Reads[T]],
@@ -50,7 +50,7 @@ trait MockSoleTraderIdentificationConnector extends MockitoSugar with BeforeAndA
     )).thenReturn(response)
 
   def verifyRetrieveSoleTraderInformation[T](journeyId: String, dataKey: String): Unit =
-    verify(mockSoleTraderIdentificationConnector).retrieveSoleTraderIdentification[T](
+    verify(mockSoleTraderIdentificationConnector).retrieveSoleTraderDetails[T](
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(dataKey)
     )(ArgumentMatchers.any[Reads[T]],

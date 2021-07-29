@@ -45,7 +45,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -85,7 +85,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJsonNoSautr)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -115,7 +115,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   }
 
   "POST /check-your-answers-business" should {
-    "redirect to continue url from the supplied journey config" when {
+    "redirect to the journey redirect controller" when {
       "the user has only provided a nino and the calling service has not enabled the sautr check" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -126,9 +126,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = false
         ))
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJsonNoSautr)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testAuthenticatorDetailsNoSatur)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
+        stubMatch(testIndividualDetailsNoSautr)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
 
@@ -136,11 +137,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(s"$testContinueUrl?journeyId=$testJourneyId")
+          redirectUri(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
         )
+
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
       }
 
-      "the user has provided both a nino and an sautr" when {
+      "the user has only provided a nino and does not have an sautr that matches what is held in the database" when {
         "the calling service has enabled the sautr check" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
@@ -151,34 +154,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             signOutUrl = testSignOutUrl,
             enableSautrCheck = true
           ))
-          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
           stubAuth(OK, successfulAuthResponse())
-          stubMatch(testAuthenticatorDetails)(OK, successfulMatchJson(testAuthenticatorDetails))
-          stubRetrieveSautr(testJourneyId)(OK, testSautr)
-
-          lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
-
-          result must have(
-            httpStatus(SEE_OTHER),
-            redirectUri(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
-          )
-        }
-      }
-
-      "the user has only provided a nino and does not have an sautr" when {
-        "the calling service has enabled the sautr check" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
-          ))
-          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJsonNoSautr)
-          stubAuth(OK, successfulAuthResponse())
-          stubMatch(testAuthenticatorDetailsNoSatur)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
+          stubMatch(testIndividualDetailsNoSautr)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
           stubRetrieveSautr(testJourneyId)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
@@ -187,8 +166,40 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have(
             httpStatus(SEE_OTHER),
-            redirectUri(s"$testContinueUrl?journeyId=$testJourneyId")
+            redirectUri(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           )
+
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+        }
+      }
+    }
+
+    "redirect to start business verification" when {
+      "the user has provided both a nino and an sautr that match what is held in the database" when {
+        "the calling service has enabled the sautr check" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
+          stubAuth(OK, successfulAuthResponse())
+          stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
+          stubRetrieveSautr(testJourneyId)(OK, testSautr)
+
+          lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
+          )
+
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
         }
       }
     }
@@ -204,9 +215,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = true
         ))
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testAuthenticatorDetails)(OK, successfulMatchJson(testAuthenticatorDetailsNoSatur))
+        stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -214,6 +226,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           httpStatus(SEE_OTHER),
           redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
         )
+
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
       }
 
       "the user has provided an sautr that does not match what is returned from authenticator" in {
@@ -239,7 +253,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
         stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testAuthenticatorDetails)(UNAUTHORIZED, mismatchErrorJson)
+        stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -247,6 +263,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           httpStatus(SEE_OTHER),
           redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
         )
+
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
       }
 
       "when authenticator returns a mismatch" in {
@@ -259,15 +277,19 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl,
           enableSautrCheck = false
         ))
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testAuthenticatorDetailsJson)
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubAuth(OK, successfulAuthResponse())
-        stubMatch(testAuthenticatorDetails)(UNAUTHORIZED, mismatchErrorJson)
+        stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
         )
+
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
       }
     }
   }

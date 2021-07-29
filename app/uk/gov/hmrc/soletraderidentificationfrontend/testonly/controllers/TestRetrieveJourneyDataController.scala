@@ -34,7 +34,7 @@ class TestRetrieveJourneyDataController @Inject()(messagesControllerComponents: 
   def retrieveSoleTraderDetails(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationConnector.retrieveSoleTraderIdentification(journeyId).map {
+        soleTraderIdentificationConnector.retrieveSoleTraderDetails(journeyId).map {
           case Some(journeyData) =>
             Ok(Json.toJsObject(journeyData))
           case None =>

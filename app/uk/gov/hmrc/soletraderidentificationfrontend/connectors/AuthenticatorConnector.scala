@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderVerificationResultHttpParser.SoleTraderVerificationResultReads
-import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.AuthenticatorResponse
 
 import java.time.format.DateTimeFormatter.ofPattern
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthenticatorConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig)(implicit executionContext: ExecutionContext) {
-  def matchSoleTraderDetails(authenticatorDetails: AuthenticatorDetails)(implicit hc: HeaderCarrier): Future[AuthenticatorResponse] = {
+  def matchSoleTraderDetails(authenticatorDetails: IndividualDetails)(implicit hc: HeaderCarrier): Future[AuthenticatorResponse] = {
     val jsonBody = Json.obj(
       "firstName" -> authenticatorDetails.firstName,
       "lastName" -> authenticatorDetails.lastName,

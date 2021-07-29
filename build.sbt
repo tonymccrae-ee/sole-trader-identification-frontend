@@ -1,4 +1,4 @@
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, integrationTestSettings}
+import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
 import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 

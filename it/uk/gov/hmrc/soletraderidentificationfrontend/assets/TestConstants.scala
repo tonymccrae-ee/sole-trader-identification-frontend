@@ -43,48 +43,70 @@ object TestConstants {
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 
-  val testSoleTraderJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true), SoleTrader)
-  val testIndividualJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false), Individual)
+  val testSoleTraderJourneyConfig: JourneyConfig =
+    JourneyConfig(
+      continueUrl = testContinueUrl,
+      pageConfig = PageConfig(
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = true
+      ),
+      entityType = SoleTrader
+    )
 
-  val testSoleTraderDetails: SoleTraderDetails =
+  val testIndividualJourneyConfig: JourneyConfig =
+    JourneyConfig(
+      continueUrl = testContinueUrl,
+      pageConfig = PageConfig(
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
+      ),
+      entityType = Individual
+    )
+
+  def testSoleTraderDetails(identifiersMatch: Boolean = false): SoleTraderDetails =
     SoleTraderDetails(
-      testFullName,
-      testDateOfBirth,
-      testNino,
-      Some(testSautr),
-      BusinessVerificationPass,
-      Registered(testSafeId)
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = Some(testSautr),
+      identifiersMatch = identifiersMatch,
+      businessVerification = BusinessVerificationPass,
+      registrationStatus = Registered(testSafeId)
     )
 
-  val testSoleTraderDetailsNoSautr: SoleTraderDetails =
+  def testSoleTraderDetailsNoSautr(identifiersMatch: Boolean = false): SoleTraderDetails =
     SoleTraderDetails(
-      testFullName,
-      testDateOfBirth,
-      testNino,
-      None,
-      BusinessVerificationUnchallenged,
-      RegistrationNotCalled
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = None,
+      identifiersMatch = identifiersMatch,
+      businessVerification = BusinessVerificationUnchallenged,
+      registrationStatus = RegistrationNotCalled
     )
 
-  val testAuthenticatorDetails: AuthenticatorDetails =
-    AuthenticatorDetails(
-      testFirstName,
-      testLastName,
-      testDateOfBirth,
-      testNino,
-      Some(testSautr)
+  val testIndividualDetails: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = Some(testSautr)
     )
 
-  val testAuthenticatorDetailsNoSatur: AuthenticatorDetails =
-    AuthenticatorDetails(
-      testFirstName,
-      testLastName,
-      testDateOfBirth,
-      testNino,
-      None
+  val testIndividualDetailsNoSautr: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      nino = testNino,
+      optSautr = None
     )
 
-  val testSoleTraderDetailsJson: JsObject = {
+  def testSoleTraderDetailsJson(identifiersMatch: Boolean = false): JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName
@@ -92,6 +114,7 @@ object TestConstants {
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino,
       "sautr" -> testSautr,
+      "identifiersMatch" -> identifiersMatch,
       "businessVerification" -> Json.obj(
         "verificationStatus" -> "PASS"
       ),
@@ -102,13 +125,14 @@ object TestConstants {
     )
   }
 
-  val testSoleTraderDetailsNoSautrJson: JsObject =
+  def testSoleTraderDetailsJsonNoSautr(identifiersMatch: Boolean = false): JsObject =
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName
     ),
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino,
+      "identifiersMatch" -> identifiersMatch,
       "businessVerification" -> Json.obj(
         "verificationStatus" -> "UNCHALLENGED"
       ),
@@ -117,7 +141,7 @@ object TestConstants {
       )
     )
 
-  val testAuthenticatorDetailsJson: JsObject = {
+  val testIndividualDetailsJson: JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName
@@ -128,7 +152,7 @@ object TestConstants {
     )
   }
 
-  val testAuthenticatorDetailsJsonNoSautr: JsObject = {
+  val testIndividualDetailsJsonNoSautr: JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName

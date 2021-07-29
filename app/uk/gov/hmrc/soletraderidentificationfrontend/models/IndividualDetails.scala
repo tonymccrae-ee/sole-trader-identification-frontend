@@ -21,13 +21,13 @@ import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
 import java.time.LocalDate
 
-case class AuthenticatorDetails(firstName: String,
-                                lastName: String,
-                                dateOfBirth: LocalDate,
-                                nino: String,
-                                optSautr: Option[String])
+case class IndividualDetails(firstName: String,
+                             lastName: String,
+                             dateOfBirth: LocalDate,
+                             nino: String,
+                             optSautr: Option[String])
 
-object AuthenticatorDetails {
+object IndividualDetails {
 
   private val FirstNameKey = "firstName"
   private val LastNameKey = "lastName"
@@ -35,22 +35,22 @@ object AuthenticatorDetails {
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
 
-  implicit val reads: Reads[AuthenticatorDetails] = (
+  implicit val reads: Reads[IndividualDetails] = (
     (JsPath \ FirstNameKey).read[String] and
       (JsPath \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).read[String] and
       (JsPath \ SautrKey).readNullable[String]
-    ) (AuthenticatorDetails.apply _)
+    ) (IndividualDetails.apply _)
 
-  implicit val writes: OWrites[AuthenticatorDetails] = (
+  implicit val writes: OWrites[IndividualDetails] = (
     (JsPath \ FirstNameKey).write[String] and
       (JsPath \ LastNameKey).write[String] and
       (JsPath \ DateOfBirthKey).write[LocalDate] and
       (JsPath \ NinoKey).write[String] and
       (JsPath \ SautrKey).writeNullable[String]
-    ) (unlift(AuthenticatorDetails.unapply))
+    ) (unlift(IndividualDetails.unapply))
 
-  val format: OFormat[AuthenticatorDetails] = OFormat(reads, writes)
+  val format: OFormat[IndividualDetails] = OFormat(reads, writes)
 
 }

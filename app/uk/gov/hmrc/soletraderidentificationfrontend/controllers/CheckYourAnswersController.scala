@@ -21,20 +21,19 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Matched
-import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuthenticatorService, JourneyService, SoleTraderIdentificationService}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{DetailsMismatch, NoSautrProvided, SautrMatched}
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, OrchestrationService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
                                            soleTraderIdentificationService: SoleTraderIdentificationService,
                                            journeyService: JourneyService,
-                                           authenticatorService: AuthenticatorService,
+                                           orchestrationService: OrchestrationService,
                                            val authConnector: AuthConnector
                                           )(implicit val config: AppConfig,
                                             executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
@@ -43,15 +42,15 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId).flatMap {
-          case Some(authenticatorDetails) =>
+        soleTraderIdentificationService.retrieveIndividualDetails(journeyId).flatMap {
+          case Some(individualDetails) =>
             journeyService.getJourneyConfig(journeyId).map {
               journeyConfig =>
                 Ok(view(
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CheckYourAnswersController.submit(journeyId),
                   journeyId = journeyId,
-                  authenticatorDetails = authenticatorDetails
+                  authenticatorDetails = individualDetails
                 ))
             }
           case _ =>
@@ -63,25 +62,15 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId).flatMap {
-          case Some(authenticatorDetails) =>
-            journeyService.getJourneyConfig(journeyId).flatMap {
-              journeyConfig =>
-                authenticatorService.matchSoleTraderDetails(authenticatorDetails, journeyConfig).flatMap {
-                  case Right(Matched) =>
-                    authenticatorDetails.optSautr match {
-                      case Some(_) =>
-                        Future.successful(Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId)))
-                      case None =>
-                        for {
-                          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-                          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                        } yield
-                          Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
-                    }
-                  case _ =>
-                    Future.successful(Redirect(routes.PersonalInformationErrorController.show(journeyId)))
-                }
+        soleTraderIdentificationService.retrieveIndividualDetails(journeyId).flatMap {
+          case Some(individualDetails) =>
+            orchestrationService.orchestrate(journeyId, individualDetails).map {
+              case SautrMatched =>
+                Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+              case NoSautrProvided =>
+                Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+              case DetailsMismatch =>
+                Redirect(routes.PersonalInformationErrorController.show(journeyId))
             }
           case _ =>
             throw new InternalServerException("Fail to retrieve data from database")

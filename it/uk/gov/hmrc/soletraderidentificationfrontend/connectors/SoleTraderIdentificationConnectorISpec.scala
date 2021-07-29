@@ -42,33 +42,44 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
   val SautrKey = "sautr"
 
 
-  s"retrieveSoleTraderIdentification($testJourneyId)" should {
-    "return Sole Trader Identification" when {
-      "there is Sole Trader Identification stored against the journeyId" in {
+  s"retrieveSoleTraderDetails($testJourneyId)" should {
+    "return SoleTraderDetails" when {
+      "there are SoleTraderDetails stored against the journeyId and identifiers match" in {
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = testSoleTraderDetailsJson
+          body = testSoleTraderDetailsJson(identifiersMatch = true)
         )
 
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification(testJourneyId))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails(testJourneyId))
 
-        result mustBe Some(testSoleTraderDetails)
+        result mustBe Some(testSoleTraderDetails(identifiersMatch = true))
+      }
+
+      "there are SoleTraderDetails stored against the journeyId and identifiers do not match" in {
+        stubRetrieveSoleTraderDetails(testJourneyId)(
+          status = OK,
+          body = testSoleTraderDetailsJson()
+        )
+
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails(testJourneyId))
+
+        result mustBe Some(testSoleTraderDetails())
       }
     }
     "return None" when {
-      "there is no Sole Trader Identification stored against the journeyId" in {
+      "there is no SoleTraderDetails stored against the journeyId" in {
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = NOT_FOUND
         )
 
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification(testJourneyId))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails(testJourneyId))
 
         result mustBe None
       }
     }
   }
 
-  s"retrieveSoleTraderIdentification($testJourneyId, $FullNameKey)" should {
+  s"retrieveSoleTraderDetails($testJourneyId, $FullNameKey)" should {
     "return full name" when {
       "the full name key is given and a full name is stored against the journeyId" in {
         stubRetrieveFullName(testJourneyId)(OK, Json.toJsObject(FullName(testFirstName, testLastName)))
@@ -76,7 +87,7 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
           "firstName" -> testFirstName,
           "lastName" -> testLastName
         )
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[JsObject](testJourneyId, FullNameKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[JsObject](testJourneyId, FullNameKey))
 
         result mustBe Some(testJson)
       }
@@ -85,18 +96,18 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
     "return None" when {
       "the firstName key is given but there is no first name stored against the journeyId" in {
         stubRetrieveFullName(testJourneyId)(NOT_FOUND)
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[JsString](testJourneyId, FullNameKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[JsString](testJourneyId, FullNameKey))
 
         result mustBe None
       }
     }
   }
 
-  s"retrieveSoleTraderIdentification($testJourneyId, $DateOfBirthKey)" should {
+  s"retrieveSoleTraderDetails($testJourneyId, $DateOfBirthKey)" should {
     "return date of birth" when {
       "the date of birth key is given and date of birth is stored against the journeyId" in {
         stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[LocalDate](testJourneyId, DateOfBirthKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[LocalDate](testJourneyId, DateOfBirthKey))
 
         result mustBe Some(testDateOfBirth)
       }
@@ -105,18 +116,18 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
     "return None" when {
       "the date of birth key is given but there is no date of birth stored against the journeyId" in {
         stubRetrieveDob(testJourneyId)(NOT_FOUND)
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[LocalDate](testJourneyId, DateOfBirthKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[LocalDate](testJourneyId, DateOfBirthKey))
 
         result mustBe None
       }
     }
   }
 
-  s"retrieveSoleTraderIdentification($testJourneyId, $NinoKey)" should {
+  s"retrieveSoleTraderDetails($testJourneyId, $NinoKey)" should {
     "return nino" when {
       "the nino key is given and nino is stored against the journeyId" in {
         stubRetrieveNino(testJourneyId)(OK, testNino)
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[JsString](testJourneyId, NinoKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[JsString](testJourneyId, NinoKey))
 
         result mustBe Some(JsString(testNino))
       }
@@ -125,18 +136,18 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
     "return None" when {
       "the nino key is given but there is no nino stored against the journeyId" in {
         stubRetrieveNino(testJourneyId)(NOT_FOUND)
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[JsString](testJourneyId, NinoKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[JsString](testJourneyId, NinoKey))
 
         result mustBe None
       }
     }
   }
 
-  s"retrieveSoleTraderIdentification($testJourneyId, $SautrKey)" should {
+  s"retrieveSoleTraderDetails($testJourneyId, $SautrKey)" should {
     "return sautr" when {
       "the sautr key is given and sautr is stored against the journeyId" in {
         stubRetrieveSautr(testJourneyId)(OK, testSautr)
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[JsString](testJourneyId, SautrKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[JsString](testJourneyId, SautrKey))
 
         result mustBe Some(JsString(testSautr))
       }
@@ -146,7 +157,7 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
       "the sautr key is given but there is no sautr stored against the journeyId" in {
         stubRetrieveSautr(testJourneyId)(NOT_FOUND)
 
-        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderIdentification[JsString](testJourneyId, SautrKey))
+        val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails[JsString](testJourneyId, SautrKey))
 
         result mustBe None
       }
@@ -192,11 +203,11 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
     }
   }
 
-  s"removeSoleTraderIdentification($testJourneyId, $SautrKey)" should {
+  s"removeSoleTraderDetails($testJourneyId, $SautrKey)" should {
     "return SuccessfullyRemoved" when {
       "the sautr successfully removed from the database" in {
         stubRemoveSautr(testJourneyId)(NO_CONTENT)
-        val result = await(soleTraderIdentificationConnector.removeSoleTraderIdentification(testJourneyId, SautrKey))
+        val result = await(soleTraderIdentificationConnector.removeSoleTraderDetails(testJourneyId, SautrKey))
 
         result mustBe SuccessfullyRemoved
       }
@@ -207,7 +218,7 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
         stubRemoveSautr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
 
         intercept[InternalServerException] {
-          await(soleTraderIdentificationConnector.removeSoleTraderIdentification(testJourneyId, SautrKey))
+          await(soleTraderIdentificationConnector.removeSoleTraderDetails(testJourneyId, SautrKey))
         }
       }
     }

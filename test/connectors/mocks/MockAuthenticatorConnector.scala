@@ -23,7 +23,7 @@ import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.AuthenticatorConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.AuthenticatorDetails
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.AuthenticatorResponse
 
 import scala.concurrent.Future
@@ -38,12 +38,12 @@ trait MockAuthenticatorConnector extends MockitoSugar with BeforeAndAfterEach {
     reset(mockAuthenticatorConnector)
   }
 
-  def mockMatchSoleTraderDetails(authenticatorDetails: AuthenticatorDetails)(response: Future[AuthenticatorResponse]): OngoingStubbing[_] =
+  def mockMatchSoleTraderDetails(authenticatorDetails: IndividualDetails)(response: Future[AuthenticatorResponse]): OngoingStubbing[_] =
     when(
       mockAuthenticatorConnector.matchSoleTraderDetails(ArgumentMatchers.eq(authenticatorDetails))(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
 
-  def verifyMatchSoleTraderDetails(authenticatorDetails: AuthenticatorDetails): Unit =
+  def verifyMatchSoleTraderDetails(authenticatorDetails: IndividualDetails): Unit =
     verify(mockAuthenticatorConnector).matchSoleTraderDetails(ArgumentMatchers.eq(authenticatorDetails))(ArgumentMatchers.any[HeaderCarrier])
 
 }

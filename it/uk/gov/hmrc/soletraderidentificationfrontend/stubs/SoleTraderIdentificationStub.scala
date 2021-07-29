@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsString, JsValue, Json}
+import play.api.libs.json.{JsBoolean, JsString, JsValue, Json}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationStatus, FullName, RegistrationStatus}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
@@ -58,6 +58,12 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       status = status
     )
 
+  def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/sole-trader-identification/journey/$journeyId/identifiersMatch", body = JsBoolean(identifiersMatch)
+    ).thenReturn(
+      status = status
+    )
 
   def stubRetrieveSoleTraderDetails(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
@@ -151,5 +157,11 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
     val jsonBody = Json.toJsObject(registrationStatus)
     WiremockHelper.verifyPut(uri = s"/sole-trader-identification/journey/$journeyId/registration", optBody = Some(jsonBody.toString()))
   }
+
+  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean): Unit =
+    WiremockHelper.verifyPut(
+      uri = s"/sole-trader-identification/journey/$journeyId/identifiersMatch",
+      optBody = Some(JsBoolean(identifiersMatch).toString())
+    )
 
 }
