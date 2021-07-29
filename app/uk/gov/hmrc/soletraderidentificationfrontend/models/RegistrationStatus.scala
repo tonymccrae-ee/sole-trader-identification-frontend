@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import play.api.libs.json.{JsObject, JsResult, JsSuccess, JsValue, Json, OFormat}
+import play.api.libs.json._
 import uk.gov.hmrc.http.InternalServerException
 
 sealed trait RegistrationStatus

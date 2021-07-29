@@ -38,10 +38,12 @@ trait MockAuthenticatorService extends MockitoSugar with BeforeAndAfterEach {
     reset(mockAuthenticatorService)
   }
 
-  def mockMatchSoleTraderDetails(individualDetails: IndividualDetails,
+  def mockMatchSoleTraderDetails(journeyId: String,
+                                 individualDetails: IndividualDetails,
                                  journeyConfig: JourneyConfig
                                 )(response: Future[SoleTraderVerificationResult]): OngoingStubbing[_] =
     when(mockAuthenticatorService.matchSoleTraderDetails(
+      ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(individualDetails),
       ArgumentMatchers.eq(journeyConfig),
     )(ArgumentMatchers.any[HeaderCarrier])

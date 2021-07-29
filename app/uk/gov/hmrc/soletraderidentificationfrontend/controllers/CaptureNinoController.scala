@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -26,6 +25,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageC
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_nino_page
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton

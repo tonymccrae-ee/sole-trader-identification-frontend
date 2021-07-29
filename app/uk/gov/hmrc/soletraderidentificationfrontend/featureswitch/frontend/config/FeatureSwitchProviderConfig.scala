@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.models.FeatureSwitchProvider
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class FeatureSwitchProviderConfig @Inject()(configuration: Configuration) {

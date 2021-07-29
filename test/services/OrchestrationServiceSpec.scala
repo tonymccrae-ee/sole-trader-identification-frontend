@@ -20,31 +20,32 @@ import helpers.TestConstants._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
-import services.mocks.{MockAuthenticatorService, MockJourneyService, MockSoleTraderIdentificationService}
+import services.mocks.{MockAuditService, MockAuthenticatorService, MockJourneyService, MockSoleTraderIdentificationService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
-import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{Matched, Mismatch}
+import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.services.OrchestrationService
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class OrchestrationServiceSpec extends AnyWordSpec
   with Matchers
   with MockJourneyService
   with MockAuthenticatorService
-  with MockSoleTraderIdentificationService {
+  with MockSoleTraderIdentificationService
+  with MockAuditService {
 
-  object TestService extends OrchestrationService(mockJourneyService, mockAuthenticatorService, mockSoleTraderIdentificationService)
+  object TestService extends OrchestrationService(mockJourneyService, mockAuthenticatorService, mockSoleTraderIdentificationService, mockAuditService)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   "orchestrate" should {
     "return SautrMatched" when {
       "the enable sautr check is enabled and the users details match those in the database" in {
-        mockGetJourneyConfig(testJourneyId)(Future.successful(testSoleTraderJourneyConfig(enableSautrCheck = true)))
-        mockMatchSoleTraderDetails(testIndividualDetails, testSoleTraderJourneyConfig(enableSautrCheck = true))(Future.successful(Right(Matched)))
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(enableSautrCheck = true)))
+        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetails, testJourneyConfig(enableSautrCheck = true))(Future.successful(Right(Matched)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.orchestrate(testJourneyId, testIndividualDetails))
@@ -57,8 +58,8 @@ class OrchestrationServiceSpec extends AnyWordSpec
 
     "return NoSautrProvided" when {
       "the enable sautr check is disabled and the users details match those in the database" in {
-        mockGetJourneyConfig(testJourneyId)(Future.successful(testSoleTraderJourneyConfig()))
-        mockMatchSoleTraderDetails(testIndividualDetailsNoSautr, testSoleTraderJourneyConfig())(Future.successful(Right(Matched)))
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig()))
+        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetailsNoSautr, testJourneyConfig())(Future.successful(Right(Matched)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
         mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
         mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
@@ -75,8 +76,8 @@ class OrchestrationServiceSpec extends AnyWordSpec
 
     "return DetailsMismatch" when {
       "the enable sautr check is disabled and the details the user provided do not match those in the database" in {
-        mockGetJourneyConfig(testJourneyId)(Future.successful(testSoleTraderJourneyConfig()))
-        mockMatchSoleTraderDetails(testIndividualDetailsNoSautr, testSoleTraderJourneyConfig())(Future.successful(Left(Mismatch)))
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig()))
+        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetailsNoSautr, testJourneyConfig())(Future.successful(Left(Mismatch)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.orchestrate(testJourneyId, testIndividualDetailsNoSautr))
@@ -89,8 +90,8 @@ class OrchestrationServiceSpec extends AnyWordSpec
 
     "return DetailsMismatch" when {
       "the enable sautr check is enabled and the details the user provided do not match those in the database" in {
-        mockGetJourneyConfig(testJourneyId)(Future.successful(testSoleTraderJourneyConfig(enableSautrCheck = true)))
-        mockMatchSoleTraderDetails(testIndividualDetailsNoSautr, testSoleTraderJourneyConfig(enableSautrCheck = true))(Future.successful(Left(Mismatch)))
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(enableSautrCheck = true)))
+        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetailsNoSautr, testJourneyConfig(enableSautrCheck = true))(Future.successful(Left(Mismatch)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.orchestrate(testJourneyId, testIndividualDetailsNoSautr))

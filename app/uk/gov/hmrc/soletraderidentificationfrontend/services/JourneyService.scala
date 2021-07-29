@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.CreateJourneyConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

@@ -39,35 +39,35 @@ class JourneyServiceSpec extends AnyWordSpec with Matchers with MockJourneyConne
   "createJourney" should {
     "return a journeyID and store the provided journey config" in {
       mockCreateJourney(response = Future.successful(testJourneyId))
-      mockInsertJourneyConfig(testJourneyId, testInternalId, testSoleTraderJourneyConfig())(response = Future.successful(mock[WriteResult]))
+      mockInsertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig())(response = Future.successful(mock[WriteResult]))
 
-      val result = await(TestService.createJourney(testSoleTraderJourneyConfig(), testInternalId))
+      val result = await(TestService.createJourney(testJourneyConfig(), testInternalId))
 
       result mustBe testJourneyId
       verifyCreateJourney()
-      verifyInsertJourneyConfig(testJourneyId, testInternalId, testSoleTraderJourneyConfig())
+      verifyInsertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig())
     }
 
     "throw an exception" when {
       "create journey API returns an invalid response" in {
         mockCreateJourney(response = Future.failed(new InternalServerException("Invalid response returned from create journey API")))
-        mockInsertJourneyConfig(testJourneyId, testInternalId, testSoleTraderJourneyConfig())(response = Future.successful(mock[WriteResult]))
+        mockInsertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig())(response = Future.successful(mock[WriteResult]))
 
         intercept[InternalServerException](
-          await(TestService.createJourney(testSoleTraderJourneyConfig(), testInternalId))
+          await(TestService.createJourney(testJourneyConfig(), testInternalId))
         )
         verifyCreateJourney()
       }
 
       "the journey config is not stored" in {
         mockCreateJourney(response = Future.successful(testJourneyId))
-        mockInsertJourneyConfig(testJourneyId, testInternalId, testSoleTraderJourneyConfig())(response = Future.failed(GenericDriverException("failed to insert")))
+        mockInsertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig())(response = Future.failed(GenericDriverException("failed to insert")))
 
         intercept[GenericDriverException](
-          await(TestService.createJourney(testSoleTraderJourneyConfig(), testInternalId))
+          await(TestService.createJourney(testJourneyConfig(), testInternalId))
         )
         verifyCreateJourney()
-        verifyInsertJourneyConfig(testJourneyId, testInternalId, testSoleTraderJourneyConfig())
+        verifyInsertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig())
       }
     }
   }
@@ -75,11 +75,11 @@ class JourneyServiceSpec extends AnyWordSpec with Matchers with MockJourneyConne
   "getJourneyConfig" should {
     "return the journey config for a specific journey id" when {
       "the journey id exists in the database" in {
-        mockFindById(testJourneyId)(Future.successful(Some(testSoleTraderJourneyConfig())))
+        mockFindById(testJourneyId)(Future.successful(Some(testJourneyConfig())))
 
         val result = await(TestService.getJourneyConfig(testJourneyId))
 
-        result mustBe testSoleTraderJourneyConfig()
+        result mustBe testJourneyConfig()
         verifyFindById(testJourneyId)
       }
     }
