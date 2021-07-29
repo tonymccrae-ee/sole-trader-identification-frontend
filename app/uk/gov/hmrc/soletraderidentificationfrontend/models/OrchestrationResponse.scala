@@ -23,3 +23,5 @@ case object SautrMatched extends OrchestrationResponse
 case object NoSautrProvided extends OrchestrationResponse
 
 case object DetailsMismatch extends OrchestrationResponse
+
+case object DetailsNotFound extends OrchestrationResponse

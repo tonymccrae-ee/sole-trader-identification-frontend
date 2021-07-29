@@ -291,6 +291,28 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
         verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
       }
+      "when authenticator returns a details not found" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
+        stubAuth(OK, successfulAuthResponse())
+        stubMatch(testIndividualDetails)(UNAUTHORIZED, notFoundErrorJson)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+
+        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.DetailsNotFoundController.show(testJourneyId).url)
+        )
+      }
     }
   }
 

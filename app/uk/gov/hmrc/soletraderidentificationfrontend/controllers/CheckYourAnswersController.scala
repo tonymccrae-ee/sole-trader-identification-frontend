@@ -21,7 +21,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{DetailsMismatch, NoSautrProvided, SautrMatched}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{DetailsMismatch, DetailsNotFound, NoSautrProvided, SautrMatched}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, OrchestrationService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
@@ -71,6 +71,8 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                 Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case DetailsMismatch =>
                 Redirect(routes.PersonalInformationErrorController.show(journeyId))
+              case DetailsNotFound =>
+                Redirect(routes.DetailsNotFoundController.show(journeyId).url)
             }
           case _ =>
             throw new InternalServerException("Fail to retrieve data from database")
