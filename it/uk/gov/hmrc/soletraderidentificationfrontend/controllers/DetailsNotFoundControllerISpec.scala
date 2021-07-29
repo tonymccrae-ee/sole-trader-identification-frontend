@@ -51,4 +51,28 @@ class DetailsNotFoundControllerISpec extends ComponentSpecHelper
       }
     }
   }
+  "GET /details-not-found" should {
+    "remove all data" when {
+      "the user tries again" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRemoveAllData(testJourneyId)(NO_CONTENT)
+
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/try-again")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CaptureFullNameController.show(testJourneyId).url)
+        )
+      }
+    }
+  }
 }

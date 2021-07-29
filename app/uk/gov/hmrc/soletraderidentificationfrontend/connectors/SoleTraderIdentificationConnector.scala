@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
-import play.api.libs.json.{Reads, Writes}
+import play.api.libs.json.{JsObject, Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser._
@@ -55,6 +55,10 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
                               dataKey: String
                              )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     http.DELETE[SuccessfullyRemoved.type](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey")(RemoveSoleTraderDetailsHttpReads, hc, ec)
+
+  def removeAllData(journeyId: String,
+                   )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    http.DELETE[SuccessfullyRemoved.type](appConfig.soleTraderIdentificationUrl(journeyId))(RemoveSoleTraderDetailsHttpReads, hc, ec)
 
 }
 
