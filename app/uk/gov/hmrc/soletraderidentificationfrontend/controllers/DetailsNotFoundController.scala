@@ -20,16 +20,18 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.services.JourneyService
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.details_not_found_page
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
+@Singleton
 class DetailsNotFoundController @Inject()(mcc: MessagesControllerComponents,
                                           view: details_not_found_page,
                                           val authConnector: AuthConnector,
-                                          journeyService: JourneyService
+                                          journeyService: JourneyService,
+                                          soleTraderIdentificationService: SoleTraderIdentificationService
                                          )(implicit val config: AppConfig,
                                            executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
@@ -40,9 +42,18 @@ class DetailsNotFoundController @Inject()(mcc: MessagesControllerComponents,
           journeyConfig =>
             Ok(view(
               pageConfig = journeyConfig.pageConfig,
-              formAction = routes.DetailsNotFoundController.show(journeyId),
+              redirectLocation = routes.DetailsNotFoundController.tryAgain(journeyId),
               journeyId = journeyId
             ))
+        }
+      }
+  }
+
+  def tryAgain(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised() {
+        soleTraderIdentificationService.removeAllData(journeyId).map {
+          _ => Redirect(routes.CaptureFullNameController.show(journeyId))
         }
       }
   }

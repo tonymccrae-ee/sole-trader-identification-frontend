@@ -92,6 +92,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, SautrKey)
 
+  def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    connector.removeAllData(journeyId)
+
 }
 
 object SoleTraderIdentificationService {
