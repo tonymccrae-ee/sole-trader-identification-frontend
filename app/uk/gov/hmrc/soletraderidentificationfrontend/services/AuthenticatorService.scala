@@ -21,6 +21,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.connectors.AuthenticatorConn
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{Matched, Mismatch, SoleTraderVerificationResult}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, JourneyConfig}
 
+
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
