@@ -56,7 +56,7 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
                              )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     http.DELETE[SuccessfullyRemoved.type](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey")(RemoveSoleTraderDetailsHttpReads, hc, ec)
 
-  def removeAllData(journeyId: String,
+  def removeAllData(journeyId: String
                    )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     http.DELETE[SuccessfullyRemoved.type](appConfig.soleTraderIdentificationUrl(journeyId))(RemoveSoleTraderDetailsHttpReads, hc, ec)
 
