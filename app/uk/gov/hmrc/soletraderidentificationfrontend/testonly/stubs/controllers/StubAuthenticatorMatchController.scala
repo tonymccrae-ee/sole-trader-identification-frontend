@@ -33,6 +33,8 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
       authenticatorDetails.lastName.toLowerCase match {
         case "fail" =>
           Unauthorized(Json.obj("errors" -> "DOB does not exist in CID"))
+        case "not-found" =>
+          Unauthorized(Json.obj("errors" -> "CID returned no record"))
         case "deceased" =>
           FailedDependency
         case "no-sautr" =>
