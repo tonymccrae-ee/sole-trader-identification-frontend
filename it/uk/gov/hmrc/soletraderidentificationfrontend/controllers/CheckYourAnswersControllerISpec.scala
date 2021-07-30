@@ -22,7 +22,8 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Mismatch
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled, SoleTraderDetailsMatching}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, AuthenticatorStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAudit}
@@ -246,6 +247,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetailsNoSautr))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+        stubStoreAuthenticatorFailureResponse(testJourneyId, Mismatch)(OK)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -283,7 +285,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
-
+        stubStoreAuthenticatorFailureResponse(testJourneyId, Mismatch)(OK)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -310,6 +312,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+        stubStoreAuthenticatorFailureResponse(testJourneyId, Mismatch)(OK)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
@@ -337,6 +340,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubMatch(testIndividualDetails)(UNAUTHORIZED, notFoundErrorJson)
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+        stubStoreAuthenticatorFailureResponse(testJourneyId, SoleTraderDetailsMatching.NotFound)(OK)
+
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 

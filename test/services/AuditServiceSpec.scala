@@ -24,6 +24,7 @@ import play.api.test.Helpers._
 import services.mocks.{MockJourneyService, MockSoleTraderIdentificationService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{Individual, SoleTrader}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Mismatch
 import uk.gov.hmrc.soletraderidentificationfrontend.services.AuditService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -50,7 +51,7 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
         result mustBe()
 
         verifySendExplicitAuditIndividuals()
-        auditEventCaptor.getValue mustBe testIndividualAuditEventJson(identifiersMatch = true)
+        auditEventCaptor.getValue mustBe testIndividualSuccessfulAuditEventJson
       }
 
       "the entity is an individual and identifiers do not match" in {
@@ -59,14 +60,14 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
         mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))
         mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
         mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoSautr)))
+        mockRetrieveAuthenticatorFailureResponse(testJourneyId)(Future.successful(Some(Mismatch.toString)))
 
         val result: Unit = await(TestService.auditIndividualJourney(testJourneyId))
 
         result mustBe()
 
         verifySendExplicitAuditIndividuals()
-        auditEventCaptor.getValue mustBe testIndividualAuditEventJson()
+        auditEventCaptor.getValue mustBe testIndividualFailureAuditEventJson
       }
     }
 

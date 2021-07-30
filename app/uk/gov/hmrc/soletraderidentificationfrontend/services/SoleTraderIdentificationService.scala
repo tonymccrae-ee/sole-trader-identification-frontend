@@ -21,6 +21,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{AuthenticatorResponse, SoleTraderDetailsMatchFailure}
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService._
 
@@ -46,7 +47,14 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def storeIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[Boolean](journeyId, IdentifiersMatchKey, identifiersMatch)
 
-  def storeAuthenticatorDetails(journeyId: String, authenticatorDetails: IndividualDetails)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+  def storeAuthenticatorFailureResponse(journeyId: String,
+                                        authenticatorFailureResponse: SoleTraderDetailsMatchFailure
+                                       )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[String](journeyId, AuthenticatorFailureResponseKey, authenticatorFailureResponse.toString)
+
+  def storeAuthenticatorDetails(journeyId: String,
+                                authenticatorDetails: IndividualDetails
+                               )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[IndividualDetails](journeyId, AuthenticatorDetailsKey, authenticatorDetails)
 
   def storeBusinessVerificationStatus(journeyId: String,
@@ -89,6 +97,10 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                                   )(implicit hc: HeaderCarrier): Future[Option[IndividualDetails]] =
     connector.retrieveSoleTraderDetails[IndividualDetails](journeyId, AuthenticatorDetailsKey)
 
+  def retrieveAuthenticatorFailureResponse(journeyId: String
+                                          )(implicit hc: HeaderCarrier): Future[Option[String]] =
+    connector.retrieveSoleTraderDetails[String](journeyId, AuthenticatorFailureResponseKey)
+
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, SautrKey)
 
@@ -104,6 +116,7 @@ object SoleTraderIdentificationService {
   val DateOfBirthKey = "dateOfBirth"
   val IdentifiersMatchKey: String = "identifiersMatch"
   val AuthenticatorDetailsKey: String = "authenticatorDetails"
+  val AuthenticatorFailureResponseKey: String = "authenticatorFailureResponse"
   val VerificationStatusKey = "businessVerification"
   val RegistrationKey: String = "registration"
 }

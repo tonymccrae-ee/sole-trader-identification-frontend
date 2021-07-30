@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{Matched, NotFound}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Matched
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import javax.inject.{Inject, Singleton}
@@ -54,12 +54,15 @@ class OrchestrationService @Inject()(journeyService: JourneyService,
                   NoSautrProvided
                 }
             }
-          case Left(SoleTraderDetailsMatching.NotFound) => soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
+          case Left(SoleTraderDetailsMatching.NotFound) =>
+            soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
             _ => DetailsNotFound
           }
           case _ =>
             soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
-              _ => DetailsMismatch
+              _ =>
+                auditService.auditIndividualJourney(journeyId)
+                DetailsMismatch
             }
         }
     }

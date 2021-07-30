@@ -20,6 +20,7 @@ import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.Individual
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +30,6 @@ class AuditService @Inject()(auditConnector: AuditConnector,
                              journeyService: JourneyService,
                              soleTraderIdentificationService: SoleTraderIdentificationService) {
 
-
   def auditIndividualJourney(journeyId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     for {
       journeyConfig <- journeyService.getJourneyConfig(journeyId)
@@ -38,10 +38,16 @@ class AuditService @Inject()(auditConnector: AuditConnector,
       optDateOfBirth <- soleTraderIdentificationService.retrieveDateOfBirth(journeyId)
       optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
       optIdentifiersMatch <- soleTraderIdentificationService.retrieveIdentifiersMatch(journeyId)
-      optAuthenticatorDetails <- soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
+      optAuthenticatorResponse <-
+        optIdentifiersMatch match {
+          case Some(true) =>
+            soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
+          case _ =>
+            soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
+        }
     } yield {
-      (optFullName, optDateOfBirth, optNino, optIdentifiersMatch, optAuthenticatorDetails) match {
-        case (Some(fullName), Some(dateOfBirth), Some(nino), Some(identifiersMatch), Some(authenticatorDetails)) =>
+      (optFullName, optDateOfBirth, optNino, optIdentifiersMatch, optAuthenticatorResponse) match {
+        case (Some(fullName), Some(dateOfBirth), Some(nino), Some(identifiersMatch), Some(authenticatorDetails: IndividualDetails)) =>
           Json.obj(
             "firstName" -> fullName.firstName,
             "lastName" -> fullName.lastName,
@@ -49,6 +55,15 @@ class AuditService @Inject()(auditConnector: AuditConnector,
             "dateOfBirth" -> dateOfBirth,
             "identifiersMatch" -> identifiersMatch,
             "authenticatorResponse" -> Json.toJson(authenticatorDetails)
+          )
+        case (Some(fullName), Some(dateOfBirth), Some(nino), Some(identifiersMatch), Some(authenticatorFailureResponse: String)) =>
+          Json.obj(
+            "firstName" -> fullName.firstName,
+            "lastName" -> fullName.lastName,
+            "nino" -> nino,
+            "dateOfBirth" -> dateOfBirth,
+            "identifiersMatch" -> identifiersMatch,
+            "authenticatorResponse" -> authenticatorFailureResponse
           )
         case _ =>
           throw new InternalServerException(s"Not enough information to audit individual journey for Journey ID $journeyId")

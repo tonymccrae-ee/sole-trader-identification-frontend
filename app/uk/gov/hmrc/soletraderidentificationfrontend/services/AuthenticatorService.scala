@@ -39,13 +39,17 @@ class AuthenticatorService @Inject()(authenticatorConnector: AuthenticatorConnec
             _ => Right(Matched)
           }
         } else
-          Future.successful(Left(Mismatch))
+          soleTraderIdentificationService.storeAuthenticatorFailureResponse(journeyId, Mismatch).map {
+            _ => Left(Mismatch)
+          }
       case Right(authenticatorDetails) =>
         soleTraderIdentificationService.storeAuthenticatorDetails(journeyId, authenticatorDetails).map {
           _ => Right(Matched)
         }
       case Left(failureReason) =>
-        Future.successful(Left(failureReason))
+        soleTraderIdentificationService.storeAuthenticatorFailureResponse(journeyId, failureReason).map {
+          _ => Left(failureReason)
+        }
     }
 
 }
