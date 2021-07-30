@@ -51,6 +51,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
+  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibilityStatement")
 
   def soleTraderIdentificationUrl(journeyId: String): String = s"$backendUrl/sole-trader-identification/journey/$journeyId"
 
