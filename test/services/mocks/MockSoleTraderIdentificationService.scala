@@ -23,6 +23,7 @@ import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{AuthenticatorResponse, SoleTraderDetailsMatchFailure}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationStatus, FullName, IndividualDetails, RegistrationStatus}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 
@@ -81,6 +82,13 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
 
+  def mockRetrieveAuthenticatorFailureResponse(journeyId: String)
+                                              (response: Future[Option[String]]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.retrieveAuthenticatorFailureResponse(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
   def mockRetrieveBusinessVerificationResponse(journeyId: String)
                                               (response: Future[Option[BusinessVerificationStatus]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveBusinessVerificationStatus(
@@ -109,6 +117,14 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     when(mockSoleTraderIdentificationService.storeIdentifiersMatch(
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(identifiersMatch)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
+  def mockStoreAuthenticatorFailureResponse(journeyId: String, authenticatorFailureResponse: SoleTraderDetailsMatchFailure)
+                                           (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.storeAuthenticatorFailureResponse(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(authenticatorFailureResponse)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
 

@@ -18,6 +18,7 @@ package helpers
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{EntityType, SoleTrader}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Mismatch
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -89,13 +90,23 @@ object TestConstants {
     entityType = entityType
   )
 
-  def testIndividualAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(
+  val testIndividualSuccessfulAuditEventJson: JsObject = Json.obj(
     "firstName" -> testFirstName,
     "lastName" -> testLastName,
     "dateOfBirth" -> testDateOfBirth,
     "nino" -> testNino,
-    "identifiersMatch" -> identifiersMatch,
+    "identifiersMatch" -> true,
     "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr)
+  )
+
+
+  val testIndividualFailureAuditEventJson: JsObject = Json.obj(
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "dateOfBirth" -> testDateOfBirth,
+    "nino" -> testNino,
+    "identifiersMatch" -> false,
+    "authenticatorResponse" -> Mismatch.toString
   )
 
 

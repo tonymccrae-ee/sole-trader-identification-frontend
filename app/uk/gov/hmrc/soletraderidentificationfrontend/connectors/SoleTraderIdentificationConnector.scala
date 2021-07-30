@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
-import play.api.libs.json.{JsObject, Reads, Writes}
+import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReadsInstances}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser._
@@ -39,14 +39,15 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
                                            hc: HeaderCarrier): Future[Option[DataType]] =
     http.GET[Option[DataType]](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey")
 
-  def retrieveSoleTraderDetails(journeyId: String
-                               )(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
+  def retrieveSoleTraderDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[SoleTraderDetails]] =
     http.GET[Option[SoleTraderDetails]](appConfig.soleTraderIdentificationUrl(journeyId))
 
   def retrieveIndividualDetails(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[IndividualDetails]] =
     http.GET[Option[IndividualDetails]](appConfig.soleTraderIdentificationUrl(journeyId))(RetrieveIndividualDetailsHttpReads, hc, ec)
 
-  def storeData[DataType](journeyId: String, dataKey: String, data: DataType
+  def storeData[DataType](journeyId: String,
+                          dataKey: String,
+                          data: DataType
                          )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[SuccessfullyStored.type] = {
     http.PUT[DataType, SuccessfullyStored.type](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey", data)
   }
@@ -56,8 +57,7 @@ class SoleTraderIdentificationConnector @Inject()(http: HttpClient,
                              )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     http.DELETE[SuccessfullyRemoved.type](s"${appConfig.soleTraderIdentificationUrl(journeyId)}/$dataKey")(RemoveSoleTraderDetailsHttpReads, hc, ec)
 
-  def removeAllData(journeyId: String
-                   )(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+  def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     http.DELETE[SuccessfullyRemoved.type](appConfig.soleTraderIdentificationUrl(journeyId))(RemoveSoleTraderDetailsHttpReads, hc, ec)
 
 }
