@@ -47,12 +47,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   def reportAProblemNonJSUrl(serviceIdentifier: String): String =
     s"$contactHost/contact/problem_reports_nonjs?service=$serviceIdentifier"
 
-  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
-  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
-  lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
-  lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
-  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibilityStatement")
-
   def soleTraderIdentificationUrl(journeyId: String): String = s"$backendUrl/sole-trader-identification/journey/$journeyId"
 
   lazy val createJourneyUrl: String = s"$backendUrl/sole-trader-identification/journey"
