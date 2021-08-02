@@ -97,6 +97,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                                   )(implicit hc: HeaderCarrier): Future[Option[IndividualDetails]] =
     connector.retrieveSoleTraderDetails[IndividualDetails](journeyId, AuthenticatorDetailsKey)
 
+  def retrieveRegistrationStatus(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationStatus]] =
+    connector.retrieveSoleTraderDetails[RegistrationStatus](journeyId, RegistrationKey)
+
   def retrieveAuthenticatorFailureResponse(journeyId: String
                                           )(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveSoleTraderDetails[String](journeyId, AuthenticatorFailureResponseKey)

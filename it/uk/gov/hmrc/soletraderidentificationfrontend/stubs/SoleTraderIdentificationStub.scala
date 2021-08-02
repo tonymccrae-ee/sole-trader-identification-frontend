@@ -90,11 +90,28 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
 
   def stubRetrieveAuthenticatorDetails(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId/authenticatorDetails"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
+  def stubRetrieveAuthenticatorFailureResponse(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId/authenticatorFailureResponse"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
+  def stubRetrieveIndividualDetails(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId"
     ).thenReturn(
       status = status,
       body = body
     )
+
 
   def stubRetrieveFullName(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
@@ -167,6 +184,22 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       body = body
     )
 
+  def stubRetrieveIdentifiersMatch(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId/identifiersMatch"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
+  def stubRetrieveRegistrationStatus(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId/registration"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
   def stubStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus)(status: Int): StubMapping = {
     when(method = PUT,
       uri = s"/sole-trader-identification/journey/$journeyId/registration",
@@ -179,6 +212,21 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
   def verifyStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus): Unit = {
     val jsonBody = Json.toJsObject(registrationStatus)
     WiremockHelper.verifyPut(uri = s"/sole-trader-identification/journey/$journeyId/registration", optBody = Some(jsonBody.toString()))
+  }
+
+  def verifyStoreAuthenticatorDetails(journeyId: String, authenticatorDetails: IndividualDetails): Unit = {
+    val jsonBody = Json.toJsObject(authenticatorDetails)
+    WiremockHelper.verifyPut(
+      uri = s"/sole-trader-identification/journey/$journeyId/authenticatorDetails",
+      optBody = Some(jsonBody.toString())
+    )
+  }
+
+  def verifyStoreAuthenticatorFailureResponse(journeyId: String, authenticatorFailureResponse: SoleTraderDetailsMatchFailure): Unit = {
+    WiremockHelper.verifyPut(
+      uri = s"/sole-trader-identification/journey/$journeyId/authenticatorFailureResponse",
+      optBody = Some(JsString(authenticatorFailureResponse.toString).toString())
+    )
   }
 
   def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean): Unit =

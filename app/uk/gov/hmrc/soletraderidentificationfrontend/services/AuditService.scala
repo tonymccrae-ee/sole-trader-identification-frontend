@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.Individual
+import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{Individual, SoleTrader}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 
 import javax.inject.{Inject, Singleton}
@@ -32,8 +32,6 @@ class AuditService @Inject()(auditConnector: AuditConnector,
 
   def auditIndividualJourney(journeyId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     for {
-      journeyConfig <- journeyService.getJourneyConfig(journeyId)
-      if journeyConfig.entityType == Individual
       optFullName <- soleTraderIdentificationService.retrieveFullName(journeyId)
       optDateOfBirth <- soleTraderIdentificationService.retrieveDateOfBirth(journeyId)
       optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
@@ -73,6 +71,59 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     auditJson =>
       auditConnector.sendExplicitAudit(
         auditType = "IndividualIdentification",
+        detail = auditJson
+      )
+  }
+
+  def auditSoleTraderJourney(journeyId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
+    for {
+      optFullName <- soleTraderIdentificationService.retrieveFullName(journeyId)
+      optDateOfBirth <- soleTraderIdentificationService.retrieveDateOfBirth(journeyId)
+      optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
+      optSautr <- soleTraderIdentificationService.retrieveSautr(journeyId)
+      optIdentifiersMatch <- soleTraderIdentificationService.retrieveIdentifiersMatch(journeyId)
+      optAuthenticatorResponse <-
+        optIdentifiersMatch match {
+          case Some(true) =>
+            soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
+          case _ =>
+            soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
+        }
+      optBusinessVerificationStatus <- soleTraderIdentificationService.retrieveBusinessVerificationStatus(journeyId)
+      optRegistrationStatus <- soleTraderIdentificationService.retrieveRegistrationStatus(journeyId)
+    } yield {
+      (optFullName, optDateOfBirth, optNino, optSautr, optIdentifiersMatch, optAuthenticatorResponse, optBusinessVerificationStatus, optRegistrationStatus) match {
+        case (Some(fullName), Some(dateOfBirth), Some(nino), optSautr, Some(identifiersMatch), Some(authenticatorResponse), Some(businessVerificationStatus), Some(registrationStatus)) =>
+          val sautrBlock =
+            optSautr match {
+              case Some(sautr) => Json.obj("userSAUTR" -> sautr)
+              case _ => Json.obj()
+            }
+
+          val authenticatorResponseBlock =
+            authenticatorResponse match {
+              case authenticatorDetails: IndividualDetails => Json.obj("authenticatorResponse" -> Json.toJson(authenticatorDetails))
+              case authenticatorFailureResponse: String => Json.obj("authenticatorResponse" -> authenticatorFailureResponse)
+            }
+
+          Json.obj(
+            "businessType" -> "Sole Trader",
+            "firstName" -> fullName.firstName,
+            "lastName" -> fullName.lastName,
+            "nino" -> nino,
+            "dateOfBirth" -> dateOfBirth,
+            "sautrMatch" -> identifiersMatch,
+            "VerificationStatus" -> businessVerificationStatus,
+            "RegisterApiStatus" -> registrationStatus
+          ) ++ sautrBlock ++ authenticatorResponseBlock
+        case _ =>
+          throw new InternalServerException(s"Not enough information to audit sole trader journey for Journey ID $journeyId")
+      }
+    }
+  }.map {
+    auditJson =>
+      auditConnector.sendExplicitAudit(
+        auditType = "SoleTraderRegistration",
         detail = auditJson
       )
   }

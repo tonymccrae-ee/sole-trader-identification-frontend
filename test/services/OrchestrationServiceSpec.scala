@@ -45,7 +45,7 @@ class OrchestrationServiceSpec extends AnyWordSpec
     "return SautrMatched" when {
       "the enable sautr check is enabled and the users details match those in the database" in {
         mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(enableSautrCheck = true)))
-        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetails, testJourneyConfig(enableSautrCheck = true))(Future.successful(Right(Matched)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(enableSautrCheck = true))(Future.successful(Right(Matched)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.orchestrate(testJourneyId, testIndividualDetails))
@@ -59,7 +59,7 @@ class OrchestrationServiceSpec extends AnyWordSpec
     "return NoSautrProvided" when {
       "the enable sautr check is disabled and the users details match those in the database" in {
         mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig()))
-        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetailsNoSautr, testJourneyConfig())(Future.successful(Right(Matched)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig())(Future.successful(Right(Matched)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
         mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
         mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
@@ -77,8 +77,10 @@ class OrchestrationServiceSpec extends AnyWordSpec
     "return DetailsMismatch" when {
       "the enable sautr check is disabled and the details the user provided do not match those in the database" in {
         mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig()))
-        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetailsNoSautr, testJourneyConfig())(Future.successful(Left(Mismatch)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig())(Future.successful(Left(Mismatch)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.orchestrate(testJourneyId, testIndividualDetailsNoSautr))
 
@@ -86,13 +88,13 @@ class OrchestrationServiceSpec extends AnyWordSpec
 
         verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
       }
-    }
 
-    "return DetailsMismatch" when {
       "the enable sautr check is enabled and the details the user provided do not match those in the database" in {
         mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(enableSautrCheck = true)))
-        mockMatchSoleTraderDetails(testJourneyId,testIndividualDetailsNoSautr, testJourneyConfig(enableSautrCheck = true))(Future.successful(Left(Mismatch)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig(enableSautrCheck = true))(Future.successful(Left(Mismatch)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.orchestrate(testJourneyId, testIndividualDetailsNoSautr))
 

@@ -25,7 +25,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService: SoleTraderIdentificationService,
-                                                 registrationConnector: RegistrationConnector
+                                                 registrationConnector: RegistrationConnector,
+                                                 auditService: AuditService,
                                                 )(implicit ec: ExecutionContext) {
 
   def register(journeyId: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
@@ -47,6 +48,9 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
         throw new InternalServerException(s"Missing business verification state in database for $journeyId")
     }
     _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, registrationStatus)
-  } yield registrationStatus
+  } yield {
+    auditService.auditSoleTraderJourney(journeyId)
+    registrationStatus
+  }
 
 }

@@ -16,14 +16,27 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import play.api.libs.json.Json
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsBoolean, Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testJourneyId, testNino, testSafeId, testSautr}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, Registered, RegistrationFailed}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, RegisterStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
+import uk.gov.hmrc.soletraderidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAudit}
 
 class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with SoleTraderIdentificationStub with RegisterStub {
+
+  def extraConfig = Map(
+    "auditing.enabled" -> "true",
+    "auditing.consumer.baseUri.host" -> mockHost,
+    "auditing.consumer.baseUri.port" -> mockPort
+  )
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(config ++ extraConfig)
+    .build
 
   "GET /:journeyId/register" should {
     "redirect to continueUrl" when {
@@ -34,12 +47,23 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
         stubRegister(testNino, testSautr)(status = OK, body = Registered(testSafeId))
         stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(status = OK)
+        stubAudit()
+        stubRetrieveFullName(testJourneyId)(OK, Json.toJson(FullName(testFirstName, testLastName)))
+        stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+        stubRetrieveNino(testJourneyId)(OK, testNino)
+        stubRetrieveSautr(testJourneyId)(OK, testSautr)
+        stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+        stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+
         verifyRegister(testNino, testSautr)
         verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
+        verifyAudit()
       }
 
       "registration failed and registration status is successfully stored" in {
@@ -49,23 +73,35 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
         stubRegister(testNino, testSautr)(status = OK, body = RegistrationFailed)
         stubStoreRegistrationStatus(testJourneyId, RegistrationFailed)(status = OK)
+        stubAudit()
+        stubRetrieveFullName(testJourneyId)(OK, Json.toJson(FullName(testFirstName, testLastName)))
+        stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+        stubRetrieveNino(testJourneyId)(OK, testNino)
+        stubRetrieveSautr(testJourneyId)(OK, testSautr)
+        stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
+        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, testIndividualDetailsJson)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+        stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(RegistrationFailed))
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
         verifyRegister(testNino, testSautr)
         verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed)
+        verifyAudit()
       }
     }
 
     "redirect to SignInPage" when {
       "the user is unauthorised" in {
         stubAuthFailure()
+        stubAudit()
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fregister&origin=sole-trader-identification-frontend")
 
+        verifyAudit()
       }
     }
 
@@ -75,9 +111,12 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveNino(testJourneyId)(status = OK, body = testNino)
         stubRetrieveSautr(testJourneyId)(status = OK, body = testSautr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = BAD_REQUEST)
+        stubAudit()
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
+
+        verifyAudit()
       }
 
       "nino is missing" in {
@@ -85,9 +124,12 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveNino(testJourneyId)(status = NOT_FOUND)
         stubRetrieveSautr(testJourneyId)(status = OK, body = testSautr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
+        stubAudit()
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
+
+        verifyAudit()
       }
 
       "sautr is missing" in {
@@ -95,9 +137,12 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveNino(testJourneyId)(status = OK, body = testNino)
         stubRetrieveSautr(testJourneyId)(status = NOT_FOUND)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
+        stubAudit()
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
+
+        verifyAudit()
       }
 
       "business verification status is missing" in {
@@ -105,9 +150,12 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveNino(testJourneyId)(status = OK, body = testNino)
         stubRetrieveSautr(testJourneyId)(status = OK, body = testSautr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
+        stubAudit()
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
+
+        verifyAudit()
       }
     }
   }

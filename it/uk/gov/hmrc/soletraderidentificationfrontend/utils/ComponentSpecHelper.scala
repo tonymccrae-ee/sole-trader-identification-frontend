@@ -28,7 +28,7 @@ import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{FeatureSwitching, FeatureSwitchingModule}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
-import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.SoleTrader
+import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{EntityType, SoleTrader}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.repositories.JourneyConfigRepository
 
@@ -61,7 +61,6 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.base.port" -> mockPort,
     "microservice.services.self.host" -> mockHost,
     "microservice.services.self.port" -> mockPort,
-    "microservice.services.des.url" -> mockUrl,
     "microservice.services.self.url" -> mockUrl,
     "microservice.services.sole-trader-identification.host" -> mockHost,
     "microservice.services.sole-trader-identification.port" -> mockPort,
@@ -133,8 +132,9 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
                           optServiceName: Option[String],
                           deskProServiceId: String,
                           signOutUrl: String,
-                          enableSautrCheck: Boolean): Future[WriteResult] =
+                          enableSautrCheck: Boolean,
+                          entityType: EntityType = SoleTrader): Future[WriteResult] =
     journeyConfigRepository.insertJourneyConfig(
-      journeyId, internalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck), SoleTrader)
+      journeyId, internalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck), entityType)
     )
 }

@@ -99,6 +99,44 @@ object TestConstants {
     "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr)
   )
 
+  def testSoleTraderAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(
+    "businessType" -> "Sole Trader",
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "nino" -> testNino,
+    "dateOfBirth" -> testDateOfBirth,
+    "authenticatorResponse" -> Json.toJson(testIndividualDetails),
+    "userSAUTR" -> testSautr,
+    "sautrMatch" -> identifiersMatch,
+    "VerificationStatus" -> BusinessVerificationPass,
+    "RegisterApiStatus" -> Registered(testSafeId)
+  )
+
+  def testSoleTraderAuditEventJsonNoSautr(identifiersMatch: Boolean = false): JsObject = Json.obj(
+    "businessType" -> "Sole Trader",
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "nino" -> testNino,
+    "dateOfBirth" -> testDateOfBirth,
+    "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr),
+    "sautrMatch" -> identifiersMatch,
+    "VerificationStatus" -> BusinessVerificationUnchallenged,
+    "RegisterApiStatus" -> RegistrationNotCalled
+  )
+
+  def testSoleTraderFailureAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(
+    "businessType" -> "Sole Trader",
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "nino" -> testNino,
+    "dateOfBirth" -> testDateOfBirth,
+    "authenticatorResponse" -> Mismatch.toString,
+    "userSAUTR" -> testSautr,
+    "sautrMatch" -> identifiersMatch,
+    "VerificationStatus" -> BusinessVerificationUnchallenged,
+    "RegisterApiStatus" -> RegistrationNotCalled
+  )
+
 
   val testIndividualFailureAuditEventJson: JsObject = Json.obj(
     "firstName" -> testFirstName,
