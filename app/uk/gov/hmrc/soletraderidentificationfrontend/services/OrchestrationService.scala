@@ -17,6 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{Individual, SoleTrader}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Matched
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
@@ -48,21 +49,29 @@ class OrchestrationService @Inject()(journeyService: JourneyService,
                   _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
                   _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                   _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-
                 } yield {
-                  auditService.auditIndividualJourney(journeyId)
+                  journeyConfig.entityType match {
+                    case Individual => auditService.auditIndividualJourney(journeyId)
+                    case SoleTrader => auditService.auditSoleTraderJourney(journeyId)
+                  }
                   NoSautrProvided
                 }
             }
           case Left(SoleTraderDetailsMatching.NotFound) =>
             soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
-            _ => DetailsNotFound
-          }
+              _ => DetailsNotFound
+            }
           case _ =>
-            soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
-              _ =>
-                auditService.auditIndividualJourney(journeyId)
-                DetailsMismatch
+            for {
+              _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+              _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+              _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+            } yield {
+              journeyConfig.entityType match {
+                case Individual => auditService.auditIndividualJourney(journeyId)
+                case SoleTrader => auditService.auditSoleTraderJourney(journeyId)
+              }
+              DetailsMismatch
             }
         }
     }

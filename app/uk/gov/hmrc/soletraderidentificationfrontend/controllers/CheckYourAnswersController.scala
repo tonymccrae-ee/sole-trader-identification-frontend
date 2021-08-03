@@ -54,7 +54,7 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                 ))
             }
           case _ =>
-            throw new InternalServerException("Fail to retrieve data from database")
+            throw new InternalServerException("Failed to retrieve data from database")
         }
       }
   }

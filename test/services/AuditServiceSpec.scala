@@ -25,6 +25,7 @@ import services.mocks.{MockJourneyService, MockSoleTraderIdentificationService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.EntityType.{Individual, SoleTrader}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.Mismatch
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationUnchallenged, Registered, RegistrationNotCalled}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.AuditService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -80,12 +81,76 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
           await(TestService.auditIndividualJourney(testJourneyId))
         )
       }
+    }
+  }
 
-      "a sole trader is trying to audit as an individual" in {
+  "auditSoleTraderJourney" should {
+    "send an event" when {
+      "the entity is a Sole Trader and identifiers match" when {
+        "there is an sautr" in {
+          mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(entityType = SoleTrader)))
+          mockRetrieveFullName(testJourneyId)(Future.successful(Some(testFullName)))
+          mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))
+          mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
+          mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
+          mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+          mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
+          mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
+          mockRetrieveRegistrationResponse(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
+
+          val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
+
+          result mustBe()
+
+          verifySendExplicitAuditSoleTraders()
+          auditEventCaptor.getValue mustBe testSoleTraderAuditEventJson(identifiersMatch = true)
+        }
+        "there is not an sautr" in {
+          mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(entityType = SoleTrader)))
+          mockRetrieveFullName(testJourneyId)(Future.successful(Some(testFullName)))
+          mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))
+          mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
+          mockRetrieveSautr(testJourneyId)(Future.successful(None))
+          mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+          mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoSautr)))
+          mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
+          mockRetrieveRegistrationResponse(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+          val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
+
+          result mustBe()
+
+          verifySendExplicitAuditSoleTraders()
+          auditEventCaptor.getValue mustBe testSoleTraderAuditEventJsonNoSautr(true)
+        }
+      }
+      "the entity is a Sole Trader and identifiers do not match" in {
         mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(entityType = SoleTrader)))
+        mockRetrieveFullName(testJourneyId)(Future.successful(Some(testFullName)))
+        mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))
+        mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
+        mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveAuthenticatorFailureResponse(testJourneyId)(Future.successful(Some(Mismatch.toString)))
+        mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
+        mockRetrieveRegistrationResponse(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        intercept[NoSuchElementException](
-          await(TestService.auditIndividualJourney(testJourneyId))
+        val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
+
+        result mustBe()
+
+        verifySendExplicitAuditSoleTraders()
+        auditEventCaptor.getValue mustBe testSoleTraderFailureAuditEventJson()
+      }
+    }
+
+    "throw an exception" when {
+      "there is missing data for the audit" in {
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(entityType = SoleTrader)))
+        mockRetrieveFullName(testJourneyId)(Future.failed(new InternalServerException("failed")))
+
+        intercept[InternalServerException](
+          await(TestService.auditSoleTraderJourney(testJourneyId))
         )
       }
     }

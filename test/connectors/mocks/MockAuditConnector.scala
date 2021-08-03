@@ -46,4 +46,12 @@ trait MockAuditConnector extends MockitoSugar with BeforeAndAfterEach {
       ArgumentMatchers.any[ExecutionContext]
     )
 
+  def verifySendExplicitAuditSoleTraders(): Unit =
+    verify(mockAuditConnector, times(1)).sendExplicitAudit(
+      ArgumentMatchers.eq("SoleTraderRegistration"),
+      auditEventCaptor.capture()
+    )(ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[ExecutionContext]
+    )
+
 }

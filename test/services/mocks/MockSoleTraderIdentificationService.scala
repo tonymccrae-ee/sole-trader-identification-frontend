@@ -89,9 +89,16 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
 
-  def mockRetrieveBusinessVerificationResponse(journeyId: String)
-                                              (response: Future[Option[BusinessVerificationStatus]]): OngoingStubbing[_] =
+  def mockRetrieveBusinessVerificationStatus(journeyId: String)
+                                            (response: Future[Option[BusinessVerificationStatus]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveBusinessVerificationStatus(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
+  def mockRetrieveRegistrationResponse(journeyId: String)
+                                      (response: Future[Option[RegistrationStatus]]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.retrieveRegistrationStatus(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)

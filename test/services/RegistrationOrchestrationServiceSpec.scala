@@ -21,7 +21,7 @@ import helpers.TestConstants._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
-import services.mocks.MockSoleTraderIdentificationService
+import services.mocks.{MockAuditService, MockSoleTraderIdentificationService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
@@ -30,11 +30,16 @@ import uk.gov.hmrc.soletraderidentificationfrontend.services.RegistrationOrchest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers with MockSoleTraderIdentificationService with MockRegistrationConnector {
+class RegistrationOrchestrationServiceSpec extends AnyWordSpec
+  with Matchers
+  with MockSoleTraderIdentificationService
+  with MockRegistrationConnector
+  with MockAuditService {
 
   object TestService extends RegistrationOrchestrationService(
     mockSoleTraderIdentificationService,
-    mockRegistrationConnector
+    mockRegistrationConnector,
+    mockAuditService
   )
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -44,7 +49,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
       "the business entity is successfully verified and then registered" in {
         mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
         mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
+        mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
         mockRegister(testNino, testSautr)(Future.successful(Registered(testSafeId)))
         mockStoreRegistrationResponse(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
@@ -58,7 +63,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
       "when the business entity is verified but fails to register" in {
         mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
         mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
+        mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
         mockRegister(testNino, testSautr)(Future.successful(RegistrationFailed))
         mockStoreRegistrationResponse(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
 
@@ -72,7 +77,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
       "the business has an IR-SA enrolment and then registers" in {
         mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
         mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(SaEnrolled)))
+        mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(SaEnrolled)))
         mockRegister(testNino, testSautr)(Future.successful(Registered(testSafeId)))
         mockStoreRegistrationResponse(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
@@ -89,7 +94,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
     "the business entity did not pass verification" in {
       mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
       mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
       mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
       await(TestService.register(testJourneyId)) mustBe {
@@ -101,7 +106,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
     "the business entity was not challenged to verify" in {
       mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
       mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
       mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
       await(TestService.register(testJourneyId)) mustBe {
@@ -115,7 +120,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
     "there is no sautr in the database" in {
       mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
       mockRetrieveSautr(testJourneyId)(Future.successful(None))
-      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
       intercept[InternalServerException](
         await(TestService.register(testJourneyId))
@@ -125,7 +130,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
     "there is no nino in the database" in {
       mockRetrieveNino(testJourneyId)(Future.successful(None))
       mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
       intercept[InternalServerException](
         await(TestService.register(testJourneyId))
@@ -135,7 +140,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
     "there is no business verification response in the database" in {
       mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
       mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
-      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(None))
 
       intercept[InternalServerException](
         await(TestService.register(testJourneyId))
@@ -145,7 +150,7 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec with Matchers wit
     "there is nothing in the database" in {
       mockRetrieveNino(testJourneyId)(Future.successful(None))
       mockRetrieveSautr(testJourneyId)(Future.successful(None))
-      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(None))
 
       intercept[InternalServerException](
         await(TestService.register(testJourneyId))
