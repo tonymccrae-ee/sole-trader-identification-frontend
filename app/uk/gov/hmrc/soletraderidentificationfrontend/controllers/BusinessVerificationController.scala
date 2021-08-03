@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.soletraderidentificationfrontend.services.{BusinessVerificationService, JourneyService, SoleTraderIdentificationService}
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{BusinessVerificationService, SoleTraderIdentificationService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,8 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                businessVerificationService: BusinessVerificationService,
-                                               soleTraderIdentificationService: SoleTraderIdentificationService,
-                                               journeyService: JourneyService
+                                               soleTraderIdentificationService: SoleTraderIdentificationService
                                               )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def startBusinessVerificationJourney(journeyId: String): Action[AnyContent] = Action.async {
