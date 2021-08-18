@@ -24,7 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.SoleTraderDetailsMatchFailure
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationStatus, FullName, IndividualDetails, RegistrationStatus}
+import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 
 import java.time.LocalDate
@@ -83,7 +83,7 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     ).thenReturn(response)
 
   def mockRetrieveIndividualDetails(journeyId: String)
-                                      (response: Future[Option[IndividualDetails]]): OngoingStubbing[_] =
+                                   (response: Future[Option[IndividualDetails]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveIndividualDetails(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
@@ -106,6 +106,13 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
   def mockRetrieveRegistrationResponse(journeyId: String)
                                       (response: Future[Option[RegistrationStatus]]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.retrieveRegistrationStatus(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
+  def mockRetrieveAddress(journeyId: String)
+                         (response: Future[Option[Address]]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.retrieveAddress(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
@@ -150,6 +157,14 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
 
+  def mockStoreTrn(journeyId: String, trn: String)
+                  (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.storeTrn(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(trn)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
   def verifyStoreRegistrationResponse(journeyId: String, registrationStatus: RegistrationStatus): Unit =
     verify(mockSoleTraderIdentificationService).storeRegistrationStatus(
       ArgumentMatchers.eq(journeyId),
@@ -166,6 +181,12 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     verify(mockSoleTraderIdentificationService).storeIdentifiersMatch(
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(identifiersMatch)
+    )(ArgumentMatchers.any[HeaderCarrier])
+
+  def verifyStoreTrn(journeyId: String, trn: String): Unit =
+    verify(mockSoleTraderIdentificationService).storeTrn(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(trn)
     )(ArgumentMatchers.any[HeaderCarrier])
 
 }

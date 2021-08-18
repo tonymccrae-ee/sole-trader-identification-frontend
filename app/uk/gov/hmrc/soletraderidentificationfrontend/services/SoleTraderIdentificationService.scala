@@ -67,6 +67,11 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                              )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[RegistrationStatus](journeyId, RegistrationKey, registrationStatus)
 
+  def storeTrn(journeyId: String,
+               trn: String
+              )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[String](journeyId, TrnKey, trn)
+
   def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullName]] =
     connector.retrieveSoleTraderDetails[FullName](journeyId, FullNameKey)
 
@@ -104,6 +109,10 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                                           )(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveSoleTraderDetails[String](journeyId, AuthenticatorFailureResponseKey)
 
+  def retrieveAddress(journeyId: String
+                     )(implicit hc: HeaderCarrier): Future[Option[Address]] =
+    connector.retrieveSoleTraderDetails[Address](journeyId, AddressKey)
+
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, SautrKey)
 
@@ -122,4 +131,6 @@ object SoleTraderIdentificationService {
   val AuthenticatorFailureResponseKey: String = "authenticatorFailureResponse"
   val VerificationStatusKey = "businessVerification"
   val RegistrationKey: String = "registration"
+  val AddressKey: String = "address"
+  val TrnKey: String = "trn"
 }

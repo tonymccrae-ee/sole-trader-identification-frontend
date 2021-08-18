@@ -38,6 +38,8 @@ object TestConstants {
   val testLastName: String = "Smith"
   val testFullName: FullName = FullName(testFirstName, testLastName)
   val testNino: String = "AA111111A"
+  val testTrn: String = "99A99999"
+  val testAddress: Address = Address("testLine1", "testLine2", "testTown", "AA11AA", "GB")
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
