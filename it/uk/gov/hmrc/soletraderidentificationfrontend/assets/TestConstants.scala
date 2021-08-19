@@ -39,6 +39,8 @@ object TestConstants {
   val testGGProviderId: String = UUID.randomUUID().toString
   val testGroupId: String = UUID.randomUUID().toString
   val testInternalId: String = UUID.randomUUID().toString
+  val testTrn: String = "99A99999"
+  val testAddress: Address = Address("testLine1", "testLine2", "testTown", "AA11AA", "GB")
 
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
