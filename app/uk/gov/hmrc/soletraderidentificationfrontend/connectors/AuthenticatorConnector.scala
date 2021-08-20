@@ -34,7 +34,7 @@ class AuthenticatorConnector @Inject()(httpClient: HttpClient, appConfig: AppCon
       "firstName" -> authenticatorDetails.firstName,
       "lastName" -> authenticatorDetails.lastName,
       "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-      "nino" -> authenticatorDetails.nino
+      "nino" -> authenticatorDetails.nino.toUpperCase
     )
 
     httpClient.POST(appConfig.matchSoleTraderDetailsUrl, jsonBody)

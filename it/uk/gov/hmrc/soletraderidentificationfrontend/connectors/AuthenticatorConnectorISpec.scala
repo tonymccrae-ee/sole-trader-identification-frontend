@@ -41,6 +41,14 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
           res mustBe Right(testIndividualDetails)
         }
 
+        "the stub authenticator feature switch is disabled and a lower case nino is provided" in {
+          stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseNino))
+
+          res mustBe Right(testIndividualDetails)
+        }
+
         "the stub authenticator feature switch is enabled" in {
           enable(AuthenticatorStub)
           stubMatchStub(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
@@ -49,8 +57,17 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
 
           res mustBe Right(testIndividualDetails)
         }
+        "the stub authenticator feature switch is enabled and a lower case nino is provided" in {
+          enable(AuthenticatorStub)
+          stubMatchStub(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseNino))
+
+          res mustBe Right(testIndividualDetails)
+        }
       }
     }
+
     "return details mismatch" when {
       "authenticator returns an error with matching" in {
         stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
@@ -60,6 +77,7 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
         res mustBe Left(SoleTraderDetailsMatching.DetailsMismatch)
       }
     }
+
     "return details not found" when {
       "authenticator returns a not found error" in {
         stubMatch(testIndividualDetails)(UNAUTHORIZED, notFoundErrorJson)
@@ -69,6 +87,7 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
         res mustBe Left(SoleTraderDetailsMatching.NinoNotFound)
       }
     }
+
     "return user is deceased" when {
       "authenticator returns dependency failed" in {
         stubMatch(testIndividualDetails)(FAILED_DEPENDENCY, Json.obj())
@@ -78,6 +97,7 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
         res mustBe Left(SoleTraderDetailsMatching.DeceasedCitizensDetails)
       }
     }
+
     "throw an exception" when {
       "any other status is received" in {
         stubMatch(testIndividualDetails)(INTERNAL_SERVER_ERROR, Json.obj())

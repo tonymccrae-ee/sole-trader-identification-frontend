@@ -97,6 +97,15 @@ object TestConstants {
       optSautr = Some(testSautr)
     )
 
+  val testIndividualDetailsLowerCaseNino: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      nino = "aa111111a",
+      optSautr = Some(testSautr)
+    )
+
   val testIndividualDetailsNoSautr: IndividualDetails =
     IndividualDetails(
       firstName = testFirstName,
