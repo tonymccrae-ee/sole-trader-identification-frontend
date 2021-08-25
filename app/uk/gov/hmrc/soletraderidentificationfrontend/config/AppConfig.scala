@@ -82,6 +82,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   def registerUrl: String = s"$backendUrl/sole-trader-identification/register"
 
+  def registerWithTrnUrl: String = s"$backendUrl/sole-trader-identification/register-trn"
+
   def ninoTeamUrl: String = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-enquiries-for-employees-and-individuals"
 
   def createTrnUrl: String = s"$backendUrl/sole-trader-identification/get-trn"

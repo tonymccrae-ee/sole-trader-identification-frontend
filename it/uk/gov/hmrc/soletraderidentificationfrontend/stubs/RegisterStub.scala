@@ -36,6 +36,19 @@ trait RegisterStub extends WireMockMethods {
       )
   }
 
+  def stubRegisterWithTrn(nino: String, sautr: String)(status: Int, body: RegistrationStatus): StubMapping = {
+    val jsonBody = Json.obj(
+        "trn" -> nino,
+        "sautr" -> sautr
+    )
+
+    when(method = POST, uri = "/sole-trader-identification/register-trn", jsonBody)
+      .thenReturn(
+        status = status,
+        body = Json.obj("registration" -> body)
+      )
+  }
+
   def verifyRegister(nino: String, sautr: String): Unit = {
     val jsonBody = Json.obj(
       "soleTrader" -> Json.obj(
