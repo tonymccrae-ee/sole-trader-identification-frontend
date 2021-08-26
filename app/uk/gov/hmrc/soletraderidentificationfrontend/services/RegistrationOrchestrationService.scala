@@ -37,7 +37,7 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
         registrationStatus <-
           (optNino, optSautr) match {
             case (Some(nino), Some(sautr)) =>
-              registrationConnector.register(nino, sautr)
+              registrationConnector.registerWithNino(nino, sautr)
             case _ =>
               throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
           }

@@ -31,7 +31,7 @@ class RegistrationConnector @Inject()(httpClient: HttpClient,
                                       appConfig: AppConfig
                                      )(implicit ec: ExecutionContext) {
 
-  def register(nino: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
+  def registerWithNino(nino: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
 
     val jsonBody = Json.obj(
       "soleTrader" -> Json.obj(
@@ -41,6 +41,21 @@ class RegistrationConnector @Inject()(httpClient: HttpClient,
     )
 
     httpClient.POST[JsObject, RegistrationStatus](appConfig.registerUrl, jsonBody)(
+      implicitly[Writes[JsObject]],
+      RegistrationHttpReads,
+      hc,
+      ec
+    )
+  }
+
+  def registerWithTrn(temporaryReferenceNumber: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] ={
+
+  val jsonBody = Json.obj(
+      "trn" -> temporaryReferenceNumber,
+      "sautr" -> sautr
+  )
+
+    httpClient.POST[JsObject, RegistrationStatus](appConfig.registerWithTrnUrl, jsonBody)(
       implicitly[Writes[JsObject]],
       RegistrationHttpReads,
       hc,
