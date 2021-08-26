@@ -40,6 +40,7 @@ object TestConstants {
   val testNino: String = "AA111111A"
   val testTrn: String = "99A99999"
   val testAddress: Address = Address("testLine1", "testLine2", "testTown", "AA11AA", "GB")
+  val testSaPostcode: String = "AA11AA"
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
@@ -147,6 +148,7 @@ object TestConstants {
     "identifiersMatch" -> false,
     "authenticatorResponse" -> DetailsMismatch.toString
   )
+
 
 
 }

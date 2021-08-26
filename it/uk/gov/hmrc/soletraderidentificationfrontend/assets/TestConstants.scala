@@ -41,6 +41,7 @@ object TestConstants {
   val testInternalId: String = UUID.randomUUID().toString
   val testTrn: String = "99A99999"
   val testAddress: Address = Address("testLine1", "testLine2", "testTown", "AA11AA", "GB")
+  val testPostcode: String = "TF4 3ER"
 
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
@@ -170,5 +171,50 @@ object TestConstants {
       "nino" -> testNino
     )
   }
+
+  val testKnownFactsResponse: JsObject = Json.obj(
+    "service" -> "IR-SA",
+    "enrolments" -> Json.arr(
+      Json.obj(
+        "identifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "UTR",
+            "value" -> testSautr
+          )
+        ),
+        "verifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "NINO",
+            "value" -> testNino
+          ),
+          Json.obj(
+            "key" -> "PostCode",
+            "value" -> testPostcode
+          )
+        )
+      )
+    )
+  )
+
+  val testKnownFactsResponseIsAbroad: JsObject = Json.obj(
+    "service" -> "IR-SA",
+    "enrolments" -> Json.arr(
+      Json.obj(
+        "identifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "UTR",
+            "value" -> testSautr
+          )
+        ),
+        "verifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "IsAbroad",
+            "value" -> "Y"
+          )
+        )
+      )
+    )
+  )
+
 
 }
