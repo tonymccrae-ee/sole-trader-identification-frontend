@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, BusinessVerificationStub, FeatureSwitching}
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, BusinessVerificationStub, FeatureSwitching, KnownFactsStub}
 
 import javax.inject.{Inject, Singleton}
 
@@ -85,4 +85,13 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   def ninoTeamUrl: String = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/national-insurance-enquiries-for-employees-and-individuals"
 
   def createTrnUrl: String = s"$backendUrl/sole-trader-identification/get-trn"
+
+  lazy val enrolmentStoreProxyUrl: String = servicesConfig.baseUrl("enrolment-store-proxy") + "/enrolment-store-proxy"
+
+  def knownFactsUrl: String = {
+    val baseUrl: String = if (isEnabled(KnownFactsStub)) s"$selfBaseUrl/identify-your-sole-trader-business/test-only" else enrolmentStoreProxyUrl
+    baseUrl + "/enrolment-store/enrolments"
+  }
+
 }
+

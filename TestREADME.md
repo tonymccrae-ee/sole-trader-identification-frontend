@@ -22,6 +22,7 @@ Shows all feature switches:
 
     - Use stub for Authenticator API
     - Use stub for Business Verification flow
+    - Use stub for Known Facts API
    
 2. Sole Trader Identification
    
@@ -183,7 +184,6 @@ Example Response body:
 }
 ```
 
-
 ### Using the Authenticator stub
 
 This stub returns different responses based on the entered last name.
@@ -201,6 +201,50 @@ Any other last name will return the data user has entered along with `1234567890
 | ```no-sautr```                          | ```Ok``` (See above)
 | Any other last name                     | ```Ok```
 
+
+### Using the Known Facts stub
+
+This stub returns different response bodies based on the sautr entered.
+
+The 'Use stub for Known Facts API' feature switch will need to be enabled to use this.
+
+#### Sautr: 0000000000
+Status: **OK(200)**
+Response body:
+```
+{
+ "service": "IR-SA",
+ "enrolments": [{
+     "identifiers": [{
+         "key": "UTR",
+         "value": "0000000000"
+     }],
+     "verifiers": [{
+         "key": "IsAbroad",
+         "value": "Y"
+     }]
+ }]
+}
+```
+
+#### Any other sautr
+Status: **OK(200)**
+Response body:
+```
+{
+ "service": "IR-SA",
+ "enrolments": [{
+     "identifiers": [{
+         "key": "UTR",
+         "value": "1234567890"
+     }],
+     "verifiers": [{
+         "key": "Postcode",
+         "value": "AA11AA"
+     }]
+ }]
+}
+```
 
 ### License
 

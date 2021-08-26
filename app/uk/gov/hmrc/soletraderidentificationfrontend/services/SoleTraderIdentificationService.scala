@@ -113,6 +113,10 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                      )(implicit hc: HeaderCarrier): Future[Option[Address]] =
     connector.retrieveSoleTraderDetails[Address](journeyId, AddressKey)
 
+  def retrieveSaPostcode(journeyId: String
+                        )(implicit hc: HeaderCarrier): Future[Option[String]] =
+    connector.retrieveSoleTraderDetails[String](journeyId, SaPostcodeKey)
+
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, SautrKey)
 
@@ -133,4 +137,5 @@ object SoleTraderIdentificationService {
   val RegistrationKey: String = "registration"
   val AddressKey: String = "address"
   val TrnKey: String = "trn"
+  val SaPostcodeKey: String = "saPostcode"
 }

@@ -117,6 +117,13 @@ trait MockSoleTraderIdentificationService extends MockitoSugar with BeforeAndAft
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
 
+  def mockRetrieveSaPostcode(journeyId: String)
+                            (response: Future[Option[String]]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationService.retrieveSaPostcode(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+
   def mockStoreRegistrationResponse(journeyId: String, registrationStatus: RegistrationStatus)
                                    (response: Future[SuccessfullyStored.type]): OngoingStubbing[_] =
     when(mockSoleTraderIdentificationService.storeRegistrationStatus(
