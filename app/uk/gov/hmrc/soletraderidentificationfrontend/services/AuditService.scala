@@ -90,10 +90,16 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
       optRegistrationStatus <- soleTraderIdentificationService.retrieveRegistrationStatus(journeyId)
     } yield {
       (optFullName, optDateOfBirth, optNino, optSautr, optIdentifiersMatch, optAuthenticatorResponse, optBusinessVerificationStatus, optRegistrationStatus) match {
-        case (Some(fullName), Some(dateOfBirth), Some(nino), optSautr, Some(identifiersMatch), Some(authenticatorResponse), Some(businessVerificationStatus), Some(registrationStatus)) =>
+        case (Some(fullName), Some(dateOfBirth), optNino, optSautr, Some(identifiersMatch), Some(authenticatorResponse), Some(businessVerificationStatus), Some(registrationStatus)) =>
           val sautrBlock =
             optSautr match {
               case Some(sautr) => Json.obj("userSAUTR" -> sautr)
+              case _ => Json.obj()
+            }
+
+          val ninoBlock =
+            optNino match {
+              case Some(nino) => Json.obj("nino" -> nino)
               case _ => Json.obj()
             }
 
@@ -107,12 +113,11 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             "businessType" -> "Sole Trader",
             "firstName" -> fullName.firstName,
             "lastName" -> fullName.lastName,
-            "nino" -> nino,
             "dateOfBirth" -> dateOfBirth,
             "sautrMatch" -> identifiersMatch,
             "VerificationStatus" -> businessVerificationStatus,
             "RegisterApiStatus" -> registrationStatus
-          ) ++ sautrBlock ++ authenticatorResponseBlock
+          ) ++ sautrBlock ++ ninoBlock ++ authenticatorResponseBlock
         case _ =>
           throw new InternalServerException(s"Not enough information to audit sole trader journey for Journey ID $journeyId")
       }

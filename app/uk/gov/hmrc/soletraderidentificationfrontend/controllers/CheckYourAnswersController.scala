@@ -28,7 +28,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuditService, Jour
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.check_your_answers_page
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
@@ -73,7 +73,9 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                   _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                   _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                   _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                } yield Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
+                } yield
+                  auditService.auditSoleTraderJourney(journeyId)
+                  Future.successful(Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId"))
               case _ =>
                 submissionService.submit(journeyId).map {
                   case StartBusinessVerification(businessVerificationUrl) =>
