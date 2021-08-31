@@ -23,7 +23,7 @@ import java.time.LocalDate
 
 case class SoleTraderDetails(fullName: FullName,
                              dateOfBirth: LocalDate,
-                             nino: String,
+                             optNino: Option[String],
                              optSautr: Option[String],
                              identifiersMatch: Boolean,
                              businessVerification: BusinessVerificationStatus,
@@ -42,7 +42,7 @@ object SoleTraderDetails {
   val reads: Reads[SoleTraderDetails] = (
     (JsPath \ FullNameKey).read[FullName] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
-      (JsPath \ NinoKey).read[String] and
+      (JsPath \ NinoKey).readNullable[String] and
       (JsPath \ SautrKey).readNullable[String] and
       (JsPath \ IdentifiersMatchKey).read[Boolean] and
       (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus] and
@@ -52,7 +52,7 @@ object SoleTraderDetails {
   val writes: OWrites[SoleTraderDetails] = (
     (JsPath \ FullNameKey).write[FullName] and
       (JsPath \ DateOfBirthKey).write[LocalDate] and
-      (JsPath \ NinoKey).write[String] and
+      (JsPath \ NinoKey).writeNullable[String] and
       (JsPath \ SautrKey).writeNullable[String] and
       (JsPath \ IdentifiersMatchKey).write[Boolean] and
       (JsPath \ BusinessVerificationKey).write[BusinessVerificationStatus] and

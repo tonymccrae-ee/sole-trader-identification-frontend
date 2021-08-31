@@ -46,7 +46,7 @@ case object BusinessVerificationStub extends FeatureSwitch {
 
 case object KnownFactsStub extends FeatureSwitch {
   override val configName: String = "feature-switch.known-facts-stub"
-  override val displayName: String = "Use stub Known Facts API"
+  override val displayName: String = "Use stub for Known Facts API"
 }
 
 case object EnableNoNinoJourney extends FeatureSwitch {

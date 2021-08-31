@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 
 import play.api.libs.json.Json
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderVerificationResultHttpParser.SoleTraderVerificationResultReads
 import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
@@ -29,12 +29,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AuthenticatorConnector @Inject()(httpClient: HttpClient, appConfig: AppConfig)(implicit executionContext: ExecutionContext) {
+
   def matchSoleTraderDetails(authenticatorDetails: IndividualDetails)(implicit hc: HeaderCarrier): Future[AuthenticatorResponse] = {
+    val nino = authenticatorDetails.optNino match {
+      case Some(nino) => nino.toUpperCase()
+      case _ => throw new InternalServerException("Missing required NINO for Authenticator API")
+    }
+
     val jsonBody = Json.obj(
       "firstName" -> authenticatorDetails.firstName,
       "lastName" -> authenticatorDetails.lastName,
       "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-      "nino" -> authenticatorDetails.nino.toUpperCase
+      "nino" -> nino
     )
 
     httpClient.POST(appConfig.matchSoleTraderDetailsUrl, jsonBody)

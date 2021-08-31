@@ -37,7 +37,7 @@ object SoleTraderVerificationResultHttpParser {
     (JsPath \ FirstNameKey).read[String] and
       (JsPath \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
-      (JsPath \ NinoKey).read[String] and
+      (JsPath \ NinoKey).readNullable[String] and
       (JsPath \ SautrKey).readNullable[String]
     ) (IndividualDetails.apply _)
 

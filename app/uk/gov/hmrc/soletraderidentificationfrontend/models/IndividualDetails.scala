@@ -24,7 +24,7 @@ import java.time.LocalDate
 case class IndividualDetails(firstName: String,
                              lastName: String,
                              dateOfBirth: LocalDate,
-                             nino: String,
+                             optNino: Option[String],
                              optSautr: Option[String])
 
 object IndividualDetails {
@@ -39,7 +39,7 @@ object IndividualDetails {
     (JsPath \ FirstNameKey).read[String] and
       (JsPath \ LastNameKey).read[String] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
-      (JsPath \ NinoKey).read[String] and
+      (JsPath \ NinoKey).readNullable[String] and
       (JsPath \ SautrKey).readNullable[String]
     ) (IndividualDetails.apply _)
 
@@ -47,7 +47,7 @@ object IndividualDetails {
     (JsPath \ FirstNameKey).write[String] and
       (JsPath \ LastNameKey).write[String] and
       (JsPath \ DateOfBirthKey).write[LocalDate] and
-      (JsPath \ NinoKey).write[String] and
+      (JsPath \ NinoKey).writeNullable[String] and
       (JsPath \ SautrKey).writeNullable[String]
     ) (unlift(IndividualDetails.unapply))
 

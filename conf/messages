@@ -68,6 +68,7 @@ check-your-answers.dob                                      = Date of birth
 check-your-answers.nino                                     = National insurance number
 check-your-answers.sautr                                    = Unique taxpayers reference number
 check-your-answers.no_sautr                                 = The business does not have a UTR
+check-your-answers.no_nino                                  = I do not have a National Insurance number
 
 ## Personal Information Error Page
 personal-information-error.title                            = We could not identify you on our records
