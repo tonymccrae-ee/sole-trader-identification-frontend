@@ -150,6 +150,53 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
       }
     }
+
+    "the applicant only has a sautr" should {
+      lazy val result: WSResponse = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = true
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubAudit()
+        stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
+        get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+      }
+
+      "return OK" in {
+        result.status mustBe OK
+
+        verifyAudit()
+      }
+
+      "return a view which" should {
+        testCheckYourAnswersNoNinoView(result, testJourneyId)
+      }
+
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          stubAuthFailure()
+          stubAudit()
+
+          lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
+
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri("/bas-gateway/sign-in" +
+              s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fcheck-your-answers-business" +
+              "&origin=sole-trader-identification-frontend"
+            )
+          }
+
+          verifyAudit()
+        }
+      }
+    }
   }
 
   "POST /check-your-answers-business" when {
@@ -170,6 +217,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
           stubStoreAuthenticatorDetails(testJourneyId, testIndividualDetails)(OK)
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
+          stubRetrieveNino(testJourneyId)(OK, testNino)
           stubCreateBusinessVerificationJourney(testSautr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testBusinessVerificationRedirectUrl))
           stubAudit()
 

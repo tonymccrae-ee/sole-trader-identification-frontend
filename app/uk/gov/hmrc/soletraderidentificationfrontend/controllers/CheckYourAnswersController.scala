@@ -21,6 +21,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{EnableNoNinoJourney, FeatureSwitching}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.NinoNotFound
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{AuditService, JourneyService, SoleTraderIdentificationService, SubmissionService}
@@ -38,7 +39,7 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                            auditService: AuditService,
                                            val authConnector: AuthConnector
                                           )(implicit val config: AppConfig,
-                                            executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                            executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
@@ -52,7 +53,7 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CheckYourAnswersController.submit(journeyId),
                   journeyId = journeyId,
-                  authenticatorDetails = individualDetails
+                  individualDetails = individualDetails
                 ))
             }
           case _ =>
@@ -66,21 +67,30 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
       authorised() {
         journeyService.getJourneyConfig(journeyId).flatMap {
           journeyConfig =>
-            submissionService.submit(journeyId).map {
-              case StartBusinessVerification(businessVerificationUrl) =>
-                Redirect(businessVerificationUrl)
-              case JourneyCompleted(continueUrl) =>
-                if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
-                else auditService.auditIndividualJourney(journeyId)
-                Redirect(continueUrl + s"?journeyId=$journeyId")
-              case SoleTraderDetailsMismatch(NinoNotFound) =>
-                if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
-                else auditService.auditIndividualJourney(journeyId)
-                Redirect(routes.DetailsNotFoundController.show(journeyId))
-              case SoleTraderDetailsMismatch(_) =>
-                if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
-                else auditService.auditIndividualJourney(journeyId)
-                Redirect(routes.PersonalInformationErrorController.show(journeyId))
+            soleTraderIdentificationService.retrieveNino(journeyId).flatMap {
+              case None if isEnabled(EnableNoNinoJourney) =>
+                for {
+                  _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                  _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                } yield Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
+              case _ =>
+                submissionService.submit(journeyId).map {
+                  case StartBusinessVerification(businessVerificationUrl) =>
+                    Redirect(businessVerificationUrl)
+                  case JourneyCompleted(continueUrl) =>
+                    if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
+                    else auditService.auditIndividualJourney(journeyId)
+                    Redirect(continueUrl + s"?journeyId=$journeyId")
+                  case SoleTraderDetailsMismatch(NinoNotFound) =>
+                    if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
+                    else auditService.auditIndividualJourney(journeyId)
+                    Redirect(routes.DetailsNotFoundController.show(journeyId))
+                  case SoleTraderDetailsMismatch(_) =>
+                    if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
+                    else auditService.auditIndividualJourney(journeyId)
+                    Redirect(routes.PersonalInformationErrorController.show(journeyId))
+                }
             }
         }
       }

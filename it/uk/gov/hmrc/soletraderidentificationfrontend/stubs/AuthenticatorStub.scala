@@ -24,13 +24,17 @@ import java.time.format.DateTimeFormatter.ofPattern
 
 trait AuthenticatorStub extends WireMockMethods {
   def stubMatch(authenticatorDetails: IndividualDetails)(status: Int, body: JsObject): Unit = {
+    val nino = authenticatorDetails.optNino match {
+      case Some(nino) => nino
+      case _ => ""
+    }
     when(method = POST,
       uri = s"/authenticator/match",
       body = Json.obj(
         "firstName" -> authenticatorDetails.firstName,
         "lastName" -> authenticatorDetails.lastName,
         "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-        "nino" -> authenticatorDetails.nino
+        "nino" -> nino
       )
     ).thenReturn(
       status = status,
@@ -39,13 +43,18 @@ trait AuthenticatorStub extends WireMockMethods {
   }
 
   def stubMatchStub(authenticatorDetails: IndividualDetails)(status: Int, body: JsObject): Unit = {
+    val nino = authenticatorDetails.optNino match {
+      case Some(nino) => nino
+      case _ => ""
+    }
+
     when(method = POST,
       uri = s"/identify-your-sole-trader-business/test-only/authenticator/match",
       body = Json.obj(
         "firstName" -> authenticatorDetails.firstName,
         "lastName" -> authenticatorDetails.lastName,
         "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-        "nino" -> authenticatorDetails.nino
+        "nino" -> nino
       )
     ).thenReturn(
       status = status,
@@ -53,17 +62,24 @@ trait AuthenticatorStub extends WireMockMethods {
     )
   }
 
-  def successfulMatchJson(authenticatorDetails: IndividualDetails): JsObject = Json.obj(
-    "firstName" -> authenticatorDetails.firstName,
-    "lastName" -> authenticatorDetails.lastName,
-    "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
-    "nino" -> authenticatorDetails.nino
-  ) ++ {
-    authenticatorDetails.optSautr match {
-      case Some(sautr) => Json.obj("saUtr" -> sautr)
-      case None => Json.obj()
+  def successfulMatchJson(authenticatorDetails: IndividualDetails): JsObject = {
+    val nino = authenticatorDetails.optNino match {
+      case Some(nino) => nino
+      case _ => ""
     }
 
+    Json.obj(
+      "firstName" -> authenticatorDetails.firstName,
+      "lastName" -> authenticatorDetails.lastName,
+      "dateOfBirth" -> authenticatorDetails.dateOfBirth.format(ofPattern("uuuu-MM-dd")),
+      "nino" -> nino
+    ) ++ {
+      authenticatorDetails.optSautr match {
+        case Some(sautr) => Json.obj("saUtr" -> sautr)
+        case None => Json.obj()
+      }
+
+    }
   }
 
   val mismatchErrorJson: JsObject = Json.obj(

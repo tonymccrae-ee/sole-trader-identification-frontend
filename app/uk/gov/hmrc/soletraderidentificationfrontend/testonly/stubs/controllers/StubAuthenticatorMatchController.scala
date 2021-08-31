@@ -42,14 +42,14 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino
+            "nino" -> authenticatorDetails.optNino
           ))
         case "bv-test-1" =>
           Ok(Json.obj(
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino,
+            "nino" -> authenticatorDetails.optNino,
             "saUtr" -> "1188662968"
           ))
         case "bv-test-2" =>
@@ -57,7 +57,7 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino,
+            "nino" -> authenticatorDetails.optNino,
             "saUtr" -> "3550699947"
           ))
         case "bv-test-3" =>
@@ -65,7 +65,7 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino,
+            "nino" -> authenticatorDetails.optNino,
             "saUtr" -> "8113878100"
           ))
         case "bv-test-4" =>
@@ -73,7 +73,7 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino,
+            "nino" -> authenticatorDetails.optNino,
             "saUtr" -> "9083735242"
           ))
         case "bv-test-5" =>
@@ -81,7 +81,7 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino,
+            "nino" -> authenticatorDetails.optNino,
             "saUtr" -> "1021150603"
           ))
         case _ =>
@@ -89,7 +89,7 @@ class StubAuthenticatorMatchController @Inject()(controllerComponents: Controlle
             "firstName" -> authenticatorDetails.firstName,
             "lastName" -> authenticatorDetails.lastName,
             "dateOfBirth" -> authenticatorDetails.dateOfBirth,
-            "nino" -> authenticatorDetails.nino,
+            "nino" -> authenticatorDetails.optNino,
             "saUtr" -> "1234567890"
           ))
       }

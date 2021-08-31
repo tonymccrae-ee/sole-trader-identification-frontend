@@ -46,7 +46,7 @@ object TestConstants {
     SoleTraderDetails(
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = Some(testSautr),
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
@@ -57,7 +57,7 @@ object TestConstants {
     SoleTraderDetails(
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = None,
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
@@ -69,7 +69,7 @@ object TestConstants {
       firstName = testFirstName,
       lastName = testLastName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = Some(testSautr)
     )
 
@@ -78,7 +78,7 @@ object TestConstants {
       firstName = testFirstName,
       lastName = testLastName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = None
     )
 

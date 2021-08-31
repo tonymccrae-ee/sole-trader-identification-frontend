@@ -71,7 +71,7 @@ object TestConstants {
     SoleTraderDetails(
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = Some(testSautr),
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationPass,
@@ -82,7 +82,7 @@ object TestConstants {
     SoleTraderDetails(
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = None,
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationUnchallenged,
@@ -94,7 +94,7 @@ object TestConstants {
       firstName = testFirstName,
       lastName = testLastName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = Some(testSautr)
     )
 
@@ -103,7 +103,7 @@ object TestConstants {
       firstName = testFirstName,
       lastName = testLastName,
       dateOfBirth = testDateOfBirth,
-      nino = "aa111111a",
+      optNino = Some("aa111111a"),
       optSautr = Some(testSautr)
     )
 
@@ -112,7 +112,7 @@ object TestConstants {
       firstName = testFirstName,
       lastName = testLastName,
       dateOfBirth = testDateOfBirth,
-      nino = testNino,
+      optNino = Some(testNino),
       optSautr = None
     )
 
@@ -169,6 +169,16 @@ object TestConstants {
     ),
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino
+    )
+  }
+
+  val testIndividualDetailsJsonNoNino: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "sautr" -> testSautr
     )
   }
 
