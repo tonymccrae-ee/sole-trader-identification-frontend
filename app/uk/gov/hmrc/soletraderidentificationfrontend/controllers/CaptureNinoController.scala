@@ -20,6 +20,7 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{EnableNoNinoJourney, FeatureSwitching}
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureNinoForm
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
@@ -35,7 +36,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                                       val authConnector: AuthConnector,
                                       journeyService: JourneyService
                                      )(implicit val config: AppConfig,
-                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching{
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -43,9 +44,11 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
         journeyService.getJourneyConfig(journeyId).map {
           journeyConfig =>
             Ok(view(
+              journeyId = journeyId,
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureNinoController.submit(journeyId),
-              form = CaptureNinoForm.form
+              form = CaptureNinoForm.form,
+              NoNinoEnabled = isEnabled(EnableNoNinoJourney)
             ))
         }
       }
@@ -59,9 +62,11 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
             journeyService.getJourneyConfig(journeyId).map {
               journeyConfig =>
                 BadRequest(view(
+                  journeyId = journeyId,
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CaptureNinoController.submit(journeyId),
-                  form = formWithErrors
+                  form = formWithErrors,
+                  NoNinoEnabled = isEnabled(EnableNoNinoJourney)
                 ))
             },
           nino =>
@@ -74,4 +79,14 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
             })
       }
   }
+
+  def noNino(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised() {
+        soleTraderIdentificationService.removeNino(journeyId).map {
+          _ => Redirect(routes.CaptureSautrController.show(journeyId))
+        }
+      }
+  }
+
 }

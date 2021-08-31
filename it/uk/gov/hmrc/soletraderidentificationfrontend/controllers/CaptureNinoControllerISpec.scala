@@ -19,6 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.EnableNoNinoJourney
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureNinoViewTests
@@ -28,41 +29,82 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
   with SoleTraderIdentificationStub
   with AuthStub {
 
-  "GET /national-insurance-number" should {
-    lazy val result = {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
-      ))
-      stubAuth(OK, successfulAuthResponse())
-      get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
-    }
+  "GET /national-insurance-number" when {
+    "the feature switch is turned off" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
+      }
 
-    "return OK" in {
-      result.status mustBe OK
-    }
+      "return OK" in {
+        result.status mustBe OK
+      }
 
-    "return a view which" should {
-      testCaptureNinoView(result)
-    }
+      "return a view which" should {
+        testCaptureNinoView(result)
+      }
 
-    "redirect to sign in page" when {
-      "the user is UNAUTHORISED" in {
-        stubAuthFailure()
-        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          stubAuthFailure()
+          lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
 
-        result must have(
-          httpStatus(SEE_OTHER),
-          redirectUri("/bas-gateway/sign-in" +
-            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fnational-insurance-number" +
-            "&origin=sole-trader-identification-frontend"
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri("/bas-gateway/sign-in" +
+              s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fnational-insurance-number" +
+              "&origin=sole-trader-identification-frontend"
+            )
           )
-        )
+        }
+      }
+    }
+    "the feature switch is turned on" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = true
+        ))
+        enable(EnableNoNinoJourney)
+        stubAuth(OK, successfulAuthResponse())
+        get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
+      }
+
+      "return OK" in {
+        result.status mustBe OK
+      }
+
+      "return a view which" should {
+        testNoNinoCaptureNinoView(result)
+      }
+
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          stubAuthFailure()
+          lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")
+
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri("/bas-gateway/sign-in" +
+              s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fnational-insurance-number" +
+              "&origin=sole-trader-identification-frontend"
+            )
+          )
+        }
       }
     }
   }
@@ -87,6 +129,50 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         httpStatus(SEE_OTHER),
         redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
       )
+    }
+  }
+  "GET /no-nino" should {
+    "redirect to sautr page" when {
+      "the nino is successfully removed" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRemoveNino(testJourneyId)(NO_CONTENT)
+
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-nino")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
+        )
+      }
+    }
+
+    "throw an exception" when {
+      "the backend returns a failure" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRemoveNino(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
+
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-nino")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 
