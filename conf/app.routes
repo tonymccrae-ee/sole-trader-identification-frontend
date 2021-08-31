@@ -10,6 +10,8 @@ POST        /:journeyId/date-of-birth                    uk.gov.hmrc.soletraderi
 
 GET         /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.show(journeyId: String)
 POST        /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId: String)
+GET         /:journeyId/no-nino                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.noNino(journeyId: String)
+
 
 GET         /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId: String)
 POST        /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId: String)

@@ -32,6 +32,7 @@ trait CaptureNinoViewTests {
     lazy val doc: Document = Jsoup.parse(result.body)
     lazy val config = app.injector.instanceOf[AppConfig]
 
+
     "have a sign out link in the header" in {
       doc.getSignOutText mustBe Header.signOut
     }
@@ -62,6 +63,56 @@ trait CaptureNinoViewTests {
 
     "have correct labels in the form" in {
       doc.getElementById("nino-hint").text mustBe messages.form_field_1
+    }
+
+    "have a save and continue button" in {
+      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+    }
+
+    "have a link to contact frontend" in {
+      doc.getLink("get-help").text mustBe Base.getHelp
+    }
+  }
+
+  def testNoNinoCaptureNinoView(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+
+    "have a sign out link in the header" in {
+      doc.getSignOutText mustBe Header.signOut
+    }
+
+    "have sign out link redirecting to signOutUrl from journey config" in {
+      doc.getSignOutLink mustBe testSignOutUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    }
+
+    "have the correct title" in {
+      doc.title mustBe messages.title
+    }
+
+    "have the correct heading" in {
+      doc.getH1Elements.text mustBe messages.heading
+    }
+
+    "have the correct hint text" in {
+      doc.getElementsByClass("govuk-hint").text mustBe messages.line_1
+    }
+
+    "have correct labels in the form" in {
+      doc.getElementById("nino-hint").text mustBe messages.form_field_1
+    }
+
+    "have a correct link to skip" in {
+      doc.getElementById("no-nino").text() mustBe messages.no_nino
     }
 
     "have a save and continue button" in {
