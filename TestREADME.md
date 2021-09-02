@@ -12,6 +12,8 @@
    - [Retrieve Result](TestREADME.md#get--test-onlyverification-questionjourneyjourneyidstatus)
 5. Authenticator stub
    - [Test Data](TestREADME.md#using-the-authenticator-stub)
+6. Known Facts stub
+   - [Test Data](TestREADME.md#using-the-known-facts-stub)
    
 
 ### GET test-only/feature-switches
@@ -23,6 +25,7 @@ Shows all feature switches:
     - Use stub for Authenticator API
     - Use stub for Business Verification flow
     - Use stub for Known Facts API
+    - Enable no nino journey
    
 2. Sole Trader Identification
    

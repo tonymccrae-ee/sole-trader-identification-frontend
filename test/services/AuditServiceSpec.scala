@@ -117,6 +117,23 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
           verifySendExplicitAuditSoleTraders()
           auditEventCaptor.getValue mustBe testSoleTraderAuditEventJsonNoSautr(true)
         }
+        "there is not a nino" in {
+          mockRetrieveFullName(testJourneyId)(Future.successful(Some(testFullName)))
+          mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))
+          mockRetrieveNino(testJourneyId)(Future.successful(None))
+          mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
+          mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+          mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNino)))
+          mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
+          mockRetrieveRegistrationResponse(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+          val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
+
+          result mustBe()
+
+          verifySendExplicitAuditSoleTraders()
+          auditEventCaptor.getValue mustBe testSoleTraderAuditEventJsonNoNino(identifiersMatch = true)
+        }
       }
       "the entity is a Sole Trader and identifiers do not match" in {
         mockRetrieveFullName(testJourneyId)(Future.successful(Some(testFullName)))

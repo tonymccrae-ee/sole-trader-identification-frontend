@@ -116,6 +116,15 @@ object TestConstants {
       optSautr = None
     )
 
+  val testIndividualDetailsNoNino: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      optNino = None,
+      optSautr = Some(testSautr)
+    )
+
   def testSoleTraderDetailsJson(identifiersMatch: Boolean = false): JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,

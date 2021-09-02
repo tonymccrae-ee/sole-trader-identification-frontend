@@ -82,6 +82,15 @@ object TestConstants {
       optSautr = None
     )
 
+  val testIndividualDetailsNoNino: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      optNino = None,
+      optSautr = Some(testSautr)
+    )
+
   def testJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
     pageConfig = PageConfig(
@@ -121,6 +130,18 @@ object TestConstants {
     "nino" -> testNino,
     "dateOfBirth" -> testDateOfBirth,
     "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr),
+    "sautrMatch" -> identifiersMatch,
+    "VerificationStatus" -> BusinessVerificationUnchallenged,
+    "RegisterApiStatus" -> RegistrationNotCalled
+  )
+
+  def testSoleTraderAuditEventJsonNoNino(identifiersMatch: Boolean = false): JsObject = Json.obj(
+    "businessType" -> "Sole Trader",
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "dateOfBirth" -> testDateOfBirth,
+    "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoNino),
+    "userSAUTR" -> testSautr,
     "sautrMatch" -> identifiersMatch,
     "VerificationStatus" -> BusinessVerificationUnchallenged,
     "RegisterApiStatus" -> RegistrationNotCalled
