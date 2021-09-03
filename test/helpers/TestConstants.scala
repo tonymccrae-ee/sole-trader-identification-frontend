@@ -140,7 +140,6 @@ object TestConstants {
     "firstName" -> testFirstName,
     "lastName" -> testLastName,
     "dateOfBirth" -> testDateOfBirth,
-    "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoNino),
     "userSAUTR" -> testSautr,
     "sautrMatch" -> identifiersMatch,
     "VerificationStatus" -> BusinessVerificationUnchallenged,
