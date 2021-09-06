@@ -81,7 +81,8 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
       optIdentifiersMatch <- soleTraderIdentificationService.retrieveIdentifiersMatch(journeyId)
       optAuthenticatorResponse <-
         optIdentifiersMatch match {
-          case Some(true) =>
+          case Some(_) if optNino.isEmpty => Future.successful(None)
+          case Some(identifiersMatch) if identifiersMatch =>
             soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
           case _ =>
             soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
@@ -90,7 +91,7 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
       optRegistrationStatus <- soleTraderIdentificationService.retrieveRegistrationStatus(journeyId)
     } yield {
       (optFullName, optDateOfBirth, optNino, optSautr, optIdentifiersMatch, optAuthenticatorResponse, optBusinessVerificationStatus, optRegistrationStatus) match {
-        case (Some(fullName), Some(dateOfBirth), optNino, optSautr, Some(identifiersMatch), Some(authenticatorResponse), Some(businessVerificationStatus), Some(registrationStatus)) =>
+        case (Some(fullName), Some(dateOfBirth), optNino, optSautr, Some(identifiersMatch), optAuthenticatorResponse, Some(businessVerificationStatus), Some(registrationStatus)) =>
           val sautrBlock =
             optSautr match {
               case Some(sautr) => Json.obj("userSAUTR" -> sautr)
@@ -104,9 +105,10 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             }
 
           val authenticatorResponseBlock =
-            authenticatorResponse match {
-              case authenticatorDetails: IndividualDetails => Json.obj("authenticatorResponse" -> Json.toJson(authenticatorDetails))
-              case authenticatorFailureResponse: String => Json.obj("authenticatorResponse" -> authenticatorFailureResponse)
+            optAuthenticatorResponse match {
+              case Some(authenticatorDetails: IndividualDetails) => Json.obj("authenticatorResponse" -> Json.toJson(authenticatorDetails))
+              case Some(authenticatorFailureResponse: String) => Json.obj("authenticatorResponse" -> authenticatorFailureResponse)
+              case _ => Json.obj()
             }
 
           Json.obj(
