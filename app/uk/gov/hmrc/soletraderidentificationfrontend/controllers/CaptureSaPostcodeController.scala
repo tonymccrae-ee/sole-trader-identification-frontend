@@ -20,22 +20,21 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSautrForm
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.FeatureSwitching
+import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureSaPostcodeForm
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
-import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sautr_page
-
+import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_sa_postcode_page
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
-                                       view: capture_sautr_page,
-                                       soleTraderIdentificationService: SoleTraderIdentificationService,
-                                       val authConnector: AuthConnector,
-                                       journeyService: JourneyService
-                                      )(implicit val config: AppConfig,
-                                        executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
-
+class CaptureSaPostcodeController @Inject()(mcc: MessagesControllerComponents,
+                                            view: capture_sa_postcode_page,
+                                            soleTraderIdentificationService: SoleTraderIdentificationService,
+                                            val authConnector: AuthConnector,
+                                            journeyService: JourneyService
+                                     )(implicit val config: AppConfig,
+                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching{
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -45,8 +44,8 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
             Ok(view(
               journeyId = journeyId,
               pageConfig = journeyConfig.pageConfig,
-              formAction = routes.CaptureSautrController.submit(journeyId),
-              form = CaptureSautrForm.form
+              formAction = routes.CaptureSaPostcodeController.submit(journeyId),
+              form = CaptureSaPostcodeForm.form
             ))
         }
       }
@@ -55,35 +54,29 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        CaptureSautrForm.form.bindFromRequest().fold(
+        CaptureSaPostcodeForm.form.bindFromRequest().fold(
           formWithErrors =>
             journeyService.getJourneyConfig(journeyId).map {
               journeyConfig =>
                 BadRequest(view(
                   journeyId = journeyId,
                   pageConfig = journeyConfig.pageConfig,
-                  formAction = routes.CaptureSautrController.submit(journeyId),
+                  formAction = routes.CaptureSaPostcodeController.submit(journeyId),
                   form = formWithErrors
                 ))
             },
-          sautr =>
-            for {
-              _ <- soleTraderIdentificationService.storeSautr(journeyId, sautr)
-              optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
-            } yield optNino match {
-              case Some(_) =>
-                Redirect(routes.CheckYourAnswersController.show(journeyId))
-              case None =>
-                Redirect(routes.CaptureSaPostcodeController.show(journeyId))
+          postcode =>
+            soleTraderIdentificationService.storeSaPostcode(journeyId, postcode).map {
+              _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
             }
         )
       }
   }
 
-  def noSautr(journeyId: String): Action[AnyContent] = Action.async {
+  def noSaPostcode(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.removeSautr(journeyId).map {
+        soleTraderIdentificationService.removeSaPostcode(journeyId).map {
           _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
         }
       }

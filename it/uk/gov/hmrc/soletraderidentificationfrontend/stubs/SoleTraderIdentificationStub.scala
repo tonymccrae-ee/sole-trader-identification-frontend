@@ -70,6 +70,14 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       status = status
     )
 
+  def stubStoreSaPostcode(journeyId: String, saPostcode: String)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode",
+      body = JsString(saPostcode)
+    ).thenReturn(
+      status = status
+    )
+
   def stubStoreDob(journeyId: String, dateOfBirth: LocalDate)(status: Int): StubMapping =
     when(method = PUT,
       uri = s"/sole-trader-identification/journey/$journeyId/dateOfBirth", body = Json.toJson(dateOfBirth)
@@ -174,6 +182,14 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
   def stubRemoveSautr(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = DELETE,
       uri = s"/sole-trader-identification/journey/$journeyId/sautr"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
+  def stubRemoveSaPostcode(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = DELETE,
+      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode"
     ).thenReturn(
       status = status,
       body = body
