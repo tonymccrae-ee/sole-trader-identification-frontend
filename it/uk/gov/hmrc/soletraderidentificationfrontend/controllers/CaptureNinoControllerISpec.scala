@@ -132,7 +132,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     }
   }
   "GET /no-nino" should {
-    "redirect to sautr page" when {
+    "redirect to capture address page" when {
       "the nino is successfully removed" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -141,7 +141,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveNino(testJourneyId)(NO_CONTENT)
@@ -150,7 +150,7 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
+          redirectUri(routes.CaptureAddressController.show(testJourneyId).url)
         )
       }
     }

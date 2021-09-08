@@ -50,6 +50,18 @@ enter-nino.line_1                                           = It’s on the Nati
 enter-nino.invalid.format.error                             = Enter a National Insurance number in the correct format
 enter-nino.no.nino                                          = I do not have a National Insurance number
 
+enter-address.title                                         = Enter your home address
+enter-address.heading                                       = Enter your home address
+enter-address.line_1                                        = Address line 1
+enter-address.line_2                                        = Address line 2
+enter-address.line_3                                        = Address line 3 (optional)
+enter-address.line_4                                        = Address line 4 (optional)
+enter-address.line_5                                        = Address line 5 (optional)
+enter-address.postcode                                      = Postcode
+enter-address.country                                       = Country
+
+
+
 ## SA-UTR Page
 sa-utr.title                                                = What is your Unique Taxpayer Reference?
 sa-utr.line_1                                               = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
@@ -93,3 +105,10 @@ error.no_entry_dob                                          = Enter your date of
 error.invalid_dob_future                                    = The date of birth must be in the past
 error.invalid_age                                           = You must be at least 16 years of age
 error.invalid_date                                          = Enter a real date
+error.no_entry_address1                                     = Enter the first line of the address
+error.no_entry_address2                                     = Enter the second line of the address
+error.too_many_characters_address                           = Enter the address using 35 characters or less
+error.invalid_characters_address                            = Enter the address without special characters
+error.invalid_characters_postcode                           = Enter the postcode without special characters
+error.non_uk_postcode                                       = Enter a postcode, like AA1 1AA
+error.no_entry_country                                      = Select a country

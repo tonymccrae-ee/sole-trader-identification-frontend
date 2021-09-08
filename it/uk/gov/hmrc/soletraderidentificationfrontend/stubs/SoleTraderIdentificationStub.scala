@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsBoolean, JsString, JsValue, Json}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.SoleTraderDetailsMatchFailure
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationStatus, FullName, IndividualDetails, RegistrationStatus}
+import uk.gov.hmrc.soletraderidentificationfrontend.models._
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
 import java.time.LocalDate
@@ -41,6 +41,16 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
     when(method = PUT,
       uri = s"/sole-trader-identification/journey/$journeyId/nino",
       body = JsString(nino)
+    ).thenReturn(
+      status = status
+    )
+
+  def stubStoreAddress(journeyId: String, address: Address)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/sole-trader-identification/journey/$journeyId/address",
+      body = Json.toJson(
+        address
+      )
     ).thenReturn(
       status = status
     )

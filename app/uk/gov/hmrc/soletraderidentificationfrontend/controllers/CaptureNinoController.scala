@@ -84,7 +84,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authorised() {
         soleTraderIdentificationService.removeNino(journeyId).map {
-          _ => Redirect(routes.CaptureSautrController.show(journeyId))
+          _ => Redirect(routes.CaptureAddressController.show(journeyId))
         }
       }
   }
