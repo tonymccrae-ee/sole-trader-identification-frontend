@@ -40,9 +40,14 @@ object TestConstants {
   val testGroupId: String = UUID.randomUUID().toString
   val testInternalId: String = UUID.randomUUID().toString
   val testTrn: String = "99A99999"
-  val testAddress: Address = Address("testLine1", "testLine2", "testTown", "AA11AA", "GB")
-  val testPostcode: String = "TF4 3ER"
-
+  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "United Kingdom")
+  val testAddress1: String = "line1"
+  val testAddress2: String = "line2"
+  val testAddress3: String = "line3"
+  val testAddress4: String = "line4"
+  val testAddress5: String = "line5"
+  val testPostcode: String = "AA11AA"
+  val testCountry: String = "United Kingdom"
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 

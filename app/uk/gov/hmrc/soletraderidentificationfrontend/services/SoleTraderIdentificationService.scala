@@ -41,6 +41,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def storeNino(journeyId: String, nino: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, NinoKey, nino)
 
+  def storeAddress(journeyId: String, address: Address)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[Address](journeyId, AddressKey, address)
+
   def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, SautrKey, sautr)
 
@@ -141,4 +144,5 @@ object SoleTraderIdentificationService {
   val AddressKey: String = "address"
   val TrnKey: String = "trn"
   val SaPostcodeKey: String = "saPostcode"
+  val addressKey = "address"
 }

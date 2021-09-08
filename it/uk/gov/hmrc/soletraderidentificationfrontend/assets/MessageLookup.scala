@@ -82,6 +82,28 @@ object MessageLookup {
 
   }
 
+  object CaptureAddress {
+    val title = "Enter your home address"
+    val heading = "Enter your home address"
+    val line_1 = "Address line 1"
+    val line_2 = "Address line 2"
+    val line_3 = "Address line 3 (optional)"
+    val line_4 = "Address line 4 (optional)"
+    val line_5 = "Address line 5 (optional)"
+    val postcode = "Postcode"
+    val country = "Country"
+
+    object Error {
+      val no_entry_address1 = "Enter the first line of the address"
+      val no_entry_address2 = "Enter the second line of the address"
+      val too_many_characters_address = "Enter the address using 35 characters or less"
+      val invalid_characters_address = "Enter the address without special characters"
+      val invalid_characters_postcode = "Enter the postcode without special characters"
+      val non_uk_postcode = "Enter a postcode, like AA1 1AA"
+      val no_entry_country = "Select a country"
+    }
+  }
+
   object CaptureSautr {
     val title = "What is your Unique Taxpayer Reference?"
     val heading = "What is your Unique Taxpayer Reference?"

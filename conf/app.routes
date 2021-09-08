@@ -12,6 +12,8 @@ GET         /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderi
 POST        /:journeyId/national-insurance-number        uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.submit(journeyId: String)
 GET         /:journeyId/no-nino                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureNinoController.noNino(journeyId: String)
 
+GET         /:journeyId/address                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureAddressController.show(journeyId: String)
+POST        /:journeyId/address                          uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureAddressController.submit(journeyId: String)
 
 GET         /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.show(journeyId: String)
 POST        /:journeyId/sa-utr                           uk.gov.hmrc.soletraderidentificationfrontend.controllers.CaptureSautrController.submit(journeyId: String)
