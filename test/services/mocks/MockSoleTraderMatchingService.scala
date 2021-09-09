@@ -22,7 +22,7 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.AuthenticatorResponse
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.SoleTraderDetailsMatchFailure
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, JourneyConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderMatchingService
 
@@ -41,7 +41,7 @@ trait MockSoleTraderMatchingService extends MockitoSugar with BeforeAndAfterEach
   def mockMatchSoleTraderDetails(journeyId: String,
                                  individualDetails: IndividualDetails,
                                  journeyConfig: JourneyConfig
-                                )(response: Future[AuthenticatorResponse]): OngoingStubbing[_] =
+                                )(response: Future[Either[SoleTraderDetailsMatchFailure, Boolean]]): OngoingStubbing[_] =
     when(mockSoleTraderMatchingService.matchSoleTraderDetails(
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(individualDetails),
