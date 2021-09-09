@@ -18,6 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationJourneyCreated
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{EnableNoNinoJourney, FeatureSwitching}
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import javax.inject.{Inject, Singleton}
@@ -27,7 +28,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class SubmissionService @Inject()(journeyService: JourneyService,
                                   soleTraderMatchingService: SoleTraderMatchingService,
                                   soleTraderIdentificationService: SoleTraderIdentificationService,
-                                  businessVerificationService: BusinessVerificationService) {
+                                  businessVerificationService: BusinessVerificationService,
+                                  createTrnService: CreateTrnService) extends FeatureSwitching {
 
   def submit(journeyId: String)(implicit hc: HeaderCarrier,
                                 ec: ExecutionContext): Future[SubmissionResponse] =
@@ -37,31 +39,38 @@ class SubmissionService @Inject()(journeyService: JourneyService,
       individualDetails = optIndividualDetails.getOrElse(
         throw new InternalServerException(s"Details could not be retrieved from the database for $journeyId")
       )
-      matchingResult <- soleTraderMatchingService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig)
-      identifiersMatch = matchingResult match {
-        case Right(_) => true
-        case _ => false
-      }
-      _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch)
+      matchingResult <-
+        if (individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney)) for {
+          _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false) // TODO Update to call ES20
+        } yield Right(false)
+        else soleTraderMatchingService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig)
       response <- matchingResult match {
-        case Right(IndividualDetails(_, _, _, _, Some(sautr))) if individualDetails.optSautr.contains(sautr) =>
-          businessVerificationService.createBusinessVerificationJourney(journeyId, sautr).flatMap {
-            case Right(BusinessVerificationJourneyCreated(businessVerificationUrl)) =>
-              Future.successful(StartBusinessVerification(businessVerificationUrl))
-            case _ =>
-              for {
-                _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-              } yield {
-                JourneyCompleted(journeyConfig.continueUrl)
-              }
+        case Right(true) if individualDetails.optSautr.nonEmpty =>
+          individualDetails.optSautr match {
+            case Some(sautr) => businessVerificationService.createBusinessVerificationJourney(journeyId, sautr).flatMap {
+              case Right(BusinessVerificationJourneyCreated(businessVerificationUrl)) =>
+                Future.successful(StartBusinessVerification(businessVerificationUrl))
+              case _ =>
+                for {
+                  _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                } yield {
+                  JourneyCompleted(journeyConfig.continueUrl)
+                }
+            }
           }
-        case Right(_) =>
-          for {
-            _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-            _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-          } yield {
-            JourneyCompleted(journeyConfig.continueUrl)
-          }
+        case Right(_) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) => for {
+          _ <- createTrnService.createTrn(journeyId)
+          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+        } yield {
+          JourneyCompleted(journeyConfig.continueUrl)
+        }
+        case Right(_) => for {
+          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+        } yield {
+          JourneyCompleted(journeyConfig.continueUrl)
+        }
         case Left(failureReason) =>
           for {
             _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)

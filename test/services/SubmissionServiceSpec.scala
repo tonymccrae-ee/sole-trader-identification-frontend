@@ -16,6 +16,7 @@
 
 package services
 
+import connectors.mocks.MockCreateTrnService
 import helpers.TestConstants._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -23,6 +24,7 @@ import play.api.test.Helpers._
 import services.mocks.{MockBusinessVerificationService, MockJourneyService, MockSoleTraderIdentificationService, MockSoleTraderMatchingService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.{BusinessVerificationJourneyCreated, NotEnoughEvidence}
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{EnableNoNinoJourney, FeatureSwitching}
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{DetailsMismatch, NinoNotFound}
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
@@ -37,9 +39,16 @@ class SubmissionServiceSpec
     with MockSoleTraderIdentificationService
     with MockJourneyService
     with MockSoleTraderMatchingService
-    with MockBusinessVerificationService {
+    with MockBusinessVerificationService
+    with MockCreateTrnService
+    with FeatureSwitching {
 
-  object TestService extends SubmissionService(mockJourneyService, mockSoleTraderMatchingService, mockSoleTraderIdentificationService, mockBusinessVerificationService)
+  object TestService extends SubmissionService(
+    mockJourneyService,
+    mockSoleTraderMatchingService,
+    mockSoleTraderIdentificationService,
+    mockBusinessVerificationService,
+    mockCreateTrnService)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -47,7 +56,7 @@ class SubmissionServiceSpec
     s"return StartBusinessVerification($testBusinessVerificationRedirectUrl)" in {
       mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
       mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
-      mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Right(testIndividualDetails)))
+      mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Right(true)))
       mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
       mockCreateBusinessVerificationJourney(testJourneyId, testSautr)(Future.successful(Right(BusinessVerificationJourneyCreated(testBusinessVerificationRedirectUrl))))
 
@@ -55,59 +64,72 @@ class SubmissionServiceSpec
 
       result mustBe StartBusinessVerification(testBusinessVerificationRedirectUrl)
     }
+    "return JourneyCompleted" when {
+      "Business Verification Journey Creation fails" in {
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
+        mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Right(true)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
+        mockCreateBusinessVerificationJourney(testJourneyId, testSautr)(Future.successful(Left(NotEnoughEvidence)))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.submit(testJourneyId))
+
+        result mustBe JourneyCompleted(testContinueUrl)
+      }
+      "no sautr is provided" in {
+        disable(EnableNoNinoJourney)
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
+        mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoSautr)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig(true))(Future.successful(Right(true)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.submit(testJourneyId))
+
+        result mustBe JourneyCompleted(testContinueUrl)
+      }
+      "no nino is provided and the EnableNoNinoJourney is enabled" in {
+        enable(EnableNoNinoJourney)
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
+        mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNino)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockCreateTrn(testJourneyId)(Future.successful(SuccessfulCreation))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.submit(testJourneyId))
+
+        result mustBe JourneyCompleted(testContinueUrl)
+      }
+    }
+    "return SoleTraderDetailsMismatch" when {
+      "the details received from Authenticator do not match" in {
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
+        mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Left(DetailsMismatch)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.submit(testJourneyId))
+
+        result mustBe SoleTraderDetailsMismatch(DetailsMismatch)
+      }
+      "the nino is not found on Authenticator" in {
+        mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
+        mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
+        mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Left(NinoNotFound)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.submit(testJourneyId))
+
+        result mustBe SoleTraderDetailsMismatch(NinoNotFound)
+      }
+    }
   }
-  "return JourneyCompleted" when {
-    "Business Verification Journey Creation fails" in {
-      mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
-      mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
-      mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Right(testIndividualDetails)))
-      mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
-      mockCreateBusinessVerificationJourney(testJourneyId, testSautr)(Future.successful(Left(NotEnoughEvidence)))
-      mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
-      mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-
-      val result = await(TestService.submit(testJourneyId))
-
-      result mustBe JourneyCompleted(testContinueUrl)
-    }
-    "no sautr is provided" in {
-      mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
-      mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoSautr)))
-      mockMatchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig(true))(Future.successful(Right(testIndividualDetailsNoSautr)))
-      mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
-      mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
-      mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-
-      val result = await(TestService.submit(testJourneyId))
-
-      result mustBe JourneyCompleted(testContinueUrl)
-    }
-  }
-  "return SoleTraderDetailsMismatch" when {
-    "the details received from Authenticator do not match" in {
-      mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
-      mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
-      mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Left(DetailsMismatch)))
-      mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
-      mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
-      mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-
-      val result = await(TestService.submit(testJourneyId))
-
-      result mustBe SoleTraderDetailsMismatch(DetailsMismatch)
-    }
-    "the nino is not found on Authenticator" in {
-      mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
-      mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
-      mockMatchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(true))(Future.successful(Left(NinoNotFound)))
-      mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
-      mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
-      mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-
-      val result = await(TestService.submit(testJourneyId))
-
-      result mustBe SoleTraderDetailsMismatch(NinoNotFound)
-    }
-  }
-
 }

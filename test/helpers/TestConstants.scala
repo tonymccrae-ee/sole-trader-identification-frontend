@@ -39,7 +39,7 @@ object TestConstants {
   val testFullName: FullName = FullName(testFirstName, testLastName)
   val testNino: String = "AA111111A"
   val testTrn: String = "99A99999"
-  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "United Kingdom")
+  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
   val testSaPostcode: String = "AA11AA"
 
   val testSoleTraderDetails: SoleTraderDetails =
@@ -50,7 +50,8 @@ object TestConstants {
       optSautr = Some(testSautr),
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
-      registrationStatus = Registered(testSafeId)
+      registrationStatus = Registered(testSafeId),
+      trn = None
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
@@ -61,7 +62,8 @@ object TestConstants {
       optSautr = None,
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
-      registrationStatus = RegistrationNotCalled
+      registrationStatus = RegistrationNotCalled,
+      trn = None
     )
 
   val testIndividualDetails: IndividualDetails =

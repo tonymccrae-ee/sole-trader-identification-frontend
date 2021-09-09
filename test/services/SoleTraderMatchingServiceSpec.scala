@@ -42,19 +42,21 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
         "the enableSautrCheck is true and the sautr matches the returned one" in {
           mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Right(testIndividualDetails)))
           mockStoreAuthenticatorDetails(testJourneyId, testIndividualDetails)(Future.successful(SuccessfullyStored))
+          mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(enableSautrCheck = true)))
 
-          result mustBe Right(testIndividualDetails)
+          result mustBe Right(true)
         }
 
         "the enableSautrCheck is false and the sautr is not provided" in {
           mockMatchSoleTraderDetails(testIndividualDetailsNoSautr)(Future.successful(Right(testIndividualDetailsNoSautr)))
           mockStoreAuthenticatorDetails(testJourneyId, testIndividualDetailsNoSautr)(Future.successful(SuccessfullyStored))
+          mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig()))
 
-          result mustBe Right(testIndividualDetailsNoSautr)
+          result mustBe Right(true)
         }
       }
     }
@@ -64,6 +66,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
         "the enableSautrCheck is true and the sautr is provided" in {
           mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(DetailsMismatch)))
           mockStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)(Future.successful(SuccessfullyStored))
+          mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(enableSautrCheck = true)))
 
@@ -73,6 +76,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
         "the enableSautrCheck is false and the sautr is not provided" in {
           mockMatchSoleTraderDetails(testIndividualDetailsNoSautr)(Future.successful(Left(DetailsMismatch)))
           mockStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)(Future.successful(SuccessfullyStored))
+          mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig()))
 
@@ -82,6 +86,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
         "the enableSautrCheck is false and the sautr is provided" in {
           mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(DetailsMismatch)))
           mockStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)(Future.successful(SuccessfullyStored))
+          mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig()))
 
@@ -92,6 +97,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
       "the provided sautr does not exist on authenticator" in {
         mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Right(testIndividualDetailsNoSautr)))
         mockStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)(Future.successful(SuccessfullyStored))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig(enableSautrCheck = true)))
 
@@ -101,6 +107,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
       "the user has not provided an sautr but one is returned from authenticator" in {
         mockMatchSoleTraderDetails(testIndividualDetailsNoSautr)(Future.successful(Right(testIndividualDetails)))
         mockStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)(Future.successful(SuccessfullyStored))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetailsNoSautr, testJourneyConfig(enableSautrCheck = true)))
 
@@ -112,6 +119,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
       "the users details are not found by authenticator" in {
         mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(NinoNotFound)))
         mockStoreAuthenticatorFailureResponse(testJourneyId, NinoNotFound)(Future.successful(SuccessfullyStored))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig()))
 
@@ -123,6 +131,7 @@ class SoleTraderMatchingServiceSpec extends AnyWordSpec with Matchers with MockA
       "the users details are not found by authenticator" in {
         mockMatchSoleTraderDetails(testIndividualDetails)(Future.successful(Left(DeceasedCitizensDetails)))
         mockStoreAuthenticatorFailureResponse(testJourneyId, DeceasedCitizensDetails)(Future.successful(SuccessfullyStored))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.matchSoleTraderDetails(testJourneyId, testIndividualDetails, testJourneyConfig()))
 

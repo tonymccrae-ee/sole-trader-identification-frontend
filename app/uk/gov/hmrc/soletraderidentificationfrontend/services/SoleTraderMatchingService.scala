@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.AuthenticatorConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{AuthenticatorResponse, DetailsMismatch}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{DetailsMismatch, SoleTraderDetailsMatchFailure}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, JourneyConfig}
 
 import javax.inject.{Inject, Singleton}
@@ -30,9 +30,8 @@ class SoleTraderMatchingService @Inject()(authenticatorConnector: AuthenticatorC
 
   def matchSoleTraderDetails(journeyId: String,
                              individualDetails: IndividualDetails,
-                             journeyConfig: JourneyConfig
-                            )(implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuthenticatorResponse] =
+                             journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier,
+                                                           ec: ExecutionContext): Future[Either[SoleTraderDetailsMatchFailure, Boolean]] =
     for {
       authenticatorResponse <- authenticatorConnector.matchSoleTraderDetails(individualDetails).map {
         case Right(authenticatorDetails) if journeyConfig.pageConfig.enableSautrCheck =>
@@ -44,13 +43,19 @@ class SoleTraderMatchingService @Inject()(authenticatorConnector: AuthenticatorC
         case authenticatorResponse =>
           authenticatorResponse
       }
-      _ <- authenticatorResponse match {
+      matchingResponse <- authenticatorResponse match {
         case Right(details) =>
-          soleTraderIdentificationService.storeAuthenticatorDetails(journeyId, details)
+          soleTraderIdentificationService.storeAuthenticatorDetails(journeyId, details).map {
+            _ => Right(true)
+          }
         case Left(failureResponse) =>
-          soleTraderIdentificationService.storeAuthenticatorFailureResponse(journeyId, failureResponse)
+          soleTraderIdentificationService.storeAuthenticatorFailureResponse(journeyId, failureResponse).map {
+            _ => Left(failureResponse)
+          }
       }
+      identifiersMatch = if (matchingResponse.isRight) true else false
+      _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch)
     } yield
-      authenticatorResponse
+      matchingResponse
 
 }

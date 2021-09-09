@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 import play.api.libs.json.Json
 import play.api.test.Helpers.{CREATED, INTERNAL_SERVER_ERROR, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testAddress, testDateOfBirth, testFullName, testTrn}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testAddress, testDateOfBirth, testFullName, testNonUKAddress, testTrn}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.CreateTrnStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 
@@ -30,12 +30,21 @@ class CreateTrnConnectorISpec extends ComponentSpecHelper with CreateTrnStub {
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
   "createTrn" should {
-    "return the TRN" in {
-      stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+    "return the TRN" when {
+      "there is a UK address" in {
+        stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
 
-      val result = await(createTrnConnector.createTrn(testDateOfBirth, testFullName, testAddress))
+        val result = await(createTrnConnector.createTrn(testDateOfBirth, testFullName, testAddress))
 
-      result mustBe testTrn
+        result mustBe testTrn
+      }
+      "there is a non-uk address" in {
+        stubCreateTrn(testDateOfBirth, testFullName, testNonUKAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+
+        val result = await(createTrnConnector.createTrn(testDateOfBirth, testFullName, testNonUKAddress))
+
+        result mustBe testTrn
+      }
     }
     "throw an exception" when {
       "any other status is received" in {
