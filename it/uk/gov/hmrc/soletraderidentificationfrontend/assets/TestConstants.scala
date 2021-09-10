@@ -78,6 +78,7 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
+      address = testAddress,
       optSautr = Some(testSautr),
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationPass,
@@ -90,6 +91,7 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
+      address = testAddress,
       optSautr = None,
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationUnchallenged,
@@ -140,6 +142,7 @@ object TestConstants {
     ),
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino,
+      "address" -> testAddress,
       "sautr" -> testSautr,
       "identifiersMatch" -> identifiersMatch,
       "businessVerification" -> Json.obj(

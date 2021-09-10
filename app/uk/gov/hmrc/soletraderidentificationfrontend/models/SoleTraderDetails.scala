@@ -24,6 +24,7 @@ import java.time.LocalDate
 case class SoleTraderDetails(fullName: FullName,
                              dateOfBirth: LocalDate,
                              optNino: Option[String],
+                             address: Address,
                              optSautr: Option[String],
                              identifiersMatch: Boolean,
                              businessVerification: BusinessVerificationStatus,
@@ -34,6 +35,7 @@ object SoleTraderDetails {
 
   private val FullNameKey = "fullName"
   private val NinoKey = "nino"
+  private val AddressKey = "address"
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
   private val IdentifiersMatchKey = "identifiersMatch"
@@ -45,6 +47,7 @@ object SoleTraderDetails {
     (JsPath \ FullNameKey).read[FullName] and
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).readNullable[String] and
+      (JsPath \ AddressKey).read[Address] and
       (JsPath \ SautrKey).readNullable[String] and
       (JsPath \ IdentifiersMatchKey).read[Boolean] and
       (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus] and
@@ -56,6 +59,7 @@ object SoleTraderDetails {
     (JsPath \ FullNameKey).write[FullName] and
       (JsPath \ DateOfBirthKey).write[LocalDate] and
       (JsPath \ NinoKey).writeNullable[String] and
+      (JsPath \ AddressKey).write[Address] and
       (JsPath \ SautrKey).writeNullable[String] and
       (JsPath \ IdentifiersMatchKey).write[Boolean] and
       (JsPath \ BusinessVerificationKey).write[BusinessVerificationStatus] and
