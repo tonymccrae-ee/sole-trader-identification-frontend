@@ -49,6 +49,7 @@ object TestConstants {
   val testAddress5: String = "line5"
   val testPostcode: String = "AA11AA"
   val testCountry: String = "GB"
+  val testCountryName: String = "United Kingdom"
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 
@@ -78,7 +79,7 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = testAddress,
+      address = Some(testAddress),
       optSautr = Some(testSautr),
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationPass,
@@ -91,7 +92,7 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = testAddress,
+      address = Some(testAddress),
       optSautr = None,
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationUnchallenged,

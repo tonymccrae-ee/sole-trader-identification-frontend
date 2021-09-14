@@ -25,7 +25,6 @@ import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.MappingUtil.{OTe
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.{validate, validateNot}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.Address
 
-import javax.inject.Inject
 import scala.util.matching.Regex
 
 object CaptureAddressForm extends Mappings {

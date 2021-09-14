@@ -143,6 +143,7 @@ object MessageLookup {
     val dob = "Date of birth"
     val nino = "National insurance number"
     val sautr = "Unique taxpayers reference number"
+    val address = "Home Address"
     val noSautr = "The business does not have a UTR"
     val noNino = "I do not have a National Insurance number"
   }
