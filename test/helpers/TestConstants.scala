@@ -47,7 +47,7 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = testAddress,
+      address = Some(testAddress),
       optSautr = Some(testSautr),
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
@@ -60,7 +60,7 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = testAddress,
+      address = Some(testAddress),
       optSautr = None,
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
@@ -83,6 +83,15 @@ object TestConstants {
       lastName = testLastName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
+      optSautr = None
+    )
+
+  val testIndividualDetailsNoNinoNoSautr: IndividualDetails =
+    IndividualDetails(
+      firstName = testFirstName,
+      lastName = testLastName,
+      dateOfBirth = testDateOfBirth,
+      optNino = None,
       optSautr = None
     )
 

@@ -16,8 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
+import play.api.libs.json.Json
+import reactivemongo.bson.BSONElement.converted
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, BusinessVerificationStub, FeatureSwitching, KnownFactsStub}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.Country
 
 import javax.inject.{Inject, Singleton}
 
@@ -94,6 +97,10 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
     val baseUrl: String = if (isEnabled(KnownFactsStub)) s"$selfBaseUrl/identify-your-sole-trader-business/test-only" else enrolmentStoreProxyUrl
     baseUrl + "/enrolment-store/enrolments"
   }
+
+  val countries: Seq[(String, String)] =
+    Json.parse(getClass.getResourceAsStream("/countries.json")).as[Map[String, Country]].map(
+      countryinfo => (countryinfo._2.country, countryinfo._2.name)).toSeq.sortWith(_.name < _.name)
 
 }
 

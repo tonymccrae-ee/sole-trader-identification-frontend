@@ -73,6 +73,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
+        stubRetrieveAddress(testJourneyId)(NOT_FOUND)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -106,7 +107,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
     }
 
-    "the applicant only has a nino" should {
+    "the applicant does not have a sautr" should {
       lazy val result: WSResponse = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -120,6 +121,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
+        stubRetrieveAddress(testJourneyId)(NOT_FOUND)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -153,7 +155,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
     }
 
-    "the applicant only has a sautr" should {
+    "the applicant does not have a nino but has an address" should {
       lazy val result: WSResponse = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -167,6 +169,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
+        stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -199,6 +202,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
       }
     }
+
   }
 
   "POST /check-your-answers-business" when {

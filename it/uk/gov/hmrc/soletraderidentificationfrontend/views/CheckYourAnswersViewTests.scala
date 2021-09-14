@@ -238,8 +238,8 @@ trait CheckYourAnswersViewTests {
     "have a summary list which" should {
       lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
 
-      "have 5 rows" in {
-        summaryListRows.size mustBe 5
+      "have 6 rows" in {
+        summaryListRows.size mustBe 6
       }
 
       "have a first name row" in {
@@ -276,6 +276,15 @@ trait CheckYourAnswersViewTests {
         ninoRow.getSummaryListAnswer mustBe messages.noNino
         ninoRow.getSummaryListChangeLink mustBe routes.CaptureNinoController.show(journeyId).url
         ninoRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.nino}"
+      }
+
+      "have an address row" in {
+        val addressRow = summaryListRows(4)
+
+        addressRow.getSummaryListQuestion mustBe messages.address
+        addressRow.getSummaryListAnswer mustBe s"$testAddress1 $testAddress2 $testAddress3 $testAddress4 $testAddress5 $testPostcode $testCountryName"
+        addressRow.getSummaryListChangeLink mustBe routes.CaptureAddressController.show(journeyId).url
+        addressRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.address}"
       }
 
       "have an sautr row" in {

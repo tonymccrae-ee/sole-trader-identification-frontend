@@ -16,14 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import reactivemongo.bson.BSONElement.converted
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CaptureAddressForm
-import uk.gov.hmrc.soletraderidentificationfrontend.models.Country
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.capture_address_page
 
@@ -36,10 +33,8 @@ class CaptureAddressController @Inject()(mcc: MessagesControllerComponents,
                                          soleTraderIdentificationService: SoleTraderIdentificationService,
                                          val authConnector: AuthConnector,
                                          journeyService: JourneyService
-                                         )(implicit val config: AppConfig,
-                                           ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
-
-  private val countries: Seq[(String, String)] = Json.parse(getClass.getResourceAsStream("/countries.json")).as[Map[String, Country]].map(countryinfo => (countryinfo._2.country,countryinfo._2.name)).toSeq.sortWith(_.name < _.name)
+                                        )(implicit val config: AppConfig,
+                                          ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -51,7 +46,7 @@ class CaptureAddressController @Inject()(mcc: MessagesControllerComponents,
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureAddressController.submit(journeyId),
               form = CaptureAddressForm.apply(),
-              countries = countries
+              countries = config.countries
             ))
         }
       }
@@ -69,7 +64,7 @@ class CaptureAddressController @Inject()(mcc: MessagesControllerComponents,
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CaptureAddressController.submit(journeyId),
                   form = formWithErrors,
-                  countries = countries
+                  countries = config.countries
                 ))
             },
           address =>
