@@ -69,7 +69,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
   "POST /sa-utr" when {
     "the sautr is correctly formatted" should {
-      "redirect to Check Your Answers Page and store the data in the backend" in {
+      "redirect to SA postcode Page and store the data in the backend" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           internalId = testInternalId,
@@ -86,7 +86,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+          redirectUri(routes.CaptureSaPostcodeController.show(testJourneyId).url)
         )
       }
     }

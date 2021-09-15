@@ -113,3 +113,12 @@ error.invalid_characters_address                            = Enter the address 
 error.invalid_characters_postcode                           = Enter the postcode without special characters
 error.non_uk_postcode                                       = Enter a postcode, like AA1 1AA
 error.no_entry_country                                      = Select a country
+
+## SA Postcode Page
+sa-postcode.title                                            = What is the postcode where the business is registered for Self Assessment?
+sa-postcode.heading                                          = What is the postcode where the business is registered for Self Assessment?
+sa-postcode.hint                                             = For example, AB1 2YZ
+sa-postcode.no.postcodeLink                                  = The business does not have a Self Assessment postcode
+sa-postcode.invalid.format.error                             = Enter a UK postcode
+error.no_entry_sa-postcode                                   = Enter a postcode
+

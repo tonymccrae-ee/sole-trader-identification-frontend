@@ -119,6 +119,20 @@ object MessageLookup {
 
   }
 
+  object CaptureSaPostcode {
+
+    val title = "What is the postcode where the business is registered for Self Assessment?"
+    val heading = "What is the postcode where the business is registered for Self Assessment?"
+    val hint = "For example, AB1 2YZ"
+    val no_postcodeLink = "The business does not have a Self Assessment postcode"
+
+    object Error {
+      val invalid_sa_postcode = "Enter a UK postcode"
+      val no_entry_sa_postcode = "Enter a postcode"
+    }
+
+  }
+
   object PersonalInformationError {
     val title = "We could not identify you on our records"
     val heading = "We could not identify you on our records"

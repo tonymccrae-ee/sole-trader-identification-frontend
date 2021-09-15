@@ -47,6 +47,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def storeSautr(journeyId: String, sautr: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, SautrKey, sautr)
 
+  def storeSaPostcode(journeyId: String, saPostcode: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[String](journeyId, SaPostcodeKey, saPostcode)
+
   def storeIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[Boolean](journeyId, IdentifiersMatchKey, identifiersMatch)
 
@@ -116,8 +119,7 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                      )(implicit hc: HeaderCarrier): Future[Option[Address]] =
     connector.retrieveSoleTraderDetails[Address](journeyId, AddressKey)
 
-  def retrieveSaPostcode(journeyId: String
-                        )(implicit hc: HeaderCarrier): Future[Option[String]] =
+  def retrieveSaPostcode(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveSoleTraderDetails[String](journeyId, SaPostcodeKey)
 
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
@@ -125,6 +127,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
 
   def removeNino(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, NinoKey)
+
+  def removeSaPostcode(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    connector.removeSoleTraderDetails(journeyId, SaPostcodeKey)
 
   def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeAllData(journeyId)
@@ -143,6 +148,6 @@ object SoleTraderIdentificationService {
   val RegistrationKey: String = "registration"
   val AddressKey: String = "address"
   val TrnKey: String = "trn"
-  val SaPostcodeKey: String = "saPostcode"
+  val SaPostcodeKey: String = "sa-postcode"
   val addressKey = "address"
 }

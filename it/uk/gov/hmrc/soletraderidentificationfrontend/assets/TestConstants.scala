@@ -50,6 +50,8 @@ object TestConstants {
   val testPostcode: String = "AA11AA"
   val testCountry: String = "GB"
   val testCountryName: String = "United Kingdom"
+  val testSaPostcode: String = "AA00 0AA"
+
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 
