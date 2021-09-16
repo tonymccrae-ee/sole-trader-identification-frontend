@@ -24,6 +24,7 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.SoleTraderIdentificationConnector
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 
 import scala.concurrent.Future
@@ -78,5 +79,20 @@ trait MockSoleTraderIdentificationConnector extends MockitoSugar with BeforeAndA
       ArgumentMatchers.eq(data)
     )(ArgumentMatchers.any[Writes[T]],
       ArgumentMatchers.any[HeaderCarrier])
+
+  def mockRemoveSoleTraderDetails[T](journeyId: String,
+                                     dataKey: String
+                                    )(response: Future[SuccessfullyRemoved.type]): OngoingStubbing[_] =
+    when(mockSoleTraderIdentificationConnector.removeSoleTraderDetails(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(dataKey)
+    )(ArgumentMatchers.any[HeaderCarrier]
+    )).thenReturn(response)
+
+  def verifyRemoveSoleTraderDetails[T](journeyId: String, dataKey: String): Unit =
+    verify(mockSoleTraderIdentificationConnector).removeSoleTraderDetails(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(dataKey)
+    )(ArgumentMatchers.any[HeaderCarrier])
 
 }

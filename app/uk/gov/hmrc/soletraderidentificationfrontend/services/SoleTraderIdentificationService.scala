@@ -131,6 +131,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def removeSaPostcode(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, SaPostcodeKey)
 
+  def removeAddress(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    connector.removeSoleTraderDetails(journeyId, AddressKey)
+
   def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeAllData(journeyId)
 

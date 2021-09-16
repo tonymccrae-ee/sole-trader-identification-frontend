@@ -109,28 +109,99 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
     }
   }
 
-  "POST /national-insurance-number" should {
-    "redirect to check your answers page" in {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
-      ))
-      stubAuth(OK, successfulAuthResponse())
-      stubStoreNino(testJourneyId, testNino)(status = OK)
+  "POST /national-insurance-number" when {
+    "the nino is correctly formatted" should {
+      "redirect to check your answers page" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubStoreNino(testJourneyId, testNino)(status = OK)
+        stubRemoveAddress(testJourneyId)(NO_CONTENT)
 
-      lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> testNino)
+        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> testNino)
 
-      result must have(
-        httpStatus(SEE_OTHER),
-        redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
-      )
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+        )
+      }
+      "redirect to the capture sautr page" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = true
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubStoreNino(testJourneyId, testNino)(status = OK)
+        stubRemoveAddress(testJourneyId)(NO_CONTENT)
+
+        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> testNino)
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
+        )
+      }
     }
+
+    "no nino is submitted" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "")
+      }
+
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+
+      testCaptureNinoErrorMessages(result)
+    }
+
+    "an invalid nino is submitted" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "AAAAAAAAAA")
+      }
+
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+
+      testCaptureNinoErrorMessages(result)
+    }
+
+
   }
+
   "GET /no-nino" should {
     "redirect to capture address page" when {
       "the nino is successfully removed" in {
@@ -174,71 +245,6 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
-  }
-
-  "no nino is submitted" should {
-    lazy val result = {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
-      ))
-      stubAuth(OK, successfulAuthResponse())
-      post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "")
-    }
-
-    "return a bad request" in {
-      result.status mustBe BAD_REQUEST
-    }
-
-    testCaptureNinoErrorMessages(result)
-  }
-
-  "an invalid nino is submitted" should {
-    lazy val result = {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
-      ))
-      stubAuth(OK, successfulAuthResponse())
-      post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> "AAAAAAAAAA")
-    }
-
-    "return a bad request" in {
-      result.status mustBe BAD_REQUEST
-    }
-
-    testCaptureNinoErrorMessages(result)
-  }
-
-  "redirect to the capture sautr page" in {
-    await(insertJourneyConfig(
-      journeyId = testJourneyId,
-      internalId = testInternalId,
-      continueUrl = testContinueUrl,
-      optServiceName = None,
-      deskProServiceId = testDeskProServiceId,
-      signOutUrl = testSignOutUrl,
-      enableSautrCheck = true
-    ))
-    stubAuth(OK, successfulAuthResponse())
-    stubStoreNino(testJourneyId, testNino)(status = OK)
-
-    lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/national-insurance-number")("nino" -> testNino)
-
-    result must have(
-      httpStatus(SEE_OTHER),
-      redirectUri(routes.CaptureSautrController.show(testJourneyId).url)
-    )
   }
 
 }
