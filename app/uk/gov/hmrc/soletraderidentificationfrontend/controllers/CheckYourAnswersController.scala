@@ -37,7 +37,7 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                            journeyService: JourneyService,
                                            submissionService: SubmissionService,
                                            auditService: AuditService,
-                                           summaryListRowBuilderService: CheckYourAnswersRowBuilder,
+                                           rowBuilder: CheckYourAnswersRowBuilder,
                                            val authConnector: AuthConnector
                                           )(implicit val config: AppConfig,
                                             executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
@@ -46,25 +46,18 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.retrieveIndividualDetails(journeyId).flatMap {
-          case Some(individualDetails) =>
-            journeyService.getJourneyConfig(journeyId).flatMap {
-              journeyConfig => soleTraderIdentificationService.retrieveAddress(journeyId).flatMap {
-                address =>
-                  summaryListRowBuilderService.buildSummaryListRowSeq(journeyId, individualDetails, address, journeyConfig.pageConfig.enableSautrCheck).map {
-                    summaryRows => Ok(view(
-                      pageConfig = journeyConfig.pageConfig,
-                      formAction = routes.CheckYourAnswersController.submit(journeyId),
-                      journeyId = journeyId,
-                      individualDetails = individualDetails,
-                      summaryRows = summaryRows
-                    ))
-                  }
-              }
-            }
-          case _ =>
-            throw new InternalServerException("Failed to retrieve data from database")
-        }
+        for {
+          journeyConfig <- journeyService.getJourneyConfig(journeyId)
+          individualDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
+            .map(_.getOrElse(throw new InternalServerException(s"Individual details not found for journeyId: $journeyId")))
+          optAddress <- soleTraderIdentificationService.retrieveAddress(journeyId)
+          optSaPostcode <- soleTraderIdentificationService.retrieveSaPostcode(journeyId)
+          summaryRows = rowBuilder.buildSummaryListRows(journeyId, individualDetails, optAddress, optSaPostcode, journeyConfig.pageConfig.enableSautrCheck)
+        } yield Ok(view(
+          pageConfig = journeyConfig.pageConfig,
+          formAction = routes.CheckYourAnswersController.submit(journeyId),
+          summaryRows = summaryRows
+        ))
       }
   }
 

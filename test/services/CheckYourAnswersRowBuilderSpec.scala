@@ -24,14 +24,11 @@ import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers.{await, defaultAwaitTimeout}
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.ActionItem
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.routes
-import uk.gov.hmrc.soletraderidentificationfrontend.models.Address
 import uk.gov.hmrc.soletraderidentificationfrontend.services.CheckYourAnswersRowBuilder
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.DateHelper.checkYourAnswersFormat
 
@@ -47,7 +44,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testFirstNameRow = SummaryListRow(
     key = Key(content = Text("First name")),
-    value = Value(content = Text(testFirstName)),
+    value = Value(content = HtmlContent(testFirstName)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureFullNameController.show(testJourneyId).url,
@@ -59,7 +56,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testLastNameRow = SummaryListRow(
     key = Key(content = Text("Last name")),
-    value = Value(content = Text(testLastName)),
+    value = Value(content = HtmlContent(testLastName)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureFullNameController.show(testJourneyId).url,
@@ -71,7 +68,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testDateOfBirthRow = SummaryListRow(
     key = Key(content = Text("Date of birth")),
-    value = Value(content = Text(testDateOfBirth.format(checkYourAnswersFormat))),
+    value = Value(content = HtmlContent(testDateOfBirth.format(checkYourAnswersFormat))),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureDateOfBirthController.show(testJourneyId).url,
@@ -83,7 +80,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testNinoRow = SummaryListRow(
     key = Key(content = Text("National insurance number")),
-    value = Value(content = Text(testNino.grouped(2).mkString(" "))),
+    value = Value(content = HtmlContent(testNino.grouped(2).mkString(" "))),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureNinoController.show(testJourneyId).url,
@@ -95,7 +92,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testNoNinoRow = SummaryListRow(
     key = Key(content = Text("National insurance number")),
-    value = Value(content = Text("I do not have a National Insurance number")),
+    value = Value(content = HtmlContent("I do not have a National Insurance number")),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureNinoController.show(testJourneyId).url,
@@ -107,7 +104,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testSautrRow = SummaryListRow(
     key = Key(content = Text("Unique taxpayers reference number")),
-    value = Value(content = Text(testSautr)),
+    value = Value(content = HtmlContent(testSautr)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureSautrController.show(testJourneyId).url,
@@ -119,7 +116,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
   val testNoSautrRow = SummaryListRow(
     key = Key(content = Text("Unique taxpayers reference number")),
-    value = Value(content = Text("The business does not have a UTR")),
+    value = Value(content = HtmlContent("The business does not have a UTR")),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureSautrController.show(testJourneyId).url,
@@ -129,17 +126,43 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
     )))
   )
 
-  def addressCheckYourAnswersFormat(countries: Seq[(String, String)], address: Address): String = {
-    val countryName = countries.toMap.get(address.countryCode) match {
-      case Some(countryName) => countryName
-      case _ => throw new InternalServerException("")
-    }
-    List(Some(address.line1), Some(address.line2), address.line3, address.line4, address.line5, address.postCode, Some(countryName)).flatten.mkString("<br>")
-  }
+  val testSaPostcodeRow = SummaryListRow(
+    key = Key(content = Text("Self Assessment postcode")),
+    value = Value(content = HtmlContent(testSaPostcode)),
+    actions = Some(Actions(items = Seq(
+      ActionItem(
+        href = routes.CaptureSaPostcodeController.show(testJourneyId).url,
+        content = Text("Change"),
+        visuallyHiddenText = Some("Self Assessment postcode")
+      )
+    )))
+  )
+
+  val testNoSaPostcodeRow = SummaryListRow(
+    key = Key(content = Text("Self Assessment postcode")),
+    value = Value(content = HtmlContent("The business does not have a Self Assessment postcode")),
+    actions = Some(Actions(items = Seq(
+      ActionItem(
+        href = routes.CaptureSaPostcodeController.show(testJourneyId).url,
+        content = Text("Change"),
+        visuallyHiddenText = Some("Self Assessment postcode")
+      )
+    )))
+  )
+
+  val formattedAddress: String = Seq(
+    Some(testAddress.line1),
+    Some(testAddress.line2),
+    testAddress.line3,
+    testAddress.line4,
+    testAddress.line5,
+    testAddress.postCode,
+    Some(mockAppConfig.getCountryName(testAddress.countryCode))
+  ).flatten.mkString("<br>")
 
   val testAddressRow = SummaryListRow(
     key = Key(content = Text("Home Address")),
-    value = Value(content = HtmlContent(addressCheckYourAnswersFormat(mockAppConfig.countries, testAddress))),
+    value = Value(content = HtmlContent(formattedAddress)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureAddressController.show(testJourneyId).url,
@@ -153,8 +176,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
     "build a summary list sequence" when {
       "the user is on the individual journey" when {
         "there is a nino" in {
-
-          val result = await(TestService.buildSummaryListRowSeq(testJourneyId, testIndividualDetailsNoSautr, optAddress = None, enableSautrCheck = false))
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoSautr, optAddress = None, optSaPostcode = None, enableSautrCheck = false)
 
           result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNinoRow)
         }
@@ -162,19 +184,25 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
       "the user is on the sole trader journey" when {
         "there is a nino and sautr but no address provided" in {
-          val result = await(TestService.buildSummaryListRowSeq(testJourneyId, testIndividualDetails, optAddress = None, enableSautrCheck = true))
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetails, optAddress = None, optSaPostcode = None, enableSautrCheck = true)
 
           result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNinoRow, testSautrRow)
         }
 
-        "the nino has not been provided but sautr and address have" in {
-          val result = await(TestService.buildSummaryListRowSeq(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), enableSautrCheck = true))
+        "the nino has not been provided but sautr, sa postcode and address have" in {
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), optSaPostcode = Some(testSaPostcode), enableSautrCheck = true)
 
-          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow)
+          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow, testSaPostcodeRow)
+        }
+
+        "the nino and sa postcode have not been provided but sautr, and address have" in {
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), optSaPostcode = None, enableSautrCheck = true)
+
+          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow, testNoSaPostcodeRow)
         }
 
         "the nino and sautr have not been provided but an address has" in {
-          val result = await(TestService.buildSummaryListRowSeq(testJourneyId, testIndividualDetailsNoNinoNoSautr, Some(testAddress), enableSautrCheck = true))
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNinoNoSautr, Some(testAddress), optSaPostcode = None, enableSautrCheck = true)
 
           result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testNoSautrRow)
         }

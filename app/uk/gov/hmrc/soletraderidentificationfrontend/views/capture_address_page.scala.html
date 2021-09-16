@@ -32,7 +32,7 @@
         select: GovukSelect
 )
 
-@(journeyId: String, pageConfig: PageConfig, formAction: Call,  form: Form[Address], countries: Seq[(String, String)])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(journeyId: String, pageConfig: PageConfig, formAction: Call,  form: Form[Address], countries: Seq[Country])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, title = title(messages("enter-address.title"), form)) {
 
@@ -103,11 +103,11 @@
             label = Label(content = HtmlContent(messages("enter-address.country")), classes = "govuk-label govuk-!-font-weight-bold"),
             errorMessage = form("country").error.map(fe ⇒ ErrorMessage(content = HtmlContent(messages("error.no_entry_country")))),
             items = Seq(SelectItem(value = Some(""), text="Select a country")) ++ countries.map {
-                case (k,v) ⇒ SelectItem(
-                    value = Some(k),
-                    text = v,
-                    selected = k == form("country").value.getOrElse(""),
-                    attributes = Map("id" → s"country-$k")
+                case Country(code, name) ⇒ SelectItem(
+                    value = Some(code),
+                    text = name,
+                    selected = code == form("country").value.getOrElse(""),
+                    attributes = Map("id" → s"country-$code")
                 )
             },
             formGroupClasses = "form-field-group"
