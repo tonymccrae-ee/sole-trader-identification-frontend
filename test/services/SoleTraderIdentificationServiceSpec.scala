@@ -22,6 +22,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier}
+import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.RemoveSoleTraderDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.soletraderidentificationfrontend.services.SoleTraderIdentificationService
 
 import scala.concurrent.Future
@@ -75,6 +76,18 @@ class SoleTraderIdentificationServiceSpec extends AnyWordSpec with Matchers with
         )
         verifyRetrieveSoleTraderInformation[String](testJourneyId, dataKey)
       }
+    }
+  }
+
+  "removeAddress" should {
+    "successfully remove the address" in {
+      mockRemoveSoleTraderDetails(testJourneyId, "address")(Future.successful(SuccessfullyRemoved))
+
+      val result = await(TestService.removeAddress(testJourneyId))
+
+      result mustBe SuccessfullyRemoved
+
+      verifyRemoveSoleTraderDetails(testJourneyId, "address")
     }
   }
 

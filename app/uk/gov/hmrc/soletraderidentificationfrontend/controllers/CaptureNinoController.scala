@@ -36,7 +36,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                                       val authConnector: AuthConnector,
                                       journeyService: JourneyService
                                      )(implicit val config: AppConfig,
-                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching{
+                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -70,15 +70,18 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                 ))
             },
           nino =>
-            soleTraderIdentificationService.storeNino(journeyId, nino) flatMap { _ =>
-              journeyService.getJourneyConfig(journeyId).map {
-                case JourneyConfig(_, PageConfig(_, _, _, false)) => Redirect(routes.CheckYourAnswersController.show(journeyId))
-                case _ => Redirect(routes.CaptureSautrController.show(journeyId))
-              }
-
-            })
+            for {
+              _ <- soleTraderIdentificationService.storeNino(journeyId, nino)
+              _ <- soleTraderIdentificationService.removeAddress(journeyId)
+              journeyConfig <- journeyService.getJourneyConfig(journeyId)
+            } yield journeyConfig match {
+              case JourneyConfig(_, PageConfig(_, _, _, false)) => Redirect(routes.CheckYourAnswersController.show(journeyId))
+              case _ => Redirect(routes.CaptureSautrController.show(journeyId))
+            }
+        )
       }
   }
+
 
   def noNino(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
