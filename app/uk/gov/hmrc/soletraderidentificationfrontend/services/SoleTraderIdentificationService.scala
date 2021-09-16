@@ -151,6 +151,6 @@ object SoleTraderIdentificationService {
   val RegistrationKey: String = "registration"
   val AddressKey: String = "address"
   val TrnKey: String = "trn"
-  val SaPostcodeKey: String = "sa-postcode"
+  val SaPostcodeKey: String = "saPostcode"
   val addressKey = "address"
 }

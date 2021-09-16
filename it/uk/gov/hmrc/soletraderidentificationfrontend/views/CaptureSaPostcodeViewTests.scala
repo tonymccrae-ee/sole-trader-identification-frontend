@@ -58,7 +58,7 @@ trait CaptureSaPostcodeViewTests {
     }
 
     "have the correct hint text" in {
-      doc.getElementById("sa-postcode-hint").text mustBe messages.hint
+      doc.getElementById("saPostcode-hint").text mustBe messages.hint
     }
 
     "have a correct link to skip self assessment postcode" in {

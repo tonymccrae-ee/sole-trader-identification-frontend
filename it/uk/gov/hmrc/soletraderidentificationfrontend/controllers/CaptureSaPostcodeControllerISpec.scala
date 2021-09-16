@@ -82,7 +82,7 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
       stubAuth(OK, successfulAuthResponse())
       stubStoreSaPostcode(testJourneyId, testSaPostcode)(status = OK)
 
-      lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("sa-postcode" -> testSaPostcode)
+      lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> testSaPostcode)
 
       result must have(
         httpStatus(SEE_OTHER),
@@ -148,7 +148,7 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
         enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
-      post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("sa-postcode" -> "")
+      post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> "")
     }
 
     "return a bad request" in {
@@ -170,7 +170,7 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
         enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
-      post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("sa-postcode" -> "AA!0!!")
+      post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> "AA!0!!")
     }
 
     "return a bad request" in {

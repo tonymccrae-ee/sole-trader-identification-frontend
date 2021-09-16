@@ -43,6 +43,6 @@ object CaptureSaPostcodeForm {
 
   val form: Form[String] =
     Form(
-      "sa-postcode" -> optText.toText.verifying(postcodeNotEntered andThen postcodeInvalid)
+      "saPostcode" -> optText.toText.verifying(postcodeNotEntered andThen postcodeInvalid)
     )
 }
