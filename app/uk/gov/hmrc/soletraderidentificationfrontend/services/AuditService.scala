@@ -74,33 +74,47 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
 
   def auditSoleTraderJourney(journeyId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     for {
-      optFullName <- soleTraderIdentificationService.retrieveFullName(journeyId)
-      optDateOfBirth <- soleTraderIdentificationService.retrieveDateOfBirth(journeyId)
-      optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
-      optSautr <- soleTraderIdentificationService.retrieveSautr(journeyId)
+      optSoleTraderRecord <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
+      optSaPostcode <- soleTraderIdentificationService.retrieveSaPostcode(journeyId)
       optIdentifiersMatch <- soleTraderIdentificationService.retrieveIdentifiersMatch(journeyId)
       optAuthenticatorResponse <-
-        optIdentifiersMatch match {
-          case Some(_) if optNino.isEmpty => Future.successful(None)
-          case Some(identifiersMatch) if identifiersMatch =>
-            soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
-          case _ =>
-            soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
-        }
-      optBusinessVerificationStatus <- soleTraderIdentificationService.retrieveBusinessVerificationStatus(journeyId)
-      optRegistrationStatus <- soleTraderIdentificationService.retrieveRegistrationStatus(journeyId)
+      optIdentifiersMatch match {
+        case Some(_) if optSoleTraderRecord.exists(details => details.optNino.isEmpty) => Future.successful(None)
+        case Some(identifiersMatch) if identifiersMatch =>
+          soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
+        case _ =>
+          soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
+      }
     } yield {
-      (optFullName, optDateOfBirth, optNino, optSautr, optIdentifiersMatch, optAuthenticatorResponse, optBusinessVerificationStatus, optRegistrationStatus) match {
-        case (Some(fullName), Some(dateOfBirth), optNino, optSautr, Some(identifiersMatch), optAuthenticatorResponse, Some(businessVerificationStatus), Some(registrationStatus)) =>
+      (optSoleTraderRecord, optSaPostcode, optIdentifiersMatch, optAuthenticatorResponse) match {
+        case (Some(optSoleTraderRecord), optSaPostcode, Some(identifiersMatch), optAuthenticatorResponse) =>
           val sautrBlock =
-            optSautr match {
+            optSoleTraderRecord.optSautr match {
               case Some(sautr) => Json.obj("userSAUTR" -> sautr)
               case _ => Json.obj()
             }
 
           val ninoBlock =
-            optNino match {
+            optSoleTraderRecord.optNino match {
               case Some(nino) => Json.obj("nino" -> nino)
+              case _ => Json.obj()
+            }
+
+          val addressBlock =
+            optSoleTraderRecord.address match {
+              case Some(address) => Json.obj("address" -> Json.toJson(address))
+              case _ => Json.obj()
+            }
+
+          val trnBlock =
+            optSoleTraderRecord.trn match {
+              case Some(trNumber) => Json.obj("TempNI" -> trNumber)
+              case _ => Json.obj()
+            }
+
+          val saPostCodeBlock =
+            optSaPostcode match {
+              case Some(postcode) => Json.obj("SAPostcode" -> postcode)
               case _ => Json.obj()
             }
 
@@ -113,13 +127,13 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
 
           Json.obj(
             "businessType" -> "Sole Trader",
-            "firstName" -> fullName.firstName,
-            "lastName" -> fullName.lastName,
-            "dateOfBirth" -> dateOfBirth,
+            "firstName" -> optSoleTraderRecord.fullName.firstName,
+            "lastName" -> optSoleTraderRecord.fullName.lastName,
+            "dateOfBirth" -> optSoleTraderRecord.dateOfBirth,
             "sautrMatch" -> identifiersMatch,
-            "VerificationStatus" -> businessVerificationStatus,
-            "RegisterApiStatus" -> registrationStatus
-          ) ++ sautrBlock ++ ninoBlock ++ authenticatorResponseBlock
+            "VerificationStatus" -> optSoleTraderRecord.businessVerification,
+            "RegisterApiStatus" -> optSoleTraderRecord.registrationStatus
+          ) ++ sautrBlock ++ ninoBlock ++ addressBlock ++ trnBlock ++ saPostCodeBlock ++  authenticatorResponseBlock
         case _ =>
           throw new InternalServerException(s"Not enough information to audit sole trader journey for Journey ID $journeyId")
       }
@@ -131,5 +145,4 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
         detail = auditJson
       )
   }
-
 }
