@@ -47,7 +47,33 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = Some(testAddress),
+      address = None,
+      optSautr = Some(testSautr),
+      identifiersMatch = true,
+      businessVerification = BusinessVerificationPass,
+      registrationStatus = Registered(testSafeId),
+      trn = None
+    )
+
+  val testSoleTraderDetailsNoMatch: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = Some(testNino),
+      address = None,
+      optSautr = Some(testSautr),
+      identifiersMatch = false,
+      businessVerification = BusinessVerificationUnchallenged,
+      registrationStatus = RegistrationNotCalled,
+      trn = None
+    )
+
+  val testSoleTraderDetailsNinoAndUtr: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = Some(testNino),
+      address = None,
       optSautr = Some(testSautr),
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
@@ -60,12 +86,25 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = Some(testAddress),
+      address = None,
       optSautr = None,
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
       trn = None
+    )
+
+  val testSoleTraderDetailsNoNinoButUtr: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = None,
+      address = Some(testAddress),
+      optSautr = Some(testSautr),
+      identifiersMatch = true,
+      businessVerification = BusinessVerificationUnchallenged,
+      registrationStatus = RegistrationNotCalled,
+      trn = Some(testTrn)
     )
 
   val testIndividualDetails: IndividualDetails =
@@ -153,10 +192,13 @@ object TestConstants {
     "firstName" -> testFirstName,
     "lastName" -> testLastName,
     "dateOfBirth" -> testDateOfBirth,
+    "address" -> testAddress,
     "userSAUTR" -> testSautr,
     "sautrMatch" -> identifiersMatch,
     "VerificationStatus" -> BusinessVerificationUnchallenged,
-    "RegisterApiStatus" -> RegistrationNotCalled
+    "RegisterApiStatus" -> RegistrationNotCalled,
+    "TempNI" -> testTrn,
+    "SAPostcode" -> testSaPostcode
   )
 
   def testSoleTraderFailureAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(
