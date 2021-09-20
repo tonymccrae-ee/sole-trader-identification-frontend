@@ -17,6 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import play.api.i18n.Messages
+import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.ActionItem
@@ -32,110 +33,100 @@ import scala.concurrent.Future
 @Singleton
 class CheckYourAnswersRowBuilder @Inject()() {
 
-  def buildSummaryListRowSeq(journeyId: String,
-                             individualDetails: IndividualDetails,
-                             optAddress: Option[Address],
-                             enableSautrCheck: Boolean
-                            )(implicit messages: Messages, config: AppConfig): Future[Seq[SummaryListRow]] = {
+  def buildSummaryListRows(journeyId: String,
+                           individualDetails: IndividualDetails,
+                           optAddress: Option[Address],
+                           optSaPostcode: Option[String],
+                           enableSautrCheck: Boolean
+                          )(implicit messages: Messages, config: AppConfig): Seq[SummaryListRow] = {
 
-    val firstNameRow = SummaryListRow(
-      key = Key(content = Text(messages("check-your-answers.first_name"))),
-      value = Value(content = Text(individualDetails.firstName)),
-      actions = Some(Actions(items = Seq(
-        ActionItem(
-          href = routes.CaptureFullNameController.show(journeyId).url,
-          content = Text("Change"),
-          visuallyHiddenText = Some(messages("check-your-answers.first_name"))
-        )
-      )))
+    val firstNameRow = buildSummaryRow(
+      messages("check-your-answers.first_name"),
+      individualDetails.firstName,
+      routes.CaptureFullNameController.show(journeyId)
     )
 
-    val lastNameRow = SummaryListRow(
-      key = Key(content = Text(messages("check-your-answers.last_name"))),
-      value = Value(content = Text(individualDetails.lastName)),
-      actions = Some(Actions(items = Seq(
-        ActionItem(
-          href = routes.CaptureFullNameController.show(journeyId).url,
-          content = Text("Change"),
-          visuallyHiddenText = Some(messages("check-your-answers.last_name"))
-        )
-      )))
+    val lastNameRow = buildSummaryRow(
+      messages("check-your-answers.last_name"),
+      individualDetails.lastName,
+      routes.CaptureFullNameController.show(journeyId)
     )
 
-    val dobRow = SummaryListRow(
-      key = Key(content = Text(messages("check-your-answers.dob"))),
-      value = Value(content = Text(individualDetails.dateOfBirth.format(checkYourAnswersFormat))),
-      actions = Some(Actions(items = Seq(
-        ActionItem(
-          href = routes.CaptureDateOfBirthController.show(journeyId).url,
-          content = Text("Change"),
-          visuallyHiddenText = Some(messages("check-your-answers.dob"))
-        )
-      )))
+    val dateOfBirthRow = buildSummaryRow(
+      messages("check-your-answers.dob"),
+      individualDetails.dateOfBirth.format(checkYourAnswersFormat),
+      routes.CaptureDateOfBirthController.show(journeyId)
     )
 
-    val ninoRow = SummaryListRow(
-      key = Key(content = Text(messages("check-your-answers.nino"))),
-      value = Value(content = Text(
-        individualDetails.optNino match {
-          case Some(nino) => nino.grouped(2).mkString(" ")
-          case None => messages("check-your-answers.no_nino")
-        }
-      )),
-      actions = Some(Actions(items = Seq(
-        ActionItem(
-          href = routes.CaptureNinoController.show(journeyId).url,
-          content = Text("Change"),
-          visuallyHiddenText = Some(messages("check-your-answers.nino"))
-        )
-      )))
+    val ninoRow = buildSummaryRow(
+      messages("check-your-answers.nino"),
+      individualDetails.optNino match {
+        case Some(nino) => nino.grouped(2).mkString(" ")
+        case None => messages("check-your-answers.no_nino")
+      },
+      routes.CaptureNinoController.show(journeyId)
     )
 
-    val sautrRow = if (enableSautrCheck) Some(SummaryListRow(
-      key = Key(content = Text(messages("check-your-answers.sautr"))),
-      value = Value(content = Text(
+    val sautrRow = if (enableSautrCheck) {
+      Some(buildSummaryRow(
+        messages("check-your-answers.sautr"),
         individualDetails.optSautr match {
           case Some(utr) => utr
           case None => messages("check-your-answers.no_sautr")
-        }
-      )),
-      actions = Some(Actions(items = Seq(
-        ActionItem(
-          href = routes.CaptureSautrController.show(journeyId).url,
-          content = Text("Change"),
-          visuallyHiddenText = Some(messages("check-your-answers.sautr"))
+        },
+        routes.CaptureSautrController.show(journeyId)
+      ))
+    } else {
+      None
+    }
+
+    val saPostcodeRow = if(individualDetails.optSautr.isDefined && individualDetails.optNino.isEmpty) {
+      Some(buildSummaryRow(
+        messages("check-your-answers.sa_postcode"),
+        optSaPostcode match {
+          case Some(saPostcode) => saPostcode
+          case None => messages("check-your-answers.no_sa_postcode")
+        },
+        routes.CaptureSaPostcodeController.show(journeyId)
+      ))
+    } else {
+      None
+    }
+
+    val addressRow = optAddress.map {
+      address =>
+        val formattedAddress = Seq(
+          Some(address.line1),
+          Some(address.line2),
+          address.line3,
+          address.line4,
+          address.line5,
+          address.postCode,
+          Some(config.getCountryName(address.countryCode))
+        ).flatten.mkString("<br>")
+
+        buildSummaryRow(
+          messages("check-your-answers.home_address"),
+          formattedAddress,
+          routes.CaptureAddressController.show(journeyId)
         )
-      )))
-    )) else None
-
-    def addressCheckYourAnswersFormat(countries: Seq[(String, String)], address: Address): String = {
-      val countryName = countries.toMap.get(address.countryCode) match {
-        case Some(countryName) => countryName
-        case _ => throw new InternalServerException(s"Country code: ${address.countryCode} could not be found")
-      }
-      List(Some(address.line1), Some(address.line2), address.line3, address.line4, address.line5, address.postCode, Some(countryName)).flatten.mkString("<br>")
     }
 
-    val addressRow = optAddress match {
-      case Some(address) =>
-        Seq(SummaryListRow(
-          key = Key(content = Text(messages("check-your-answers.home_address"))),
-          value = Value(HtmlContent(addressCheckYourAnswersFormat(config.countries, address))),
-          actions = Some(Actions(items = Seq(
-            ActionItem(
-              href = routes.CaptureAddressController.show(journeyId).url,
-              content = Text("Change"),
-              visuallyHiddenText = Some(messages("check-your-answers.home_address"))
-            )
-          )))
-        ))
-      case _ => Seq.empty
-    }
-
-    Future.successful(Seq(firstNameRow, lastNameRow, dobRow, ninoRow) ++ addressRow ++ sautrRow)
+    Seq(firstNameRow, lastNameRow, dateOfBirthRow, ninoRow) ++ addressRow ++ sautrRow ++ saPostcodeRow
 
   }
 
+  private def buildSummaryRow(key: String, value: String, changeLink: Call) = SummaryListRow(
+    key = Key(content = Text(key)),
+    value = Value(HtmlContent(value)),
+    actions = Some(Actions(items = Seq(
+      ActionItem(
+        href = changeLink.url,
+        content = Text("Change"),
+        visuallyHiddenText = Some(key)
+      )
+    )))
+  )
 }
 
 

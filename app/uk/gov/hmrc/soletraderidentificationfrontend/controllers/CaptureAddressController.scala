@@ -46,7 +46,7 @@ class CaptureAddressController @Inject()(mcc: MessagesControllerComponents,
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureAddressController.submit(journeyId),
               form = CaptureAddressForm.apply(),
-              countries = config.countries
+              countries = config.orderedCountryList
             ))
         }
       }
@@ -64,7 +64,7 @@ class CaptureAddressController @Inject()(mcc: MessagesControllerComponents,
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CaptureAddressController.submit(journeyId),
                   form = formWithErrors,
-                  countries = config.countries
+                  countries = config.orderedCountryList
                 ))
             },
           address =>

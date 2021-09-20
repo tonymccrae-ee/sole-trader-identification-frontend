@@ -16,16 +16,19 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
-import play.api.libs.json.Json
+import play.api.Environment
+import play.api.libs.json.{JsResult, JsValue, Json, Reads}
 import reactivemongo.bson.BSONElement.converted
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, BusinessVerificationStub, FeatureSwitching, KnownFactsStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.Country
 
 import javax.inject.{Inject, Singleton}
+import scala.collection.SortedMap
 
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
+class AppConfig @Inject()(servicesConfig: ServicesConfig, environment: Environment) extends FeatureSwitching {
 
   def matchSoleTraderDetailsUrl: String =
     if (isEnabled(AuthenticatorStub)) {
@@ -98,9 +101,24 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
     baseUrl + "/enrolment-store/enrolments"
   }
 
-  val countries: Seq[(String, String)] =
-    Json.parse(getClass.getResourceAsStream("/countries.json")).as[Map[String, Country]].map(
-      countryinfo => (countryinfo._2.country, countryinfo._2.name)).toSeq.sortWith(_.name < _.name)
+  lazy val countries: Map[String, Country] = {
+    environment.resourceAsStream("/countries.json") match {
+      case Some(countriesStream) =>
+        Json.parse(countriesStream).as[Map[String, Country]]
+      case None =>
+        throw new InternalServerException("Country list missing")
+    }
+  }
+
+  lazy val orderedCountryList: Seq[Country] = countries.values.toSeq.sortBy(_.name)
+
+  def getCountryName(countryCode: String): String = countries.get(countryCode) match {
+    case Some(Country(_, name)) =>
+      name
+    case None =>
+      throw new InternalServerException("Invalid country code")
+
+  }
 
 }
 

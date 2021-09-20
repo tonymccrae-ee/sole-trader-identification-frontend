@@ -74,6 +74,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubRetrieveAddress(testJourneyId)(NOT_FOUND)
+        stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -122,6 +123,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
         stubRetrieveAddress(testJourneyId)(NOT_FOUND)
+        stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -170,6 +172,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
         stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
+        stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 

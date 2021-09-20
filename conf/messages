@@ -82,6 +82,8 @@ check-your-answers.sautr                                    = Unique taxpayers r
 check-your-answers.home_address                             = Home Address
 check-your-answers.no_sautr                                 = The business does not have a UTR
 check-your-answers.no_nino                                  = I do not have a National Insurance number
+check-your-answers.sa_postcode                              = Self Assessment postcode
+check-your-answers.no_sa_postcode                           = The business does not have a Self Assessment postcode
 
 ## Personal Information Error Page
 personal-information-error.title                            = We could not identify you on our records
