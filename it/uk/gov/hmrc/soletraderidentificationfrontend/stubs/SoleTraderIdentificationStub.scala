@@ -173,7 +173,7 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
 
   def stubRetrieveSaPostcode(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = GET,
-      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode"
+      uri = s"/sole-trader-identification/journey/$journeyId/saPostcode"
     ).thenReturn(
       status = status,
       body = JsString(body)
