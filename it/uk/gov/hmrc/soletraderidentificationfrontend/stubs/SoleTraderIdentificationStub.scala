@@ -72,7 +72,7 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
 
   def stubStoreSaPostcode(journeyId: String, saPostcode: String)(status: Int): StubMapping =
     when(method = PUT,
-      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode",
+      uri = s"/sole-trader-identification/journey/$journeyId/saPostcode",
       body = JsString(saPostcode)
     ).thenReturn(
       status = status
@@ -173,7 +173,7 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
 
   def stubRetrieveSaPostcode(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = GET,
-      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode"
+      uri = s"/sole-trader-identification/journey/$journeyId/saPostcode"
     ).thenReturn(
       status = status,
       body = JsString(body)
@@ -189,7 +189,7 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
 
   def stubRetrieveSAPostcode(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = GET,
-      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode"
+      uri = s"/sole-trader-identification/journey/$journeyId/saPostcode"
     ).thenReturn(
       status = status,
       body = body
@@ -205,7 +205,7 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
 
   def stubRemoveSaPostcode(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = DELETE,
-      uri = s"/sole-trader-identification/journey/$journeyId/sa-postcode"
+      uri = s"/sole-trader-identification/journey/$journeyId/saPostcode"
     ).thenReturn(
       status = status,
       body = body

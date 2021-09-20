@@ -25,6 +25,7 @@ case class SoleTraderDetails(fullName: FullName,
                              dateOfBirth: LocalDate,
                              optNino: Option[String],
                              address: Option[Address],
+                             optSaPostcode: Option[String],
                              optSautr: Option[String],
                              identifiersMatch: Boolean,
                              businessVerification: BusinessVerificationStatus,
@@ -36,6 +37,7 @@ object SoleTraderDetails {
   private val FullNameKey = "fullName"
   private val NinoKey = "nino"
   private val AddressKey = "address"
+  private val SaPostcodeKey = "saPostcode"
   private val SautrKey = "sautr"
   private val DateOfBirthKey = "dateOfBirth"
   private val IdentifiersMatchKey = "identifiersMatch"
@@ -48,6 +50,7 @@ object SoleTraderDetails {
       (JsPath \ DateOfBirthKey).read[LocalDate] and
       (JsPath \ NinoKey).readNullable[String] and
       (JsPath \ AddressKey).readNullable[Address] and
+      (JsPath \ SaPostcodeKey).readNullable[String] and
       (JsPath \ SautrKey).readNullable[String] and
       (JsPath \ IdentifiersMatchKey).read[Boolean] and
       (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus] and
@@ -60,6 +63,7 @@ object SoleTraderDetails {
       (JsPath \ DateOfBirthKey).write[LocalDate] and
       (JsPath \ NinoKey).writeNullable[String] and
       (JsPath \ AddressKey).writeNullable[Address] and
+      (JsPath \ SaPostcodeKey).writeNullable[String] and
       (JsPath \ SautrKey).writeNullable[String] and
       (JsPath \ IdentifiersMatchKey).write[Boolean] and
       (JsPath \ BusinessVerificationKey).write[BusinessVerificationStatus] and
