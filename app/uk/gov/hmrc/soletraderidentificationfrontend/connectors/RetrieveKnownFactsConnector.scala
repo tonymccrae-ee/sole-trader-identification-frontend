@@ -21,7 +21,7 @@ import play.api.libs.json._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.KnownFactsHttpParser.KnownFactsHttpReads
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{KnownFacts, KnownFactsResponse}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.KnownFactsResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -67,7 +67,7 @@ object KnownFactsHttpParser {
               val optPostcode: Option[String] = verifiersList.find(verifier => verifier.key == "PostCode").map(verifier => verifier.value)
               val optIsAbroadFlag: Option[Boolean] = verifiersList.find(verifier => verifier.key == "IsAbroad").map(verifier => if (verifier.value == "Y") true else false)
               val optNino: Option[String] = verifiersList.find(verifier => verifier.key == "NINO").map(verifier => verifier.value)
-              KnownFacts(optPostcode, optIsAbroadFlag, optNino)
+              KnownFactsResponse(optPostcode, optIsAbroadFlag, optNino)
             case JsError(errors) => throw new InternalServerException(s"`Failed to read Known Facts API response with the following error/s: $errors")
           }
         case status =>

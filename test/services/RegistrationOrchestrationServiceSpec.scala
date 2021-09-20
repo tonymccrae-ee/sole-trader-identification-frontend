@@ -114,22 +114,24 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec
       }
       verifyStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)
     }
+
+    "the business entity does not have a nino" in {
+      mockRetrieveNino(testJourneyId)(Future.successful(None))
+      mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
+      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
+      mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+      await(TestService.register(testJourneyId)) mustBe {
+        RegistrationNotCalled
+      }
+      verifyStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)
+    }
   }
 
   "throw an Internal Server Exception" when {
     "there is no sautr in the database" in {
       mockRetrieveNino(testJourneyId)(Future.successful(Some(testNino)))
       mockRetrieveSautr(testJourneyId)(Future.successful(None))
-      mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
-
-      intercept[InternalServerException](
-        await(TestService.register(testJourneyId))
-      )
-    }
-
-    "there is no nino in the database" in {
-      mockRetrieveNino(testJourneyId)(Future.successful(None))
-      mockRetrieveSautr(testJourneyId)(Future.successful(Some(testSautr)))
       mockRetrieveBusinessVerificationStatus(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
       intercept[InternalServerException](

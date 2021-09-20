@@ -20,7 +20,7 @@ import play.api.test.Helpers.{NO_CONTENT, OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.KnownFactsStub
-import uk.gov.hmrc.soletraderidentificationfrontend.models.KnownFacts
+import uk.gov.hmrc.soletraderidentificationfrontend.models.KnownFactsResponse
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.KnownFactsStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 
@@ -39,7 +39,7 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
-          result mustBe KnownFacts(Some(testPostcode), None, Some(testNino))
+          result mustBe KnownFactsResponse(Some(testSaPostcode), None, Some(testNino))
 
           verifyRetrieveKnownFactsFromStub(testSautr)
         }
@@ -49,7 +49,7 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
-          result mustBe KnownFacts(None, Some(true), None)
+          result mustBe KnownFactsResponse(None, Some(true), None)
 
           verifyRetrieveKnownFactsFromStub(testSautr)
         }
@@ -69,7 +69,7 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
-          result mustBe KnownFacts(Some(testPostcode), None, Some(testNino))
+          result mustBe KnownFactsResponse(Some(testSaPostcode), None, Some(testNino))
 
           verifyRetrieveKnownFacts(testSautr)
         }
@@ -79,7 +79,7 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
-          result mustBe KnownFacts(None, Some(true), None)
+          result mustBe KnownFactsResponse(None, Some(true), None)
 
           verifyRetrieveKnownFacts(testSautr)
         }

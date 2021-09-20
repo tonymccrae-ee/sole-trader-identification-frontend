@@ -17,15 +17,13 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.config
 
 import play.api.Environment
-import play.api.libs.json.{JsResult, JsValue, Json, Reads}
-import reactivemongo.bson.BSONElement.converted
+import play.api.libs.json.Json
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{AuthenticatorStub, BusinessVerificationStub, FeatureSwitching, KnownFactsStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.Country
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.SortedMap
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, environment: Environment) extends FeatureSwitching {

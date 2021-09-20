@@ -69,25 +69,51 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
   "POST /sa-utr" when {
     "the sautr is correctly formatted" should {
-      "redirect to SA postcode Page and store the data in the backend" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
-        ))
-        stubAuth(OK, successfulAuthResponse())
-        stubStoreSautr(testJourneyId, testSautr)(status = OK)
+      "redirect to SA postcode Page and store the data in the backend" when {
+        "the user does not have a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = false
+          ))
+          stubAuth(OK, successfulAuthResponse())
+          stubStoreSautr(testJourneyId, testSautr)(status = OK)
+          stubRetrieveNino(testJourneyId)(NOT_FOUND)
 
-        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> testSautr)
+          lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> testSautr)
 
-        result must have(
-          httpStatus(SEE_OTHER),
-          redirectUri(routes.CaptureSaPostcodeController.show(testJourneyId).url)
-        )
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(routes.CaptureSaPostcodeController.show(testJourneyId).url)
+          )
+        }
+      }
+      "redirect to the CYA page" when {
+        "the user has a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = false
+          ))
+          stubAuth(OK, successfulAuthResponse())
+          stubStoreSautr(testJourneyId, testSautr)(status = OK)
+          stubRetrieveNino(testJourneyId)(OK, testNino)
+
+          lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> testSautr)
+
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+          )
+        }
       }
     }
 

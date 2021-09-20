@@ -106,6 +106,13 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       status = status
     )
 
+  def stubStoreES20Details(journeyId: String, es20Details: KnownFactsResponse)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/sole-trader-identification/journey/$journeyId/es20Details", body = Json.toJson(es20Details)
+    ).thenReturn(
+      status = status
+    )
+
   def stubRetrieveSoleTraderDetails(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId"
@@ -182,14 +189,6 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
   def stubRetrieveAddress(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId/address"
-    ).thenReturn(
-      status = status,
-      body = body
-    )
-
-  def stubRetrieveSAPostcode(journeyId: String)(status: Int, body: String = ""): StubMapping =
-    when(method = GET,
-      uri = s"/sole-trader-identification/journey/$journeyId/saPostcode"
     ).thenReturn(
       status = status,
       body = body
@@ -307,6 +306,18 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
     WiremockHelper.verifyPut(
       uri = s"/sole-trader-identification/journey/$journeyId/identifiersMatch",
       optBody = Some(JsBoolean(identifiersMatch).toString())
+    )
+
+  def verifyStoreTrn(journeyId: String, trn: String): Unit =
+    WiremockHelper.verifyPut(
+      uri = s"/sole-trader-identification/journey/$journeyId/trn",
+      optBody = Some(JsString(trn).toString())
+    )
+
+  def verifyStoreES20Details(journeyId: String, es20Details: KnownFactsResponse): Unit =
+    WiremockHelper.verifyPut(
+      uri = s"/sole-trader-identification/journey/$journeyId/es20Details",
+      optBody = Some(Json.toJsObject(es20Details).toString())
     )
 
 }

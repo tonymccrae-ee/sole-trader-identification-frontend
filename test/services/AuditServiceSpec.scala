@@ -24,7 +24,6 @@ import play.api.test.Helpers._
 import services.mocks.MockSoleTraderIdentificationService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.DetailsMismatch
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationUnchallenged, Registered, RegistrationNotCalled}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.AuditService
 
 import scala.concurrent.ExecutionContext.Implicits.global

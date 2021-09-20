@@ -16,7 +16,29 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-sealed trait KnownFactsResponse
+import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
-case class KnownFacts(postcode: Option[String], isAbroad: Option[Boolean], nino: Option[String]) extends KnownFactsResponse
+case class KnownFactsResponse(postcode: Option[String], isAbroad: Option[Boolean], nino: Option[String])
 
+object KnownFactsResponse {
+
+  private val PostcodeKey = "postcode"
+  private val IsAbroadKey = "isAbroad"
+  private val NinoKey = "nino"
+
+  implicit val reads: Reads[KnownFactsResponse] = (
+    (JsPath \ PostcodeKey).readNullable[String] and
+      (JsPath \ IsAbroadKey).readNullable[Boolean] and
+      (JsPath \ NinoKey).readNullable[String]
+    ) (KnownFactsResponse.apply _)
+
+  implicit val writes: OWrites[KnownFactsResponse] = (
+    (JsPath \ PostcodeKey).writeNullable[String] and
+      (JsPath \ IsAbroadKey).writeNullable[Boolean] and
+      (JsPath \ NinoKey).writeNullable[String]
+    ) (unlift(KnownFactsResponse.unapply))
+
+  val format: OFormat[KnownFactsResponse] = OFormat(reads, writes)
+
+}

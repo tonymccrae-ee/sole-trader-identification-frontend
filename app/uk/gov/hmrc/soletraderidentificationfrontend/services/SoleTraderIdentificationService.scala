@@ -63,6 +63,11 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                                )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[IndividualDetails](journeyId, AuthenticatorDetailsKey, authenticatorDetails)
 
+  def storeES20Details(journeyId: String,
+                       es20Details: KnownFactsResponse
+                      )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+    connector.storeData[KnownFactsResponse](journeyId, Es20DetailsKey, es20Details)
+
   def storeBusinessVerificationStatus(journeyId: String,
                                       businessVerification: BusinessVerificationStatus
                                      )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
@@ -73,9 +78,7 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
                              )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[RegistrationStatus](journeyId, RegistrationKey, registrationStatus)
 
-  def storeTrn(journeyId: String,
-               trn: String
-              )(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
+  def storeTrn(journeyId: String, trn: String)(implicit hc: HeaderCarrier): Future[SuccessfullyStored.type] =
     connector.storeData[String](journeyId, TrnKey, trn)
 
   def retrieveFullName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[FullName]] =
@@ -152,5 +155,5 @@ object SoleTraderIdentificationService {
   val AddressKey: String = "address"
   val TrnKey: String = "trn"
   val SaPostcodeKey: String = "saPostcode"
-  val addressKey = "address"
+  val Es20DetailsKey: String = "es20Details"
 }

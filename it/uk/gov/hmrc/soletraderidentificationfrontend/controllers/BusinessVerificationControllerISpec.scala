@@ -23,7 +23,7 @@ import play.api.libs.json.{JsBoolean, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, FeatureSwitching}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, FullName, Registered}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, Registered}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, RegisterStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAudit}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{ComponentSpecHelper, WiremockHelper}
@@ -73,7 +73,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
         stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
         stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
         stubRetrieveNino(testJourneyId)(OK, testNino)
-        stubRetrieveSAPostcode(testJourneyId)(NOT_FOUND)
+        stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
         stubRetrieveSautr(testJourneyId)(OK, testSautr)
         stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
         stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
@@ -137,7 +137,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
         stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
         stubRetrieveNino(testJourneyId)(OK, testNino)
         stubRetrieveAddress(testJourneyId)(NOT_FOUND)
-        stubRetrieveSAPostcode(testJourneyId)(NOT_FOUND)
+        stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
         stubRetrieveSautr(testJourneyId)(OK, testSautr)
         stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
         stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
