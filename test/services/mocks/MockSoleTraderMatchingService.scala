@@ -50,4 +50,14 @@ trait MockSoleTraderMatchingService extends MockitoSugar with BeforeAndAfterEach
       ArgumentMatchers.any[ExecutionContext])
     ).thenReturn(response)
 
+  def mockMatchSoleTraderDetailsNoNino(journeyId: String,
+                                       individualDetails: IndividualDetails
+                                      )(response: Future[Either[SoleTraderDetailsMatchFailure, Boolean]]): OngoingStubbing[_] =
+    when(mockSoleTraderMatchingService.matchSoleTraderDetailsNoNino(
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(individualDetails)
+    )(ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[ExecutionContext])
+    ).thenReturn(response)
+
 }

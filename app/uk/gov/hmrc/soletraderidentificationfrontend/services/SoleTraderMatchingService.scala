@@ -17,15 +17,16 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.soletraderidentificationfrontend.connectors.AuthenticatorConnector
+import uk.gov.hmrc.soletraderidentificationfrontend.connectors.{AuthenticatorConnector, RetrieveKnownFactsConnector}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.SoleTraderDetailsMatching.{DetailsMismatch, SoleTraderDetailsMatchFailure}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, JourneyConfig}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, JourneyConfig, KnownFactsResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SoleTraderMatchingService @Inject()(authenticatorConnector: AuthenticatorConnector,
+                                          retrieveKnownFactsConnector: RetrieveKnownFactsConnector,
                                           soleTraderIdentificationService: SoleTraderIdentificationService) {
 
   def matchSoleTraderDetails(journeyId: String,
@@ -57,5 +58,39 @@ class SoleTraderMatchingService @Inject()(authenticatorConnector: AuthenticatorC
       _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch)
     } yield
       matchingResponse
+
+  def matchSoleTraderDetailsNoNino(journeyId: String,
+                                   individualDetails: IndividualDetails
+                                  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[SoleTraderDetailsMatchFailure, Boolean]] = {
+    for {
+      optUserPostcode <- soleTraderIdentificationService.retrieveSaPostcode(journeyId)
+      matchingResponse <-
+        (individualDetails.optSautr, optUserPostcode) match {
+          case (Some(sautr), _) =>
+            retrieveKnownFactsConnector.retrieveKnownFacts(sautr).flatMap {
+              case KnownFacts@KnownFactsResponse(Some(retrievePostcode), _, _) if optUserPostcode.exists(userPostcode => userPostcode filterNot (_.isWhitespace) equalsIgnoreCase (retrievePostcode filterNot (_.isWhitespace))) =>
+                soleTraderIdentificationService.storeES20Details(journeyId, KnownFacts).map(
+                  _ => Right(true)
+                )
+              case KnownFacts@KnownFactsResponse(_, Some(true), _) if optUserPostcode.isEmpty =>
+                soleTraderIdentificationService.storeES20Details(journeyId, KnownFacts).map(
+                  _ => Right(true)
+                )
+              case KnownFacts@KnownFactsResponse(_, _, _) =>
+                soleTraderIdentificationService.storeES20Details(journeyId, KnownFacts).map(
+                  _ => Right(false)
+                )
+            }
+          case (_, _) => Future.successful(Right(false))
+        }
+      identifiersMatch = matchingResponse match {
+        case Right(true) => true
+        case Right(false) => false
+      }
+      _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch)
+    } yield {
+      matchingResponse
+    }
+  }
 
 }

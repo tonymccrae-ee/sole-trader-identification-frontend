@@ -38,6 +38,8 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
           (optNino, optSautr) match {
             case (Some(nino), Some(sautr)) =>
               registrationConnector.registerWithNino(nino, sautr)
+            case (_, Some(_)) =>
+              Future.successful(RegistrationNotCalled)
             case _ =>
               throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
           }

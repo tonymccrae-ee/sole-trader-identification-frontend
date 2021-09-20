@@ -40,16 +40,19 @@ class SubmissionService @Inject()(journeyService: JourneyService,
         throw new InternalServerException(s"Details could not be retrieved from the database for $journeyId")
       )
       matchingResult <-
-        if (individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney)) for {
-          _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch = false) // TODO Update to call ES20
-        } yield Right(false)
+        if (individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney)) soleTraderMatchingService.matchSoleTraderDetailsNoNino(journeyId, individualDetails)
         else soleTraderMatchingService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig)
       response <- matchingResult match {
         case Right(true) if individualDetails.optSautr.nonEmpty =>
           individualDetails.optSautr match {
             case Some(sautr) => businessVerificationService.createBusinessVerificationJourney(journeyId, sautr).flatMap {
               case Right(BusinessVerificationJourneyCreated(businessVerificationUrl)) =>
-                Future.successful(StartBusinessVerification(businessVerificationUrl))
+                if (individualDetails.optNino.isEmpty) {
+                  createTrnService.createTrn(journeyId).flatMap {
+                    _ => Future.successful(StartBusinessVerification(businessVerificationUrl))
+                  }
+                }
+                else Future.successful(StartBusinessVerification(businessVerificationUrl))
               case _ =>
                 for {
                   _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)

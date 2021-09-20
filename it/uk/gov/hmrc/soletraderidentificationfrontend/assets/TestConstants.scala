@@ -177,6 +177,25 @@ object TestConstants {
       )
     )
 
+  def testSoleTraderDetailsJsonNoNino(identifiersMatch: Boolean = false): JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "address" -> testAddress,
+      "sautr" -> testSautr,
+      "identifiersMatch" -> identifiersMatch,
+      "businessVerification" -> Json.obj(
+        "verificationStatus" -> "PASS"
+      ),
+      "registration" -> Json.obj(
+        "registrationStatus" -> "REGISTERED",
+        "registeredBusinessPartnerId" -> testSafeId
+      )
+    )
+  }
+
   val testIndividualDetailsJson: JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
@@ -208,6 +227,15 @@ object TestConstants {
     )
   }
 
+  val testIndividualDetailsJsonNoNinoNoSautr: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth
+    )
+  }
+
   val testKnownFactsResponse: JsObject = Json.obj(
     "service" -> "IR-SA",
     "enrolments" -> Json.arr(
@@ -225,7 +253,7 @@ object TestConstants {
           ),
           Json.obj(
             "key" -> "PostCode",
-            "value" -> testPostcode
+            "value" -> testSaPostcode
           )
         )
       )

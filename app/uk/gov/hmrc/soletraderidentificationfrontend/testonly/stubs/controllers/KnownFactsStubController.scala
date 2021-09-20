@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsArray, JsDefined, JsObject, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
@@ -26,51 +27,55 @@ import scala.concurrent.Future
 @Singleton
 class KnownFactsStubController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val stubKnownFacts: Action[JsValue] = Action.async(parse.json) {
+  def stubKnownFacts: Action[JsValue] = Action.async(parse.json) {
     implicit request =>
-      val sautr: String = (request.body \ "knownFacts" \ "UTR").as[String]
+      val knownFacts = (request.body \ "knownFacts").head.validate[JsObject]
 
-      sautr match {
-        case "0000000000" =>
-          Future.successful(Ok(Json.obj(
-            "service" -> "IR-SA",
-            "enrolments" -> Json.arr(
-              Json.obj(
-                "identifiers" -> Json.arr(
+      knownFacts match {
+        case JsSuccess(sautrBlock, _) =>
+          (sautrBlock \ "value").validate[String] match {
+            case JsSuccess("0000000000", _) =>
+              Future.successful(Ok(Json.obj(
+                "service" -> "IR-SA",
+                "enrolments" -> Json.arr(
                   Json.obj(
-                    "key" -> "UTR",
-                    "value" -> sautr
+                    "identifiers" -> Json.arr(
+                      Json.obj(
+                        "key" -> "UTR",
+                        "value" -> "0000000000"
+                      )
+                    ),
+                    "verifiers" -> Json.arr(
+                      Json.obj(
+                        "key" -> "IsAbroad",
+                        "value" -> "Y"
+                      )
+                    )
                   )
-                ),
-                "verifiers" -> Json.arr(
-                  Json.obj(
-                    "key" -> "IsAbroad",
-                    "value" -> "Y"
+                )
+              )))
+            case JsSuccess(sautr, _) =>
+              Future.successful(Ok(Json.obj(
+              "service" -> "IR-SA",
+              "enrolments" -> Json.arr(
+                Json.obj(
+                  "identifiers" -> Json.arr(
+                    Json.obj(
+                      "key" -> "UTR",
+                      "value" -> sautr
+                    )
+                  ),
+                  "verifiers" -> Json.arr(
+                    Json.obj(
+                      "key" -> "PostCode",
+                      "value" -> "AA11AA"
+                    )
                   )
                 )
               )
-            )
-          )))
-        case _ =>
-          Future.successful(Ok(Json.obj(
-            "service" -> "IR-SA",
-            "enrolments" -> Json.arr(
-              Json.obj(
-                "identifiers" -> Json.arr(
-                  Json.obj(
-                    "key" -> "UTR",
-                    "value" -> sautr
-                  )
-                ),
-                "verifiers" -> Json.arr(
-                  Json.obj(
-                    "key" -> "PostCode",
-                    "value" -> "AA11AA"
-                  )
-                )
-              )
-            )
-          )))
+            )))
+          }
+        case _ => throw new InternalServerException("KnownFactsStubController: Error in parsing data posted to stub")
       }
   }
 

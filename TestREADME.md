@@ -212,7 +212,11 @@ This stub returns different response bodies based on the sautr entered.
 The 'Use stub for Known Facts API' feature switch will need to be enabled to use this.
 
 #### Sautr: 0000000000
+___
+Mimics a response for users without a UK SA postcode. If user asserts they have no SA postcode and IsAbroad if returned as true then identifersMatch will be stored as true
+
 Status: **OK(200)**
+
 Response body:
 ```
 {
@@ -231,7 +235,11 @@ Response body:
 ```
 
 #### Any other sautr
+___
+Mimics a response for users with a UK postcode. If this matches the SA postcode entered by the user then identifersMatch will be stored as true
+
 Status: **OK(200)**
+
 Response body:
 ```
 {
