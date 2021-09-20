@@ -83,6 +83,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubStoreSautr(testJourneyId, testSautr)(status = OK)
           stubRetrieveNino(testJourneyId)(NOT_FOUND)
+          stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
 
           lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> testSautr)
 
@@ -106,6 +107,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubStoreSautr(testJourneyId, testSautr)(status = OK)
           stubRetrieveNino(testJourneyId)(OK, testNino)
+          stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
 
           lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> testSautr)
 
@@ -176,6 +178,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveSautr(testJourneyId)(NO_CONTENT)
+        stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
 
         val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-sa-utr")
 
