@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.testonly.stubs.controllers
 
-import play.api.libs.json.{JsArray, JsDefined, JsObject, JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsObject, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -56,24 +56,24 @@ class KnownFactsStubController @Inject()(controllerComponents: ControllerCompone
               )))
             case JsSuccess(sautr, _) =>
               Future.successful(Ok(Json.obj(
-              "service" -> "IR-SA",
-              "enrolments" -> Json.arr(
-                Json.obj(
-                  "identifiers" -> Json.arr(
-                    Json.obj(
-                      "key" -> "UTR",
-                      "value" -> sautr
-                    )
-                  ),
-                  "verifiers" -> Json.arr(
-                    Json.obj(
-                      "key" -> "PostCode",
-                      "value" -> "AA11AA"
+                "service" -> "IR-SA",
+                "enrolments" -> Json.arr(
+                  Json.obj(
+                    "identifiers" -> Json.arr(
+                      Json.obj(
+                        "key" -> "UTR",
+                        "value" -> sautr
+                      )
+                    ),
+                    "verifiers" -> Json.arr(
+                      Json.obj(
+                        "key" -> "PostCode",
+                        "value" -> "AA11AA"
+                      )
                     )
                   )
                 )
-              )
-            )))
+              )))
           }
         case _ => throw new InternalServerException("KnownFactsStubController: Error in parsing data posted to stub")
       }

@@ -101,7 +101,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
           address.line3,
           address.line4,
           address.line5,
-          address.postCode,
+          address.postcode,
           Some(config.getCountryName(address.countryCode))
         ).flatten.mkString("<br>")
 
