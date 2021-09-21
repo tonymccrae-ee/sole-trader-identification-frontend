@@ -86,7 +86,7 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
           mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetailsNinoAndUtr)))
           mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
           mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
-          mockRetrieveSaPostcode(testJourneyId)(Future.successful(None))
+          mockRetrieveES20Response(testJourneyId)(Future.successful(None))
 
 
           val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
@@ -100,7 +100,7 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
           mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetailsNoSautr)))
           mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
           mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoSautr)))
-          mockRetrieveSaPostcode(testJourneyId)(Future.successful(None))
+          mockRetrieveES20Response(testJourneyId)(Future.successful(None))
 
           val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
 
@@ -113,7 +113,7 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
           mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetailsNoNinoButUtr)))
           mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
           mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNino)))
-          mockRetrieveSaPostcode(testJourneyId)(Future.successful(Some(testSaPostcode)))
+          mockRetrieveES20Response(testJourneyId)(Future.successful(Some(testKnownFactsResponseUK)))
 
           val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
 
@@ -127,7 +127,7 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
         mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetailsNoMatch)))
         mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
         mockRetrieveAuthenticatorFailureResponse(testJourneyId)(Future.successful(Some(DetailsMismatch.toString)))
-        mockRetrieveSaPostcode(testJourneyId)(Future.successful(None))
+        mockRetrieveES20Response(testJourneyId)(Future.successful(None))
 
         val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
 
@@ -135,6 +135,20 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
 
         verifySendExplicitAuditSoleTraders()
         auditEventCaptor.getValue mustBe testSoleTraderFailureAuditEventJson()
+      }
+      "the entity is a Sole Trader and the user is overseas" in {
+        mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetailsNoNinoAndOverseas)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNino)))
+        mockRetrieveES20Response(testJourneyId)(Future.successful(Some(testKnownFactsResponseOverseas)))
+
+
+        val result: Unit = await(TestService.auditSoleTraderJourney(testJourneyId))
+
+        result mustBe()
+
+        verifySendExplicitAuditSoleTraders()
+        auditEventCaptor.getValue mustBe testSoleTraderAuditEventJsonNoNinoOverseas(identifiersMatch = true)
       }
     }
 
