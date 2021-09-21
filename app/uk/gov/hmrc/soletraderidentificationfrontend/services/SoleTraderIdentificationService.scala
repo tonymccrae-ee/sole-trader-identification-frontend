@@ -125,6 +125,9 @@ class SoleTraderIdentificationService @Inject()(connector: SoleTraderIdentificat
   def retrieveSaPostcode(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveSoleTraderDetails[String](journeyId, SaPostcodeKey)
 
+  def retrieveES20Details(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[KnownFactsResponse]] =
+    connector.retrieveSoleTraderDetails[KnownFactsResponse](journeyId, Es20DetailsKey)
+
   def removeSautr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeSoleTraderDetails(journeyId, SautrKey)
 

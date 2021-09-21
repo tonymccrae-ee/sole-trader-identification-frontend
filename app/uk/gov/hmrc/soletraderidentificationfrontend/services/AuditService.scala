@@ -19,9 +19,9 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
-
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, KnownFactsResponse}
 import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -75,7 +75,7 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
   def auditSoleTraderJourney(journeyId: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Unit] = {
     for {
       optSoleTraderRecord <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-      optSaPostcode <- soleTraderIdentificationService.retrieveSaPostcode(journeyId)
+      optES20Response <- soleTraderIdentificationService.retrieveES20Details(journeyId)
       optIdentifiersMatch <- soleTraderIdentificationService.retrieveIdentifiersMatch(journeyId)
       optAuthenticatorResponse <-
       optIdentifiersMatch match {
@@ -86,8 +86,8 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
           soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
       }
     } yield {
-      (optSoleTraderRecord, optSaPostcode, optIdentifiersMatch, optAuthenticatorResponse) match {
-        case (Some(optSoleTraderRecord), optSaPostcode, Some(identifiersMatch), optAuthenticatorResponse) =>
+      (optSoleTraderRecord, optES20Response, optIdentifiersMatch, optAuthenticatorResponse) match {
+        case (Some(optSoleTraderRecord), optES20Response, Some(identifiersMatch), optAuthenticatorResponse) =>
           val sautrBlock =
             optSoleTraderRecord.optSautr match {
               case Some(sautr) => Json.obj("userSAUTR" -> sautr)
@@ -113,8 +113,14 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             }
 
           val saPostCodeBlock =
-            optSaPostcode match {
+            optSoleTraderRecord.optSaPostcode match {
               case Some(postcode) => Json.obj("SAPostcode" -> postcode)
+              case _ => Json.obj()
+            }
+
+          val eS20Block =
+            optES20Response match {
+              case Some(eSReponse) => Json.obj("ES20Response" -> eSReponse)
               case _ => Json.obj()
             }
 
@@ -133,7 +139,7 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             "sautrMatch" -> identifiersMatch,
             "VerificationStatus" -> optSoleTraderRecord.businessVerification,
             "RegisterApiStatus" -> optSoleTraderRecord.registrationStatus
-          ) ++ sautrBlock ++ ninoBlock ++ addressBlock ++ trnBlock ++ saPostCodeBlock ++  authenticatorResponseBlock
+          ) ++ sautrBlock ++ ninoBlock ++ addressBlock ++ trnBlock ++ saPostCodeBlock ++ eS20Block ++ authenticatorResponseBlock
         case _ =>
           throw new InternalServerException(s"Not enough information to audit sole trader journey for Journey ID $journeyId")
       }

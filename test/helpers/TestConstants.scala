@@ -40,6 +40,7 @@ object TestConstants {
   val testNino: String = "AA111111A"
   val testTrn: String = "99A99999"
   val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
+  val testOverseasAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), None, "US")
   val testSaPostcode: String = "AA11AA"
 
   val testSoleTraderDetails: SoleTraderDetails =
@@ -112,6 +113,20 @@ object TestConstants {
       trn = Some(testTrn)
     )
 
+  val testSoleTraderDetailsNoNinoAndOverseas: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = None,
+      address = Some(testOverseasAddress),
+      optSaPostcode = Some(testSaPostcode),
+      optSautr = Some(testSautr),
+      identifiersMatch = true,
+      businessVerification = BusinessVerificationUnchallenged,
+      registrationStatus = RegistrationNotCalled,
+      trn = Some(testTrn)
+    )
+
   val testIndividualDetails: IndividualDetails =
     IndividualDetails(
       firstName = testFirstName,
@@ -146,6 +161,20 @@ object TestConstants {
       dateOfBirth = testDateOfBirth,
       optNino = None,
       optSautr = Some(testSautr)
+    )
+
+  val testKnownFactsResponseOverseas: KnownFactsResponse =
+    KnownFactsResponse(
+      postcode = None,
+      isAbroad = Some(true),
+      nino = None
+    )
+
+  val testKnownFactsResponseUK: KnownFactsResponse =
+    KnownFactsResponse(
+      postcode = Some("AA11AA"),
+      isAbroad = Some(false),
+      nino = None
     )
 
   def testJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
@@ -203,6 +232,22 @@ object TestConstants {
     "VerificationStatus" -> BusinessVerificationUnchallenged,
     "RegisterApiStatus" -> RegistrationNotCalled,
     "TempNI" -> testTrn,
+    "ES20Response" -> testKnownFactsResponseUK,
+    "SAPostcode" -> testSaPostcode
+  )
+
+  def testSoleTraderAuditEventJsonNoNinoOverseas(identifiersMatch: Boolean = false): JsObject = Json.obj(
+    "businessType" -> "Sole Trader",
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "dateOfBirth" -> testDateOfBirth,
+    "address" -> testOverseasAddress,
+    "userSAUTR" -> testSautr,
+    "sautrMatch" -> identifiersMatch,
+    "VerificationStatus" -> BusinessVerificationUnchallenged,
+    "RegisterApiStatus" -> RegistrationNotCalled,
+    "TempNI" -> testTrn,
+    "ES20Response" -> testKnownFactsResponseOverseas,
     "SAPostcode" -> testSaPostcode
   )
 
