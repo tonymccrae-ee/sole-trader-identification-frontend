@@ -156,7 +156,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
     testAddress.line3,
     testAddress.line4,
     testAddress.line5,
-    testAddress.postCode,
+    testAddress.postcode,
     Some(mockAppConfig.getCountryName(testAddress.countryCode))
   ).flatten.mkString("<br>")
 

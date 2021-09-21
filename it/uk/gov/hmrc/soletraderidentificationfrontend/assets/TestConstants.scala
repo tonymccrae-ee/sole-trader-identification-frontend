@@ -286,7 +286,7 @@ object TestConstants {
     "line3" -> "line3",
     "line4" -> "line4",
     "line5" -> "line5",
-    "postCode" -> "AA11AA",
+    "postcode" -> "AA11AA",
     "countryCode" -> "GB"
   )
 
