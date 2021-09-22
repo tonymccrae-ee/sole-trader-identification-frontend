@@ -22,7 +22,10 @@ object MessageLookup {
     val confirmAndContinue = "Confirm and continue"
     val change = "Change"
     val saveAndContinue = "Save and continue"
+    val continue = "Continue"
     val getHelp = "Is this page not working properly?"
+    val yes = "Yes"
+    val no = "No"
 
     object Error {
       val title = "There is a problem"
@@ -147,6 +150,17 @@ object MessageLookup {
     val link_1 = "contact the National Insurance team (opens in a new tab)"
     val line_2 = "If you entered the wrong details, you can try again using different details."
     val link_2 = "try again using different details."
+  }
+
+  object CannotConfirmBusiness {
+    val title = "The details you provided do not match records held by HMRC"
+    val heading = "The details you provided do not match records held by HMRC"
+    val line_1 = "If these details are correct, you can still register. If you entered the wrong details, go back and make changes."
+    val radio = "Do you want to continue registering with the details you provided?"
+
+    object Error {
+      val no_selection = "Select yes if you want to continue registering with the details you provided"
+    }
   }
 
   object CheckYourAnswers {

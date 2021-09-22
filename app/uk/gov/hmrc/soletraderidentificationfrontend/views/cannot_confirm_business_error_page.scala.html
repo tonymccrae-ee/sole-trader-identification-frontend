@@ -1,0 +1,80 @@
+@*
+* Copyright 2021 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+@import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => Routes}
+@import uk.gov.hmrc.soletraderidentificationfrontend.forms.CannotConfirmBusinessErrorForm._
+@import uk.gov.hmrc.soletraderidentificationfrontend.forms.mappings.YesNoMapping._
+@import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers._
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
+
+
+@this(layout: govuk_template,
+        h1: h1,
+        p: p,
+        govUkHeader: GovukHeader,
+        govukButton: GovukButton,
+        formWithCSRF: FormWithCSRF,
+        govukRadios : GovukRadios,
+        errorSummary: errorSummary
+)
+
+@(pageConfig: PageConfig, formAction: Call, form: Form[_])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageConfig, title = messages("cannot-confirm-business.title")) {
+
+    @errorSummary(form.errors)
+
+    @h1(messages("cannot-confirm-business.heading"))
+
+    @p {
+        @messages("cannot-confirm-business.line_1")
+    }
+
+    @formWithCSRF(action = formAction) {
+        @govukRadios(Radios(
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = Text(messages("Do you want to continue registering with the details you provided?")),
+                    classes = "govuk-fieldset__legend--m",
+                    isPageHeading = true
+                ))
+            )),
+            idPrefix = Some("yes_no"),
+            name = "yes_no",
+            items = Seq(
+                RadioItem(
+                    content = Text(messages("app.common.yes")),
+                    value = Some("yes")
+                ),
+                RadioItem(
+                    content = Text(messages("app.common.no")),
+                    value = Some("no")
+                )
+            ),
+            classes = "govuk-radios--inline",
+            errorMessage = form("yes_no").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args:_*))))
+        ))
+
+        @govukButton(Button(
+            attributes = Map("id" -> "continue"),
+            classes = "govuk-!-margin-right-1",
+            content = Text(messages("base.continue"))
+        ))
+    }
+
+}

@@ -60,6 +60,4 @@ trait Formatters {
       override def unbind(key: String, value: Int) =
         baseFormatter.unbind(key, value.toString)
     }
-
-
 }

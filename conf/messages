@@ -7,6 +7,7 @@ error.title-prefix                                          = 'Error: '
 base.save_and_continue                                      = Save and continue
 base.change                                                 = Change
 base.confirm_and_continue                                   = Confirm and continue
+base.continue                                               = Continue
 date.day                                                    = Day
 date.month                                                  = Month
 date.year                                                   = Year
@@ -14,6 +15,9 @@ date.year                                                   = Year
 localDate.label.day                                         = day
 localDate.label.month                                       = month
 localDate.label.year                                        = year
+
+app.common.yes                                              = Yes
+app.common.no                                               = No
 
 ## Banner
 feedback.before                                             = This is a new service - your
@@ -60,8 +64,6 @@ enter-address.line_5                                        = Address line 5 (op
 enter-address.postcode                                      = Postcode
 enter-address.country                                       = Country
 
-
-
 ## SA-UTR Page
 sa-utr.title                                                = What is your Unique Taxpayer Reference?
 sa-utr.line_1                                               = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
@@ -99,6 +101,12 @@ details-not-found-page.link_1                               = contact the Nation
 details-not-found-page.line_2                               = If you entered the wrong details, you can
 details-not-found-page.link_2                               = try again using different details.
 
+## Cannot Confirm Business Error Page
+cannot-confirm-business.title                               = The details you provided do not match records held by HMRC
+cannot-confirm-business.heading                             = The details you provided do not match records held by HMRC
+cannot-confirm-business.line_1                              = If these details are correct, you can still register. If you entered the wrong details, go back and make changes.
+cannot-confirm-business.radio                               = Do you want to continue registering with the details you provided?
+
 ## Errors
 error.no_entry_first_name                                   = Enter your first name
 error.invalid_first_name                                    = First name must be 99 characters or fewer
@@ -115,6 +123,7 @@ error.invalid_characters_address                            = Enter the address 
 error.invalid_characters_postcode                           = Enter the postcode without special characters
 error.non_uk_postcode                                       = Enter a postcode, like AA1 1AA
 error.no_entry_country                                      = Select a country
+error.no_selection                                          = Select yes if you want to continue registering with the details you provided
 
 ## SA Postcode Page
 sa-postcode.title                                            = What is the postcode where the business is registered for Self Assessment?
