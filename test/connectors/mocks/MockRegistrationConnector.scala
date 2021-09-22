@@ -52,4 +52,20 @@ trait MockRegistrationConnector extends MockitoSugar with BeforeAndAfterEach {
     )(ArgumentMatchers.any[HeaderCarrier])
   }
 
+  def mockRegisterWithTrn(trn: String, sautr: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+    when(mockRegistrationConnector.registerWithTrn(
+      ArgumentMatchers.eq(trn),
+      ArgumentMatchers.eq(sautr)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+  }
+
+  def verifyRegistrationWithTrn(trn: String, sautr: String): Unit = {
+    verify(mockRegistrationConnector).registerWithTrn(
+      ArgumentMatchers.eq(trn),
+      ArgumentMatchers.eq(sautr)
+    )(ArgumentMatchers.any[HeaderCarrier])
+  }
+
+
 }

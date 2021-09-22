@@ -34,12 +34,13 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
       case Some(BusinessVerificationPass) | Some(SaEnrolled) => for {
         optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
         optSautr <- soleTraderIdentificationService.retrieveSautr(journeyId)
+        optTrn <- soleTraderIdentificationService.retrieveTrn(journeyId)
         registrationStatus <-
-          (optNino, optSautr) match {
-            case (Some(nino), Some(sautr)) =>
+          (optNino, optSautr, optTrn) match {
+            case (Some(nino), Some(sautr), _) =>
               registrationConnector.registerWithNino(nino, sautr)
-            case (_, Some(_)) =>
-              Future.successful(RegistrationNotCalled)
+            case (None, Some(sautr), Some(trn)) =>
+              registrationConnector.registerWithTrn(trn, sautr)
             case _ =>
               throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
           }
