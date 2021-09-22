@@ -22,6 +22,9 @@ GET         /:journeyId/no-sa-utr                        uk.gov.hmrc.soletraderi
 GET         /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId: String)
 POST        /:journeyId/check-your-answers-business      uk.gov.hmrc.soletraderidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId: String)
 
+GET         /:journeyId/cannot-confirm-business         uk.gov.hmrc.soletraderidentificationfrontend.controllers.CannotConfirmBusinessErrorController.show(journeyId: String)
+POST         /:journeyId/cannot-confirm-business         uk.gov.hmrc.soletraderidentificationfrontend.controllers.CannotConfirmBusinessErrorController.submit(journeyId: String)
+
 GET         /:journeyId/personal-information-error       uk.gov.hmrc.soletraderidentificationfrontend.controllers.PersonalInformationErrorController.show(journeyId: String)
 
 GET         /:journeyId/details-not-found                uk.gov.hmrc.soletraderidentificationfrontend.controllers.DetailsNotFoundController.show(journeyId: String)

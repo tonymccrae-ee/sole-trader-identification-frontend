@@ -35,4 +35,5 @@ trait Mappings extends Formatters {
                          (implicit messages: Messages): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(invalidKey, invalidDayKey, invalidMonthKey, allRequiredKey, twoRequiredKey, requiredKey, args))
 
+
 }
