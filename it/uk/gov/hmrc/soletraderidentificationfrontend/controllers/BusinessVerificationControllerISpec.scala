@@ -56,44 +56,88 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
 
   "GET /business-verification-result" when {
     s"the $BusinessVerificationStub feature switch is enabled" should {
-      "redirect to the continue url" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
-        ))
-        enable(BusinessVerificationStub)
-        stubAuth(OK, successfulAuthResponse())
-        stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
-        stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-        stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
-        stubRetrieveNino(testJourneyId)(OK, testNino)
-        stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
-        stubRetrieveSautr(testJourneyId)(OK, testSautr)
-        stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
-        stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
-        stubAudit()
-        stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
-        stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-        stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+      "redirect to the continue url" when {
+        "the user has a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
+          enable(BusinessVerificationStub)
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+          stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
+          stubRetrieveNino(testJourneyId)(OK, testNino)
+          stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+          stubRetrieveSautr(testJourneyId)(OK, testSautr)
+          stubRetrieveTrn(testJourneyId)(NOT_FOUND)
+          stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
+          stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
+          stubAudit()
+          stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
+          stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
 
-        lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
+          lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
-        result must have {
-          httpStatus(SEE_OTHER)
-          redirectUri(testContinueUrl)
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(testContinueUrl)
+          }
+
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
+          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
+          verifyAudit()
         }
+        "the user does not have a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
+          enable(BusinessVerificationStub)
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+          stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
+          stubRetrieveNino(testJourneyId)(NOT_FOUND)
+          stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+          stubRetrieveSautr(testJourneyId)(OK, testSautr)
+          stubRetrieveTrn(testJourneyId)(OK, testTrn)
+          stubRegisterWithTrn(testTrn, testSautr)(OK, Registered(testSafeId))
+          stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
+          stubAudit()
+          stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
+          stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
 
-        verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
-        verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
-        verifyAudit()
+          lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
+
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(testContinueUrl)
+          }
+
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
+          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
+          verifyRegisterWithTrn(testTrn, testSautr)
+          verifyAudit()
+        }
       }
 
       "throw an exception when the query string is missing" in {
@@ -120,46 +164,92 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
     }
 
     s"the $BusinessVerificationStub feature switch is disabled" should {
-      "redirect to the journey redirect controller if BV status is stored successfully" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
-        ))
+      "redirect to the continue url" when {
+        "the user has a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
 
-        stubAuth(OK, successfulAuthResponse())
-        stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
-        stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-        stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
-        stubRetrieveNino(testJourneyId)(OK, testNino)
-        stubRetrieveAddress(testJourneyId)(NOT_FOUND)
-        stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
-        stubRetrieveSautr(testJourneyId)(OK, testSautr)
-        stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
-        stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
-        stubAudit()
-        stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
-        stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
-        stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-        stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+          stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
+          stubRetrieveNino(testJourneyId)(OK, testNino)
+          stubRetrieveAddress(testJourneyId)(NOT_FOUND)
+          stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+          stubRetrieveSautr(testJourneyId)(OK, testSautr)
+          stubRetrieveTrn(testJourneyId)(NOT_FOUND)
+          stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
+          stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
+          stubAudit()
+          stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
+          stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
 
-        lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
+          lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
-        result must have {
-          httpStatus(SEE_OTHER)
-          redirectUri(testContinueUrl)
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(testContinueUrl)
+          }
+
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
+          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
+          verifyAudit()
         }
+        "the user does not have a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
 
-        verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
-        verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
-        verifyAudit()
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+          stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails(true)))
+          stubRetrieveNino(testJourneyId)(NOT_FOUND)
+          stubRetrieveAddress(testJourneyId)(NOT_FOUND)
+          stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+          stubRetrieveSautr(testJourneyId)(OK, testSautr)
+          stubRetrieveTrn(testJourneyId)(OK, testTrn)
+          stubRegisterWithTrn(testTrn, testSautr)(OK, Registered(testSafeId))
+          stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
+          stubAudit()
+          stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
+          stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
+          stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
+
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(testContinueUrl)
+          }
+
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
+          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
+          verifyRegisterWithTrn(testTrn, testSautr)
+          verifyAudit()
+        }
       }
+
 
       "throw an exception when the query string is missing" in {
         stubAuth(OK, successfulAuthResponse())

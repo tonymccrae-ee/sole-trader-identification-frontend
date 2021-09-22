@@ -194,6 +194,14 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       body = body
     )
 
+  def stubRetrieveTrn(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId/trn"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
   def stubRemoveSautr(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = DELETE,
       uri = s"/sole-trader-identification/journey/$journeyId/sautr"

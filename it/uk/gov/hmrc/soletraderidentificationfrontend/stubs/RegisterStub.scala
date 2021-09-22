@@ -36,10 +36,10 @@ trait RegisterStub extends WireMockMethods {
       )
   }
 
-  def stubRegisterWithTrn(nino: String, sautr: String)(status: Int, body: RegistrationStatus): StubMapping = {
+  def stubRegisterWithTrn(trn: String, sautr: String)(status: Int, body: RegistrationStatus): StubMapping = {
     val jsonBody = Json.obj(
-        "trn" -> nino,
-        "sautr" -> sautr
+      "trn" -> trn,
+      "sautr" -> sautr
     )
 
     when(method = POST, uri = "/sole-trader-identification/register-trn", jsonBody)
@@ -57,6 +57,15 @@ trait RegisterStub extends WireMockMethods {
       )
     )
     WiremockHelper.verifyPost(uri = "/sole-trader-identification/register", optBody = Some(jsonBody.toString()))
+  }
+
+  def verifyRegisterWithTrn(trn: String, sautr: String): Unit = {
+    val jsonBody = Json.obj(
+      "trn" -> trn,
+      "sautr" -> sautr
+    )
+
+    WiremockHelper.verifyPost(uri = "/sole-trader-identification/register-trn", optBody = Some(jsonBody.toString()))
 
   }
 }
