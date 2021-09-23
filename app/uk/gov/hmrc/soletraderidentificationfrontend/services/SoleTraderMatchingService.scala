@@ -78,14 +78,14 @@ class SoleTraderMatchingService @Inject()(authenticatorConnector: AuthenticatorC
                 )
               case KnownFacts@KnownFactsResponse(_, _, _) =>
                 soleTraderIdentificationService.storeES20Details(journeyId, KnownFacts).map(
-                  _ => Right(false)
+                  _ => Left(DetailsMismatch)
                 )
             }
           case (_, _) => Future.successful(Right(false))
         }
       identifiersMatch = matchingResponse match {
         case Right(true) => true
-        case Right(false) => false
+        case _ => false
       }
       _ <- soleTraderIdentificationService.storeIdentifiersMatch(journeyId, identifiersMatch)
     } yield {

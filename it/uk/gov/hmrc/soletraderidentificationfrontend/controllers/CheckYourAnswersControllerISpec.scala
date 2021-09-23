@@ -260,7 +260,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
             stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponse)
             stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
-            stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))(OK)
+            stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))(OK)
             stubCreateBusinessVerificationJourney(testSautr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testBusinessVerificationRedirectUrl))
             stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
             stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
@@ -277,7 +277,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             }
 
             verifyStoreTrn(testJourneyId, testTrn)
-            verifyStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))
+            verifyStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))
             verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
             verifyAudit()
           }
@@ -439,7 +439,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "redirect to cannot confirm business error controller" when {
-        "the provided details do not match what is held in the database" in {
+        "the provided details do not match what is held in the database" when {
+          "the user has a nino" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             internalId = testInternalId,
@@ -462,18 +463,99 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationUnchallenged))
           stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(RegistrationNotCalled))
 
-          val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+            val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
           result must have {
             httpStatus(SEE_OTHER)
             redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
           }
 
-          verifyStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
-          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-          verifyAudit()
+            verifyStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)
+            verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+            verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
+            verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+            verifyAudit()
+          }
+          "the user does not have a nino" when {
+            "the SA postcode does not match postcode returned from ES20" in {
+              enable(EnableNoNinoJourney)
+              await(insertJourneyConfig(
+                journeyId = testJourneyId,
+                internalId = testInternalId,
+                continueUrl = testContinueUrl,
+                optServiceName = None,
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                enableSautrCheck = true
+              ))
+              stubAuth(OK, successfulAuthResponse())
+              stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
+              stubRetrieveSaPostcode(testJourneyId)(OK, testPostcode)
+              stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
+              stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+              stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))(OK)
+              stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+              stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
+              stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+              stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
+              stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
+              stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+              stubStoreTrn(testJourneyId, testTrn)(OK)
+              stubAudit()
+
+              val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+              result must have {
+                httpStatus(SEE_OTHER)
+                redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
+              }
+
+              verifyStoreTrn(testJourneyId, testTrn)
+              verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+              verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
+              verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+              verifyAudit()
+            }
+            "the user does not provide a SA postcode and ES20 returns N for isAbroad flag" in {
+              enable(EnableNoNinoJourney)
+              await(insertJourneyConfig(
+                journeyId = testJourneyId,
+                internalId = testInternalId,
+                continueUrl = testContinueUrl,
+                optServiceName = None,
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                enableSautrCheck = true
+              ))
+              stubAuth(OK, successfulAuthResponse())
+              stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
+              stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+              stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad("N"))
+              stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+              stubStoreES20Details(testJourneyId, KnownFactsResponse(None, Some(false), None))(OK)
+              stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+              stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
+              stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+              stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
+              stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
+              stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+              stubStoreTrn(testJourneyId, testTrn)(OK)
+              stubAudit()
+
+              val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+              result must have {
+                httpStatus(SEE_OTHER)
+                redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
+              }
+
+              verifyStoreTrn(testJourneyId, testTrn)
+              verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+              verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
+              verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+              verifyAudit()
+            }
+          }
         }
 
         "the provided details are for a deceased citizen" in {

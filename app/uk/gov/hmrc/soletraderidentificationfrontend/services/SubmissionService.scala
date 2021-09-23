@@ -74,6 +74,13 @@ class SubmissionService @Inject()(journeyService: JourneyService,
         } yield {
           JourneyCompleted(journeyConfig.continueUrl)
         }
+        case Left(failureReason) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney)=>
+          for {
+            _ <- createTrnService.createTrn(journeyId)
+            _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+            _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+          } yield
+            SoleTraderDetailsMismatch(failureReason)
         case Left(failureReason) =>
           for {
             _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
