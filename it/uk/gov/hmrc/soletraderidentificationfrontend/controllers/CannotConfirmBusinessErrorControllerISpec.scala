@@ -107,6 +107,7 @@ class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
+        stubRemoveAllData(testJourneyId)(NO_CONTENT)
 
         lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/cannot-confirm-business")(
           "yes_no" -> "no"

@@ -87,12 +87,6 @@ check-your-answers.no_nino                                  = I do not have a Na
 check-your-answers.sa_postcode                              = Self Assessment postcode
 check-your-answers.no_sa_postcode                           = The business does not have a Self Assessment postcode
 
-## Personal Information Error Page
-personal-information-error.title                            = We could not identify you on our records
-personal-information-error.heading                          = We could not identify you on our records
-personal-information-error.line_1                           = This could have been because of a mistake when entering your name, date of birth or National Insurance number.
-personal-information-error.tryAgain                         = Try again
-
 ## Details Not Found Page
 details-not-found-page.title                                = The details you entered did not match our records
 details-not-found-page.heading                              = The details you entered did not match our records

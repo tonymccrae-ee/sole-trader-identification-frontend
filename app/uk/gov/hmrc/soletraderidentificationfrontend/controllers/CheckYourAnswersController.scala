@@ -80,7 +80,7 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
               case SoleTraderDetailsMismatch(_) =>
                 if (journeyConfig.pageConfig.enableSautrCheck) auditService.auditSoleTraderJourney(journeyId)
                 else auditService.auditIndividualJourney(journeyId)
-                Redirect(routes.PersonalInformationErrorController.show(journeyId))
+                Redirect(routes.CannotConfirmBusinessErrorController.show(journeyId))
             }
         }
       }
