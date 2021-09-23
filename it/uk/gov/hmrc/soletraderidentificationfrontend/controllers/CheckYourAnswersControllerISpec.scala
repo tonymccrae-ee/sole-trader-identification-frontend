@@ -438,7 +438,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
       }
 
-      "redirect to personal information error controller" when {
+      "redirect to cannot confirm business error controller" when {
         "the provided details do not match what is held in the database" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
@@ -466,7 +466,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
+            redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
           }
 
           verifyStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)
@@ -503,7 +503,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
+            redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
           }
 
           verifyStoreAuthenticatorFailureResponse(testJourneyId, DeceasedCitizensDetails)
@@ -598,7 +598,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
       }
 
-      "redirect to personal information error controller" when {
+      "redirect to cannot confirm business error controller" when {
         "the provided details do not match what is held in the database" in {
           await(insertJourneyConfig(
             journeyId = testJourneyId,
@@ -630,7 +630,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
+            redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
           }
 
           verifyStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)
@@ -671,7 +671,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(routes.PersonalInformationErrorController.show(testJourneyId).url)
+            redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
           }
 
           verifyStoreAuthenticatorFailureResponse(testJourneyId, DeceasedCitizensDetails)

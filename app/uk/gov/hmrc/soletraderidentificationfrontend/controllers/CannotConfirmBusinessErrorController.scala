@@ -21,11 +21,12 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CannotConfirmBusinessErrorForm.cannotConfirmBusinessForm
+import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyCompleted
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService, SubmissionService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.cannot_confirm_business_error_page
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CannotConfirmBusinessErrorController @Inject()(mcc: MessagesControllerComponents,
@@ -55,22 +56,30 @@ class CannotConfirmBusinessErrorController @Inject()(mcc: MessagesControllerComp
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig =>
-            cannotConfirmBusinessForm.bindFromRequest.fold(
-              formWithErrors =>
+        cannotConfirmBusinessForm.bindFromRequest.fold(
+          formWithErrors =>
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
                 BadRequest(view(
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CannotConfirmBusinessErrorController.submit(journeyId),
                   form = formWithErrors
                 ))
-              , {
-                tryAgain =>
-                  if (tryAgain) Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
-                  else Redirect(routes.CaptureFullNameController.show(journeyId))
+            },
+          tryAgain =>
+            if (tryAgain) {
+              journeyService.getJourneyConfig(journeyId).map {
+                journeyConfig => Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
               }
-            )
-        }
+            } else {
+              soleTraderIdentificationService.removeAllData(journeyId).map {
+                _ => Redirect(routes.CaptureFullNameController.show(journeyId))
+              }
+            }
+
+        )
       }
   }
+
 }
+
