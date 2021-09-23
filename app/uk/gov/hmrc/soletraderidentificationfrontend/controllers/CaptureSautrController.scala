@@ -69,6 +69,7 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
           sautr =>
             for {
               _ <- soleTraderIdentificationService.storeSautr(journeyId, sautr)
+              _ <- soleTraderIdentificationService.removeSaPostcode(journeyId)
               optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
             } yield optNino match {
               case Some(_) =>
@@ -83,8 +84,12 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
   def noSautr(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.removeSautr(journeyId).map {
-          _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+        for{
+          _ <- soleTraderIdentificationService.removeSautr(journeyId)
+          _ <- soleTraderIdentificationService.removeSaPostcode(journeyId)
+          journeyConfig <- journeyService.getJourneyConfig(journeyId)
+        } yield journeyConfig match {
+          case _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
         }
       }
   }
