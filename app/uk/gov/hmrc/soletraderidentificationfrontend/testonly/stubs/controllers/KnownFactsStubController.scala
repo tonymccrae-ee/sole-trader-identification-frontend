@@ -67,7 +67,7 @@ class KnownFactsStubController @Inject()(controllerComponents: ControllerCompone
                     ),
                     "verifiers" -> Json.arr(
                       Json.obj(
-                        "key" -> "PostCode",
+                        "key" -> "Postcode",
                         "value" -> "AA11AA"
                       )
                     )

@@ -64,7 +64,7 @@ object KnownFactsHttpParser {
           } yield verifiers
           knownFacts match {
             case JsSuccess(verifiersList, _) =>
-              val optPostcode: Option[String] = verifiersList.find(verifier => verifier.key == "PostCode").map(verifier => verifier.value)
+              val optPostcode: Option[String] = verifiersList.find(verifier => verifier.key == "Postcode").map(verifier => verifier.value)
               val optIsAbroadFlag: Option[Boolean] = verifiersList.find(verifier => verifier.key == "IsAbroad").map(verifier => if (verifier.value == "Y") true else false)
               val optNino: Option[String] = verifiersList.find(verifier => verifier.key == "NINO").map(verifier => verifier.value)
               KnownFactsResponse(optPostcode, optIsAbroadFlag, optNino)

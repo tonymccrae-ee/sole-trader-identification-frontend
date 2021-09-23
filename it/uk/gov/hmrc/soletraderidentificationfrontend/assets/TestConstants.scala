@@ -252,7 +252,7 @@ object TestConstants {
             "value" -> testNino
           ),
           Json.obj(
-            "key" -> "PostCode",
+            "key" -> "Postcode",
             "value" -> testSaPostcode
           )
         )
