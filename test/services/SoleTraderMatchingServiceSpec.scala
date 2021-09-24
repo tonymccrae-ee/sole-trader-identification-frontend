@@ -151,9 +151,9 @@ class SoleTraderMatchingServiceSpec
       "the user's postcode matches the postcode returned from ES20" when {
         "the postcode's are provided in the same format" in {
           mockRetrieveSaPostcode(testJourneyId)(Future.successful(Some(testSaPostcode)))
-          mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some(testSaPostcode), None, Some(testNino))))
+          mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some(testSaPostcode), None, None)))
           mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
-          mockStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))(Future.successful(SuccessfullyStored))
+          mockStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
 
@@ -165,9 +165,9 @@ class SoleTraderMatchingServiceSpec
         "the postcode's are provided in different formats" in {
           val testPostcode: String = "aa1 1aa"
           mockRetrieveSaPostcode(testJourneyId)(Future.successful(Some(testPostcode)))
-          mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some(testSaPostcode), None, Some(testNino))))
+          mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some(testSaPostcode), None, None)))
           mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
-          mockStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))(Future.successful(SuccessfullyStored))
+          mockStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
 
@@ -179,9 +179,9 @@ class SoleTraderMatchingServiceSpec
       }
       "the user does not provide a postcode and isAbroad is true" in {
         mockRetrieveSaPostcode(testJourneyId)(Future.successful(None))
-        mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some(testSaPostcode), Some(true), Some(testNino))))
+        mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some(testSaPostcode), Some(true), None)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
-        mockStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), Some(true), Some(testNino)))(Future.successful(SuccessfullyStored))
+        mockStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), Some(true), None))(Future.successful(SuccessfullyStored))
 
         val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
 
@@ -192,32 +192,6 @@ class SoleTraderMatchingServiceSpec
       }
     }
     "return Right(false)" when {
-      "the user's postcode does not match the postcode returned from ES20" in {
-        mockRetrieveSaPostcode(testJourneyId)(Future.successful(Some(testSaPostcode)))
-        mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some("TF4 3ER"), None, Some(testNino))))
-        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
-        mockStoreES20Details(testJourneyId, KnownFactsResponse(Some("TF4 3ER"), None, Some(testNino)))(Future.successful(SuccessfullyStored))
-
-        val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
-
-        result mustBe Right(false)
-
-        verifyRetrieveKnownFacts(testSautr)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-      }
-      "the user does not provide a postcode but isAbroad is false" in {
-        mockRetrieveSaPostcode(testJourneyId)(Future.successful(None))
-        mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(None, Some(false), Some(testNino))))
-        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
-        mockStoreES20Details(testJourneyId, KnownFactsResponse(None, Some(false), Some(testNino)))(Future.successful(SuccessfullyStored))
-
-        val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
-
-        result mustBe Right(false)
-
-        verifyRetrieveKnownFacts(testSautr)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-      }
       "the user does not have an sautr" in {
         mockRetrieveSaPostcode(testJourneyId)(Future.successful(Some(testSaPostcode)))
         mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
@@ -226,6 +200,34 @@ class SoleTraderMatchingServiceSpec
 
         result mustBe Right(false)
 
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+      }
+    }
+    "return Left(DetailsMismatch}" when {
+      "the user's postcode does not match the postcode returned from ES20" in {
+        mockRetrieveSaPostcode(testJourneyId)(Future.successful(Some(testSaPostcode)))
+        mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(Some("TF4 3ER"), None, None)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockStoreES20Details(testJourneyId, KnownFactsResponse(Some("TF4 3ER"), None, None))(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
+
+        result mustBe Left(DetailsMismatch)
+
+        verifyRetrieveKnownFacts(testSautr)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+      }
+      "the user does not provide a postcode but isAbroad is false" in {
+        mockRetrieveSaPostcode(testJourneyId)(Future.successful(None))
+        mockRetrieveKnownFacts(testSautr)(Future.successful(KnownFactsResponse(None, Some(false), None)))
+        mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+        mockStoreES20Details(testJourneyId, KnownFactsResponse(None, Some(false), None))(Future.successful(SuccessfullyStored))
+
+        val result = await(TestService.matchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino))
+
+        result mustBe Left(DetailsMismatch)
+
+        verifyRetrieveKnownFacts(testSautr)
         verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
       }
     }

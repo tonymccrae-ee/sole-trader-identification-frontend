@@ -33,9 +33,19 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
   "retrieveKnownFacts" when {
     "the StubKnownFacts is enabled" should {
       "return KnownFacts" when {
-        "the isAbroad flag is not there" in {
+        "a nino is not there" in {
           enable(KnownFactsStub)
           stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponse)
+
+          val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
+
+          result mustBe KnownFactsResponse(Some(testSaPostcode), None, None)
+
+          verifyRetrieveKnownFactsFromStub(testSautr)
+        }
+        "the isAbroad flag is not there" in {
+          enable(KnownFactsStub)
+          stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseNino)
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
@@ -45,7 +55,7 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
         }
         "the isAbroad flag is there" in {
           enable(KnownFactsStub)
-          stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseIsAbroad)
+          stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseIsAbroad())
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
@@ -63,9 +73,19 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
     }
     "the StubKnownFacts is disabled" should {
       "return KnownFacts" when {
-        "the isAbroad flag is not there" in {
+        "a nino is not there" in {
           disable(KnownFactsStub)
           stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponse)
+
+          val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
+
+          result mustBe KnownFactsResponse(Some(testSaPostcode), None, None)
+
+          verifyRetrieveKnownFacts(testSautr)
+        }
+        "the isAbroad flag is not there" in {
+          disable(KnownFactsStub)
+          stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
@@ -75,7 +95,7 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
         }
         "the isAbroad flag is there" in {
           disable(KnownFactsStub)
-          stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad)
+          stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad())
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 

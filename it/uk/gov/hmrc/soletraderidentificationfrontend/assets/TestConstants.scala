@@ -248,10 +248,6 @@ object TestConstants {
         ),
         "verifiers" -> Json.arr(
           Json.obj(
-            "key" -> "NINO",
-            "value" -> testNino
-          ),
-          Json.obj(
             "key" -> "Postcode",
             "value" -> testSaPostcode
           )
@@ -260,7 +256,7 @@ object TestConstants {
     )
   )
 
-  val testKnownFactsResponseIsAbroad: JsObject = Json.obj(
+  def testKnownFactsResponseIsAbroad(abroad: String = "Y"): JsObject = Json.obj(
     "service" -> "IR-SA",
     "enrolments" -> Json.arr(
       Json.obj(
@@ -273,7 +269,31 @@ object TestConstants {
         "verifiers" -> Json.arr(
           Json.obj(
             "key" -> "IsAbroad",
-            "value" -> "Y"
+            "value" -> abroad
+          )
+        )
+      )
+    )
+  )
+
+  val testKnownFactsResponseNino: JsObject = Json.obj(
+    "service" -> "IR-SA",
+    "enrolments" -> Json.arr(
+      Json.obj(
+        "identifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "UTR",
+            "value" -> testSautr
+          )
+        ),
+        "verifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "NINO",
+            "value" -> testNino
+          ),
+          Json.obj(
+            "key" -> "Postcode",
+            "value" -> testSaPostcode
           )
         )
       )

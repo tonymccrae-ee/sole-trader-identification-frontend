@@ -163,6 +163,21 @@ class SubmissionServiceSpec
           result mustBe JourneyCompleted(testContinueUrl)
         }
       }
+      "return SoleTraderDetailsMismatch" when {
+        "the details received from ES20 do not match" in {
+          mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(true)))
+          mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNino)))
+          mockMatchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino)(Future.successful(Left(DetailsMismatch)))
+          mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
+          mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+          mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+          mockCreateTrn(testJourneyId)(Future.successful(SuccessfulCreation))
+
+          val result = await(TestService.submit(testJourneyId))
+
+          result mustBe SoleTraderDetailsMismatch(DetailsMismatch)
+        }
+      }
     }
   }
 }
