@@ -24,7 +24,6 @@ import play.api.test.Helpers._
 import services.mocks.MockSoleTraderIdentificationService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
-import uk.gov.hmrc.soletraderidentificationfrontend.models.SuccessfulCreation
 import uk.gov.hmrc.soletraderidentificationfrontend.services.CreateTrnService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -46,7 +45,7 @@ class CreateTrnServiceSpec extends AnyWordSpec with Matchers with MockSoleTrader
 
       val result = await(TestService.createTrn(testJourneyId))
 
-      result mustBe SuccessfulCreation
+      result mustBe testTrn
 
       verifyStoreTrn(testJourneyId, testTrn)
       verifyCreateTrn(testDateOfBirth, testFullName, testAddress)

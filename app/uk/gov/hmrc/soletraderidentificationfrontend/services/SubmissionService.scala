@@ -47,12 +47,7 @@ class SubmissionService @Inject()(journeyService: JourneyService,
           individualDetails.optSautr match {
             case Some(sautr) => businessVerificationService.createBusinessVerificationJourney(journeyId, sautr).flatMap {
               case Right(BusinessVerificationJourneyCreated(businessVerificationUrl)) =>
-                if (individualDetails.optNino.isEmpty) {
-                  createTrnService.createTrn(journeyId).flatMap {
-                    _ => Future.successful(StartBusinessVerification(businessVerificationUrl))
-                  }
-                }
-                else Future.successful(StartBusinessVerification(businessVerificationUrl))
+                Future.successful(StartBusinessVerification(businessVerificationUrl))
               case _ =>
                 for {
                   _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
@@ -74,9 +69,8 @@ class SubmissionService @Inject()(journeyService: JourneyService,
         } yield {
           JourneyCompleted(journeyConfig.continueUrl)
         }
-        case Left(failureReason) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney)=>
+        case Left(failureReason) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) =>
           for {
-            _ <- createTrnService.createTrn(journeyId)
             _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
             _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
           } yield

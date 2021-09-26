@@ -35,38 +35,38 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
       "return KnownFacts" when {
         "a nino is not there" in {
           enable(KnownFactsStub)
-          stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponse)
+          stubGetEacdKnownFactsFromStub(testSautr)(OK, testKnownFactsResponse)
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
           result mustBe KnownFactsResponse(Some(testSaPostcode), None, None)
 
-          verifyRetrieveKnownFactsFromStub(testSautr)
+          verifyGetEacdKnownFactsFromStub(testSautr)
         }
         "the isAbroad flag is not there" in {
           enable(KnownFactsStub)
-          stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseNino)
+          stubGetEacdKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseNino)
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
           result mustBe KnownFactsResponse(Some(testSaPostcode), None, Some(testNino))
 
-          verifyRetrieveKnownFactsFromStub(testSautr)
+          verifyGetEacdKnownFactsFromStub(testSautr)
         }
         "the isAbroad flag is there" in {
           enable(KnownFactsStub)
-          stubRetrieveKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseIsAbroad())
+          stubGetEacdKnownFactsFromStub(testSautr)(OK, testKnownFactsResponseIsAbroad())
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
           result mustBe KnownFactsResponse(None, Some(true), None)
 
-          verifyRetrieveKnownFactsFromStub(testSautr)
+          verifyGetEacdKnownFactsFromStub(testSautr)
         }
       }
       "throw an exception" in {
         enable(KnownFactsStub)
-        stubRetrieveKnownFactsFromStub(testSautr)(NO_CONTENT)
+        stubGetEacdKnownFactsFromStub(testSautr)(NO_CONTENT)
 
         intercept[InternalServerException](await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr)))
       }
@@ -75,38 +75,38 @@ class RetrieveKnownFactsConnectorISpec extends ComponentSpecHelper with KnownFac
       "return KnownFacts" when {
         "a nino is not there" in {
           disable(KnownFactsStub)
-          stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponse)
+          stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponse)
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
           result mustBe KnownFactsResponse(Some(testSaPostcode), None, None)
 
-          verifyRetrieveKnownFacts(testSautr)
+          verifyGetEacdKnownFacts(testSautr)
         }
         "the isAbroad flag is not there" in {
           disable(KnownFactsStub)
-          stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
+          stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
           result mustBe KnownFactsResponse(Some(testSaPostcode), None, Some(testNino))
 
-          verifyRetrieveKnownFacts(testSautr)
+          verifyGetEacdKnownFacts(testSautr)
         }
         "the isAbroad flag is there" in {
           disable(KnownFactsStub)
-          stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad())
+          stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad())
 
           val result = await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr))
 
           result mustBe KnownFactsResponse(None, Some(true), None)
 
-          verifyRetrieveKnownFacts(testSautr)
+          verifyGetEacdKnownFacts(testSautr)
         }
       }
       "throw an exception" in {
         disable(KnownFactsStub)
-        stubRetrieveKnownFacts(testSautr)(NO_CONTENT)
+        stubGetEacdKnownFacts(testSautr)(NO_CONTENT)
 
         intercept[InternalServerException](await(retrieveKnownFactsConnector.retrieveKnownFacts(testSautr)))
       }

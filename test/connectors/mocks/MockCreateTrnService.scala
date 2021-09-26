@@ -22,7 +22,6 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.soletraderidentificationfrontend.models.TrnCreationStatus
 import uk.gov.hmrc.soletraderidentificationfrontend.services.CreateTrnService
 
 import scala.concurrent.Future
@@ -37,7 +36,7 @@ trait MockCreateTrnService extends MockitoSugar with BeforeAndAfterEach {
     reset(mockCreateTrnService)
   }
 
-  def mockCreateTrn(journeyId: String)(response: Future[TrnCreationStatus]): OngoingStubbing[_] =
+  def mockCreateTrn(journeyId: String)(response: Future[String]): OngoingStubbing[_] =
     when(
       mockCreateTrnService.createTrn(ArgumentMatchers.eq(journeyId)
       )(ArgumentMatchers.any[HeaderCarrier])
