@@ -19,9 +19,9 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 import play.api.libs.json.Json
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{IndividualDetails, KnownFactsResponse}
-import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.IndividualDetails
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -78,13 +78,13 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
       optES20Response <- soleTraderIdentificationService.retrieveES20Details(journeyId)
       optIdentifiersMatch <- soleTraderIdentificationService.retrieveIdentifiersMatch(journeyId)
       optAuthenticatorResponse <-
-      optIdentifiersMatch match {
-        case Some(_) if optSoleTraderRecord.exists(details => details.optNino.isEmpty) => Future.successful(None)
-        case Some(identifiersMatch) if identifiersMatch =>
-          soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
-        case _ =>
-          soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
-      }
+        optIdentifiersMatch match {
+          case Some(_) if optSoleTraderRecord.exists(details => details.optNino.isEmpty) => Future.successful(None)
+          case Some(identifiersMatch) if identifiersMatch =>
+            soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
+          case _ =>
+            soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
+        }
     } yield {
       (optSoleTraderRecord, optES20Response, optIdentifiersMatch, optAuthenticatorResponse) match {
         case (Some(optSoleTraderRecord), optES20Response, Some(identifiersMatch), optAuthenticatorResponse) =>

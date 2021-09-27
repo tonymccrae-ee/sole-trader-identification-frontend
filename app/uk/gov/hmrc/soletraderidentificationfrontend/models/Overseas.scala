@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.soletraderidentificationfrontend.forms
+package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-import play.api.data.Form
-import play.api.data.Forms.of
-import uk.gov.hmrc.soletraderidentificationfrontend.forms.mappings.YesNoMapping.yesNoMapping
+import play.api.libs.json.{Json, OFormat}
 
-object CannotConfirmBusinessErrorForm {
+case class Overseas(taxIdentifier: String, country: String)
 
-  val cannotConfirmBusinessForm: Form[Boolean] = Form(
-    "yes_no" -> of(yesNoMapping("error.no_selection"))
-
-  )
+object Overseas {
+  implicit val format: OFormat[Overseas] = Json.format[Overseas]
 }
-

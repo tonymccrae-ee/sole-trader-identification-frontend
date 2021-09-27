@@ -42,6 +42,7 @@ object TestConstants {
   val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
   val testOverseasAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), None, "US")
   val testSaPostcode: String = "AA11AA"
+  val testOverseasIdentifiers: Overseas = Overseas("134124532", "AL")
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
@@ -54,7 +55,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
       registrationStatus = Registered(testSafeId),
-      trn = None
+      trn = None,
+      overseas = None
     )
 
   val testSoleTraderDetailsNoMatch: SoleTraderDetails =
@@ -68,7 +70,8 @@ object TestConstants {
       identifiersMatch = false,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = None
+      trn = None,
+      overseas = None
     )
 
   val testSoleTraderDetailsNinoAndUtr: SoleTraderDetails =
@@ -82,7 +85,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
       registrationStatus = Registered(testSafeId),
-      trn = None
+      trn = None,
+      overseas = None
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
@@ -96,7 +100,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = None
+      trn = None,
+      overseas = None
     )
 
   val testSoleTraderDetailsNoNinoButUtr: SoleTraderDetails =
@@ -110,7 +115,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = Some(testTrn)
+      trn = Some(testTrn),
+      overseas = Some(testOverseasIdentifiers)
     )
 
   val testSoleTraderDetailsNoNinoAndOverseas: SoleTraderDetails =
@@ -124,7 +130,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = Some(testTrn)
+      trn = Some(testTrn),
+      overseas = Some(testOverseasIdentifiers)
     )
 
   val testIndividualDetails: IndividualDetails =

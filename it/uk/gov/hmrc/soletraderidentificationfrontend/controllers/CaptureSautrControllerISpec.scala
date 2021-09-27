@@ -78,7 +78,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            enableSautrCheck = true
           ))
           stubAuth(OK, successfulAuthResponse())
           stubStoreSautr(testJourneyId, testSautr)(status = OK)
@@ -102,7 +102,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            enableSautrCheck = true
           ))
           stubAuth(OK, successfulAuthResponse())
           stubStoreSautr(testJourneyId, testSautr)(status = OK)
@@ -128,7 +128,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "")
@@ -150,7 +150,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/sa-utr")("sa-utr" -> "123456789")
@@ -166,7 +166,7 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
 
   "GET /no-sa-utr" should {
     "redirect to CYA page" when {
-      "the sautr is successfully removed" in {
+      "the user has a nino" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           internalId = testInternalId,
@@ -174,11 +174,12 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveSautr(testJourneyId)(NO_CONTENT)
         stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
+        stubRetrieveNino(testJourneyId)(OK, testNino)
 
         val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-sa-utr")
 
@@ -186,6 +187,30 @@ class CaptureSautrControllerISpec extends ComponentSpecHelper
           httpStatus(SEE_OTHER),
           redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
         )
+      }
+      "redirect to the Overseas Tax Identifiers page" when {
+        "the user does not have a nino" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
+          stubAuth(OK, successfulAuthResponse())
+          stubRemoveSautr(testJourneyId)(NO_CONTENT)
+          stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
+          stubRetrieveNino(testJourneyId)(NOT_FOUND)
+
+          val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-sa-utr")
+
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(routes.CaptureOverseasTaxIdentifiersController.show(testJourneyId).url)
+          )
+        }
       }
     }
 

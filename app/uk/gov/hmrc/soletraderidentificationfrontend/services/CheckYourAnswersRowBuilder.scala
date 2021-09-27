@@ -21,14 +21,12 @@ import play.api.mvc.Call
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.ActionItem
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.routes
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{Address, IndividualDetails}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.DateHelper.checkYourAnswersFormat
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
 
 @Singleton
 class CheckYourAnswersRowBuilder @Inject()() {
@@ -80,7 +78,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
       None
     }
 
-    val saPostcodeRow = if(individualDetails.optSautr.isDefined && individualDetails.optNino.isEmpty) {
+    val saPostcodeRow = if (individualDetails.optSautr.isDefined && individualDetails.optNino.isEmpty) {
       Some(buildSummaryRow(
         messages("check-your-answers.sa_postcode"),
         optSaPostcode match {

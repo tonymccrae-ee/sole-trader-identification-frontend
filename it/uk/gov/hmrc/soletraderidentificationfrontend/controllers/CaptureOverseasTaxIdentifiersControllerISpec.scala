@@ -17,18 +17,18 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
 import play.api.libs.ws.WSResponse
-import play.api.test.Helpers._
+import play.api.test.Helpers.{BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT, OK, SEE_OTHER, await, defaultAwaitTimeout}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
-import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureSaPostcodeViewTests
+import uk.gov.hmrc.soletraderidentificationfrontend.views.CaptureOverseasTaxIdentifiersViewTests
 
-class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
-  with CaptureSaPostcodeViewTests
-  with SoleTraderIdentificationStub
-  with AuthStub {
+class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
+  with CaptureOverseasTaxIdentifiersViewTests
+  with AuthStub
+  with SoleTraderIdentificationStub {
 
-  "GET /self-assessment-postcode" should {
+  "GET /overseas-identifier" should {
     lazy val result = {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
@@ -40,7 +40,7 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
         enableSautrCheck = false
       ))
       stubAuth(OK, successfulAuthResponse())
-      get(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")
+      get(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier")
     }
 
     "return OK" in {
@@ -48,29 +48,28 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
     }
 
     "return a view which" should {
-      testCaptureSaPostcodeView(result)
+      testCaptureCaptureOverseasTaxIdentifiersView(result)
     }
 
     "redirect to sign in page" when {
       "the user is UNAUTHORISED" in {
         stubAuthFailure()
-        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")
+        lazy val result: WSResponse = get(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier")
 
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri("/bas-gateway/sign-in" +
-            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Fself-assessment-postcode" +
+            s"?continue_url=%2Fidentify-your-sole-trader-business%2F$testJourneyId%2Foverseas-identifier" +
             "&origin=sole-trader-identification-frontend"
           )
         )
       }
     }
-
   }
 
-  "POST /self-assessment-postcode" when {
-    "the SA Postcode is correctly formatted" should {
-      "redirect to Overseas Tax Identifiers page" in {
+  "POST /overseas-identifier" when {
+    "the tax identifiers are correctly formatted" should {
+      "redirect to Check Your Answers" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           internalId = testInternalId,
@@ -78,20 +77,22 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubStoreSaPostcode(testJourneyId, testSaPostcode)(status = OK)
+        stubStoreOverseasTaxIdentifiers(testJourneyId, testOverseasTaxIdentifiers)(OK)
 
-        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> testSaPostcode)
+        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
+        )("tax-identifier" -> "134124532",
+          "country" -> "AL")
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CaptureOverseasTaxIdentifiersController.show(testJourneyId).url)
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
         )
       }
     }
-    "no SA postcode is submitted" should {
+    "no tax identifier or country is submitted" should {
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -103,17 +104,19 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> "")
+        post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
+        )("tax-identifier" -> "",
+          "country" -> "")
       }
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
 
-      testCaptureSaPostcodeErrorMessageNoEntryPostcode(result)
+      testCaptureCaptureOverseasTaxIdentifiersErrorMessages(result)
     }
 
-    "an invalid SA postcode is submitted" should {
+    "an invalid tax identifier is submitted" should {
       lazy val result = {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
@@ -125,20 +128,46 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
-        post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> "AA!0!!")
+        post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
+        )("tax-identifier" -> "134124532$$$",
+          "country" -> "AL")
       }
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
 
-      testCaptureSaPostcodeErrorMessageInvalidPostcode(result)
+      testCaptureCaptureOverseasTaxIdentifiersErrorMessagesInvalidIdentifier(result)
+    }
+
+    "a tax identifier that is too long is submitted" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
+        )("tax-identifier" -> "13412453134124531341245313412453134124531341245313412453134124531341245313412453134124531341245313412453134124531341245313412453134124531341245313412453134124531341245313412453134124531341245313412453",
+          "country" -> "AL")
+      }
+
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+
+      testCaptureCaptureOverseasTaxIdentifiersErrorMessagesTooLongIdentifier(result)
     }
   }
 
-  "GET /no-self-assessment-postcode" should {
-    "redirect to Overseas Tax Identifiers page" when {
-      "the SA postcode is successfully removed" in {
+  "GET /no-overseas-identifier" should {
+    "redirect to CYA page" when {
+      "the overseas identifiers are successfully removed" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           internalId = testInternalId,
@@ -146,16 +175,16 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          enableSautrCheck = true
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
+        stubRemoveOverseasTaxIdentifiers(testJourneyId)(NO_CONTENT)
 
-        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-self-assessment-postcode")
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-overseas-identifier")
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CaptureOverseasTaxIdentifiersController.show(testJourneyId).url)
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
         )
       }
     }
@@ -172,9 +201,9 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
           enableSautrCheck = false
         ))
         stubAuth(OK, successfulAuthResponse())
-        stubRemoveSaPostcode(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
+        stubRemoveOverseasTaxIdentifiers(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
 
-        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-self-assessment-postcode")
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-overseas-identifier")
 
         result.status mustBe INTERNAL_SERVER_ERROR
       }
