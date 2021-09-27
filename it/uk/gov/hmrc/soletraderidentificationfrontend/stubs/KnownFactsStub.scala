@@ -22,7 +22,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.utils.{WireMockMethods, Wire
 
 trait KnownFactsStub extends WireMockMethods {
 
-  def stubRetrieveKnownFacts(sautr: String
+  def stubGetEacdKnownFacts(sautr: String
                             )(status: Int,
                               body: JsObject = Json.obj()): StubMapping = {
 
@@ -43,8 +43,8 @@ trait KnownFactsStub extends WireMockMethods {
       )
   }
 
-  def stubRetrieveKnownFactsFromStub(sautr: String)
-                                    (status: Int,
+  def stubGetEacdKnownFactsFromStub(sautr: String)
+                                   (status: Int,
                                      body: JsObject = Json.obj()): StubMapping = {
 
     val json: JsObject = Json.obj(
@@ -64,7 +64,7 @@ trait KnownFactsStub extends WireMockMethods {
       )
   }
 
-  def verifyRetrieveKnownFacts(sautr: String): Unit = {
+  def verifyGetEacdKnownFacts(sautr: String): Unit = {
     val json: JsObject = Json.obj(
       "service" -> "IR-SA",
       "knownFacts" -> Json.arr(
@@ -79,7 +79,7 @@ trait KnownFactsStub extends WireMockMethods {
 
   }
 
-  def verifyRetrieveKnownFactsFromStub(sautr: String): Unit = {
+  def verifyGetEacdKnownFactsFromStub(sautr: String): Unit = {
 
     val json: JsObject = Json.obj(
       "service" -> "IR-SA",

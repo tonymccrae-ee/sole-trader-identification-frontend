@@ -16,17 +16,18 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.controllers
 
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.soletraderidentificationfrontend.models.FullName
-import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, SoleTraderIdentificationStub}
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, CreateTrnStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.views.CannotConfirmBusinessErrorViewTests
 
 class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
   with CannotConfirmBusinessErrorViewTests
   with SoleTraderIdentificationStub
+  with CreateTrnStub
   with AuthStub {
 
   val testFirstName = "John"
@@ -71,27 +72,57 @@ class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
   }
 
   "POST /cannot-confirm-business" when {
-    "the user selects yes" should {
-      "redirect to the contineurl" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
-        ))
-        stubAuth(OK, successfulAuthResponse())
-        stubStoreFullName(testJourneyId, FullName(testFirstName, testLastName))(status = OK)
+    "the user selects yes" when {
+      "the user has previously provided a nino" should {
+        "redirect to the contineurl" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = false
+          ))
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveNino(testJourneyId)(OK, testNino)
 
-        lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/cannot-confirm-business")(
-          "yes_no" -> "yes"
-        )
-        result must have(
-          httpStatus(SEE_OTHER),
-          redirectUri(testContinueUrl)
-        )
+          lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/cannot-confirm-business")(
+            "yes_no" -> "yes"
+          )
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(testContinueUrl)
+          )
+        }
+      }
+      "the user has not provided a nino" should {
+        "create a trn redirect to the contineurl" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = false
+          ))
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveNino(testJourneyId)(NOT_FOUND)
+          stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
+          stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+          stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
+          stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+          stubStoreTrn(testJourneyId, testTrn)(OK)
+
+          lazy val result = post(s"/identify-your-sole-trader-business/$testJourneyId/cannot-confirm-business")(
+            "yes_no" -> "yes"
+          )
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(testContinueUrl)
+          )
+        }
       }
     }
 

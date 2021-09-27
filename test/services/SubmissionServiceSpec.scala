@@ -127,7 +127,6 @@ class SubmissionServiceSpec
         mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNino)))
         mockMatchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNino)(Future.successful(Right(true)))
         mockCreateBusinessVerificationJourney(testJourneyId, testSautr)(Future.successful(Right(BusinessVerificationJourneyCreated(testBusinessVerificationRedirectUrl))))
-        mockCreateTrn(testJourneyId)(Future.successful(SuccessfulCreation))
 
         val result = await(TestService.submit(testJourneyId))
 
@@ -142,7 +141,7 @@ class SubmissionServiceSpec
           mockCreateBusinessVerificationJourney(testJourneyId, testSautr)(Future.successful(Left(NotEnoughEvidence)))
           mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
           mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-          mockCreateTrn(testJourneyId)(Future.successful(SuccessfulCreation))
+          mockCreateTrn(testJourneyId)(Future.successful(testTrn))
 
           val result = await(TestService.submit(testJourneyId))
 
@@ -156,7 +155,7 @@ class SubmissionServiceSpec
           mockMatchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNinoNoSautr)(Future.successful(Right(true)))
           mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
           mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-          mockCreateTrn(testJourneyId)(Future.successful(SuccessfulCreation))
+          mockCreateTrn(testJourneyId)(Future.successful(testTrn))
 
           val result = await(TestService.submit(testJourneyId))
 
@@ -171,7 +170,6 @@ class SubmissionServiceSpec
           mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(Future.successful(SuccessfullyStored))
           mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
           mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-          mockCreateTrn(testJourneyId)(Future.successful(SuccessfulCreation))
 
           val result = await(TestService.submit(testJourneyId))
 

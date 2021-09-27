@@ -258,15 +258,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubAuth(OK, successfulAuthResponse())
             stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
             stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
-            stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponse)
+            stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponse)
             stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
             stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))(OK)
             stubCreateBusinessVerificationJourney(testSautr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testBusinessVerificationRedirectUrl))
             stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
             stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
             stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
-            stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
-            stubStoreTrn(testJourneyId, testTrn)(OK)
             stubAudit()
 
             val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
@@ -276,7 +274,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               redirectUri(testBusinessVerificationRedirectUrl)
             }
 
-            verifyStoreTrn(testJourneyId, testTrn)
             verifyStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))
             verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
             verifyAudit()
@@ -491,7 +488,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               stubAuth(OK, successfulAuthResponse())
               stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
               stubRetrieveSaPostcode(testJourneyId)(OK, testPostcode)
-              stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
+              stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
               stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
               stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))(OK)
               stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
@@ -499,8 +496,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
               stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
               stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
-              stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
-              stubStoreTrn(testJourneyId, testTrn)(OK)
               stubAudit()
 
               val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
@@ -510,7 +505,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
                 redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
               }
 
-              verifyStoreTrn(testJourneyId, testTrn)
               verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
               verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
               verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
@@ -530,7 +524,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               stubAuth(OK, successfulAuthResponse())
               stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
               stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
-              stubRetrieveKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad("N"))
+              stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad("N"))
               stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
               stubStoreES20Details(testJourneyId, KnownFactsResponse(None, Some(false), None))(OK)
               stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
@@ -538,8 +532,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
               stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
               stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
-              stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
-              stubStoreTrn(testJourneyId, testTrn)(OK)
               stubAudit()
 
               val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
@@ -549,7 +541,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
                 redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
               }
 
-              verifyStoreTrn(testJourneyId, testTrn)
               verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
               verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
               verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)

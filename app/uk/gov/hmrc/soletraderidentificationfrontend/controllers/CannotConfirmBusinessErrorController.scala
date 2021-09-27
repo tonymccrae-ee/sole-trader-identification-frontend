@@ -21,8 +21,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.CannotConfirmBusinessErrorForm.cannotConfirmBusinessForm
-import uk.gov.hmrc.soletraderidentificationfrontend.models.JourneyCompleted
-import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService, SubmissionService}
+import uk.gov.hmrc.soletraderidentificationfrontend.services.{CreateTrnService, JourneyService, SoleTraderIdentificationService}
 import uk.gov.hmrc.soletraderidentificationfrontend.views.html.cannot_confirm_business_error_page
 
 import javax.inject.{Inject, Singleton}
@@ -34,7 +33,7 @@ class CannotConfirmBusinessErrorController @Inject()(mcc: MessagesControllerComp
                                                      val authConnector: AuthConnector,
                                                      soleTraderIdentificationService: SoleTraderIdentificationService,
                                                      journeyService: JourneyService,
-                                                     submissionService: SubmissionService
+                                                     trnService: CreateTrnService
                                                     )(implicit val config: AppConfig,
                                                       executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
@@ -66,11 +65,14 @@ class CannotConfirmBusinessErrorController @Inject()(mcc: MessagesControllerComp
                   form = formWithErrors
                 ))
             },
-          tryAgain =>
-            if (tryAgain) {
-              journeyService.getJourneyConfig(journeyId).map {
-                journeyConfig => Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
-              }
+          continue =>
+            if (continue) {
+              for {
+                optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
+                _ <- if (optNino.isEmpty) trnService.createTrn(journeyId) //Create TRN at end of journey to avoid duplication
+                else Future.successful(Unit)
+                journeyConfig <- journeyService.getJourneyConfig(journeyId)
+              } yield Redirect(journeyConfig.continueUrl + s"?journeyId=$journeyId")
             } else {
               soleTraderIdentificationService.removeAllData(journeyId).map {
                 _ => Redirect(routes.CaptureFullNameController.show(journeyId))

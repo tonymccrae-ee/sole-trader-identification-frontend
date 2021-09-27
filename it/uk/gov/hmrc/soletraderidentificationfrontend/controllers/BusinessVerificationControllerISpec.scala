@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, FeatureSwitching}
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{BusinessVerificationPass, Registered}
-import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, RegisterStub, SoleTraderIdentificationStub}
+import uk.gov.hmrc.soletraderidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, CreateTrnStub, RegisterStub, SoleTraderIdentificationStub}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAudit}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{ComponentSpecHelper, WiremockHelper}
 
@@ -36,6 +36,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
   with BusinessVerificationStub
   with RegisterStub
   with SoleTraderIdentificationStub
+  with CreateTrnStub
   with BeforeAndAfterEach
   with WiremockHelper {
 
@@ -116,7 +117,11 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubRetrieveNino(testJourneyId)(NOT_FOUND)
           stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
           stubRetrieveSautr(testJourneyId)(OK, testSautr)
-          stubRetrieveTrn(testJourneyId)(OK, testTrn)
+          stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
+          stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+          stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
+          stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+          stubStoreTrn(testJourneyId, testTrn)(OK)
           stubRegisterWithTrn(testTrn, testSautr)(OK, Registered(testSafeId))
           stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
           stubAudit()
@@ -226,7 +231,11 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubRetrieveAddress(testJourneyId)(NOT_FOUND)
           stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
           stubRetrieveSautr(testJourneyId)(OK, testSautr)
-          stubRetrieveTrn(testJourneyId)(OK, testTrn)
+          stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
+          stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+          stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
+          stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+          stubStoreTrn(testJourneyId, testTrn)(OK)
           stubRegisterWithTrn(testTrn, testSautr)(OK, Registered(testSafeId))
           stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
           stubAudit()

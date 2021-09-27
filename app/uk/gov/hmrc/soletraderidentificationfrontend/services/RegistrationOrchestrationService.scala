@@ -26,6 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService: SoleTraderIdentificationService,
                                                  registrationConnector: RegistrationConnector,
+                                                 trnService: CreateTrnService,
                                                  auditService: AuditService
                                                 )(implicit ec: ExecutionContext) {
 
@@ -34,13 +35,14 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
       case Some(BusinessVerificationPass) | Some(SaEnrolled) => for {
         optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
         optSautr <- soleTraderIdentificationService.retrieveSautr(journeyId)
-        optTrn <- soleTraderIdentificationService.retrieveTrn(journeyId)
         registrationStatus <-
-          (optNino, optSautr, optTrn) match {
-            case (Some(nino), Some(sautr), _) =>
+          (optNino, optSautr) match {
+            case (Some(nino), Some(sautr)) =>
               registrationConnector.registerWithNino(nino, sautr)
-            case (None, Some(sautr), Some(trn)) =>
-              registrationConnector.registerWithTrn(trn, sautr)
+            case (None, Some(sautr)) =>
+              trnService.createTrn(journeyId) flatMap {
+                trn => registrationConnector.registerWithTrn(trn, sautr)
+              }
             case _ =>
               throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
           }

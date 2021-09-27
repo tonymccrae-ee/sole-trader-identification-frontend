@@ -18,7 +18,6 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.CreateTrnConnector
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{SuccessfulCreation, TrnCreationStatus}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +27,7 @@ class CreateTrnService @Inject()(soleTraderIdentificationService: SoleTraderIden
                                  createTrnConnector: CreateTrnConnector
                                 )(implicit ec: ExecutionContext) {
 
-  def createTrn(journeyId: String)(implicit headerCarrier: HeaderCarrier): Future[TrnCreationStatus] = {
+  def createTrn(journeyId: String)(implicit headerCarrier: HeaderCarrier): Future[String] = {
     for {
       optDateOfBirth <- soleTraderIdentificationService.retrieveDateOfBirth(journeyId)
       optName <- soleTraderIdentificationService.retrieveFullName(journeyId)
@@ -40,7 +39,7 @@ class CreateTrnService @Inject()(soleTraderIdentificationService: SoleTraderIden
       }
       _ <- soleTraderIdentificationService.storeTrn(journeyId, trn)
     } yield {
-      SuccessfulCreation
+      trn
     }
   }
 
