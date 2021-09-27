@@ -113,6 +113,13 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       status = status
     )
 
+  def stubStoreOverseasTaxIdentifiers(journeyId: String, taxIdentifiers: Overseas)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/sole-trader-identification/journey/$journeyId/overseas", body = Json.toJson(taxIdentifiers)
+    ).thenReturn(
+      status = status
+    )
+
   def stubRetrieveSoleTraderDetails(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId"
@@ -229,6 +236,14 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
   def stubRemoveAddress(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = DELETE,
       uri = s"/sole-trader-identification/journey/$journeyId/address"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
+  def stubRemoveOverseasTaxIdentifiers(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = DELETE,
+      uri = s"/sole-trader-identification/journey/$journeyId/overseas"
     ).thenReturn(
       status = status,
       body = body

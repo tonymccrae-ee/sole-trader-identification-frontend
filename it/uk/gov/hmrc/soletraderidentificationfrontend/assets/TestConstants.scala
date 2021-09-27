@@ -51,6 +51,7 @@ object TestConstants {
   val testCountry: String = "GB"
   val testCountryName: String = "United Kingdom"
   val testSaPostcode: String = "AA00 0AA"
+  val testOverseasTaxIdentifiers: Overseas = Overseas("134124532", "AL")
 
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
@@ -87,7 +88,8 @@ object TestConstants {
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationPass,
       registrationStatus = Registered(testSafeId),
-      trn = None
+      trn = None,
+      overseas = None
     )
 
   def testSoleTraderDetailsNoSautr(identifiersMatch: Boolean = false): SoleTraderDetails =
@@ -101,7 +103,8 @@ object TestConstants {
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = None
+      trn = None,
+      overseas = Some(testOverseasTaxIdentifiers)
     )
 
   val testIndividualDetails: IndividualDetails =

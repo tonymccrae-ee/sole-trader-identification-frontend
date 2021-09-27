@@ -84,12 +84,15 @@ class CaptureSautrController @Inject()(mcc: MessagesControllerComponents,
   def noSautr(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        for{
+        for {
           _ <- soleTraderIdentificationService.removeSautr(journeyId)
           _ <- soleTraderIdentificationService.removeSaPostcode(journeyId)
-          journeyConfig <- journeyService.getJourneyConfig(journeyId)
-        } yield journeyConfig match {
-          case _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+          optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
+        } yield optNino match {
+          case Some(_) =>
+            Redirect(routes.CheckYourAnswersController.show(journeyId))
+          case None =>
+            Redirect(routes.CaptureOverseasTaxIdentifiersController.show(journeyId))
         }
       }
   }

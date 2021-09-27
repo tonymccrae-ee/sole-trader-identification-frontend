@@ -133,6 +133,23 @@ object MessageLookup {
       val invalid_sa_postcode = "Enter a UK postcode"
       val no_entry_sa_postcode = "Enter a postcode"
     }
+  }
+
+  object CaptureOverseasTaxIdentifiers {
+
+    val title = "What is the business’s overseas tax identifier?"
+    val heading = "What is the business’s overseas tax identifier?"
+    val hint = "We may use this number to help us identify your business. The tax identifier could be VAT registration number, Employee Identification Number (EIN) or any other identifier we could use to verify your business details."
+    val form_field_1 = "Enter a tax identifier"
+    val form_field_2 = "Enter the name of the country that issued the tax identifier"
+    val no_identifierLink = "I do not want to provide an identifier"
+
+    object Error {
+      val invalid_tax_identifier = "Enter a tax identifier that does not contain special characters"
+      val no_entry_tax_identifier = "Enter a tax identifier"
+      val invalid_length_tax_identifier = "Enter a tax identifier that is 60 characters or less"
+      val no_entry_country = "Enter the name of the country that issued the tax identifier"
+    }
 
   }
 

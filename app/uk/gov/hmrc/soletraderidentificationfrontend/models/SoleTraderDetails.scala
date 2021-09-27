@@ -30,7 +30,8 @@ case class SoleTraderDetails(fullName: FullName,
                              identifiersMatch: Boolean,
                              businessVerification: BusinessVerificationStatus,
                              registrationStatus: RegistrationStatus,
-                             trn: Option[String])
+                             trn: Option[String],
+                             overseas: Option[Overseas])
 
 object SoleTraderDetails {
 
@@ -44,6 +45,7 @@ object SoleTraderDetails {
   private val BusinessVerificationKey = "businessVerification"
   private val RegistrationKey = "registration"
   private val TrnKey = "trn"
+  private val OverseasIdentifiersKey = "overseas"
 
   val reads: Reads[SoleTraderDetails] = (
     (JsPath \ FullNameKey).read[FullName] and
@@ -55,7 +57,8 @@ object SoleTraderDetails {
       (JsPath \ IdentifiersMatchKey).read[Boolean] and
       (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus] and
       (JsPath \ RegistrationKey).read[RegistrationStatus] and
-      (JsPath \ TrnKey).readNullable[String]
+      (JsPath \ TrnKey).readNullable[String] and
+      (JsPath \ OverseasIdentifiersKey).readNullable[Overseas]
     ) (SoleTraderDetails.apply _)
 
   val writes: OWrites[SoleTraderDetails] = (
@@ -68,7 +71,8 @@ object SoleTraderDetails {
       (JsPath \ IdentifiersMatchKey).write[Boolean] and
       (JsPath \ BusinessVerificationKey).write[BusinessVerificationStatus] and
       (JsPath \ RegistrationKey).write[RegistrationStatus] and
-      (JsPath \ TrnKey).writeNullable[String]
+      (JsPath \ TrnKey).writeNullable[String] and
+      (JsPath \ OverseasIdentifiersKey).writeNullable[Overseas]
     ) (unlift(SoleTraderDetails.unapply))
 
   implicit val format: OFormat[SoleTraderDetails] = OFormat(reads, writes)
