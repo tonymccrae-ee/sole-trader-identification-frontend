@@ -107,8 +107,8 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             }
 
           val trnBlock =
-            optSoleTraderRecord.trn match {
-              case Some(trNumber) => Json.obj("TempNI" -> trNumber)
+            optSoleTraderRecord.optTrn match {
+              case Some(trn) => Json.obj("TempNI" -> trn)
               case _ => Json.obj()
             }
 
@@ -131,6 +131,12 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
               case _ => Json.obj()
             }
 
+          val overseasIdentifiersBlock =
+            optSoleTraderRecord.optOverseas match {
+              case Some(overseas) => Json.obj("overseas" -> overseas)
+              case _ => Json.obj()
+            }
+
           Json.obj(
             "businessType" -> "Sole Trader",
             "firstName" -> optSoleTraderRecord.fullName.firstName,
@@ -139,7 +145,7 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             "sautrMatch" -> identifiersMatch,
             "VerificationStatus" -> optSoleTraderRecord.businessVerification,
             "RegisterApiStatus" -> optSoleTraderRecord.registrationStatus
-          ) ++ sautrBlock ++ ninoBlock ++ addressBlock ++ trnBlock ++ saPostCodeBlock ++ eS20Block ++ authenticatorResponseBlock
+          ) ++ sautrBlock ++ ninoBlock ++ addressBlock ++ saPostCodeBlock ++ overseasIdentifiersBlock ++ trnBlock ++ eS20Block ++ authenticatorResponseBlock
         case _ =>
           throw new InternalServerException(s"Not enough information to audit sole trader journey for Journey ID $journeyId")
       }
