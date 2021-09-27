@@ -55,8 +55,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
       registrationStatus = Registered(testSafeId),
-      trn = None,
-      overseas = None
+      optTrn = None,
+      optOverseas = None
     )
 
   val testSoleTraderDetailsNoMatch: SoleTraderDetails =
@@ -70,8 +70,8 @@ object TestConstants {
       identifiersMatch = false,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = None,
-      overseas = None
+      optTrn = None,
+      optOverseas = None
     )
 
   val testSoleTraderDetailsNinoAndUtr: SoleTraderDetails =
@@ -85,8 +85,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationPass,
       registrationStatus = Registered(testSafeId),
-      trn = None,
-      overseas = None
+      optTrn = None,
+      optOverseas = None
     )
 
   val testSoleTraderDetailsNoSautr: SoleTraderDetails =
@@ -100,8 +100,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = None,
-      overseas = None
+      optTrn = None,
+      optOverseas = None
     )
 
   val testSoleTraderDetailsNoNinoButUtr: SoleTraderDetails =
@@ -115,8 +115,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = Some(testTrn),
-      overseas = Some(testOverseasIdentifiers)
+      optTrn = Some(testTrn),
+      optOverseas = Some(testOverseasIdentifiers)
     )
 
   val testSoleTraderDetailsNoNinoAndOverseas: SoleTraderDetails =
@@ -130,8 +130,8 @@ object TestConstants {
       identifiersMatch = true,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = Some(testTrn),
-      overseas = Some(testOverseasIdentifiers)
+      optTrn = Some(testTrn),
+      optOverseas = Some(testOverseasIdentifiers)
     )
 
   val testIndividualDetails: IndividualDetails =
@@ -240,7 +240,8 @@ object TestConstants {
     "RegisterApiStatus" -> RegistrationNotCalled,
     "TempNI" -> testTrn,
     "ES20Response" -> testKnownFactsResponseUK,
-    "SAPostcode" -> testSaPostcode
+    "SAPostcode" -> testSaPostcode,
+    "overseas" -> testOverseasIdentifiers
   )
 
   def testSoleTraderAuditEventJsonNoNinoOverseas(identifiersMatch: Boolean = false): JsObject = Json.obj(
@@ -255,7 +256,8 @@ object TestConstants {
     "RegisterApiStatus" -> RegistrationNotCalled,
     "TempNI" -> testTrn,
     "ES20Response" -> testKnownFactsResponseOverseas,
-    "SAPostcode" -> testSaPostcode
+    "SAPostcode" -> testSaPostcode,
+    "overseas" -> testOverseasIdentifiers
   )
 
   def testSoleTraderFailureAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(

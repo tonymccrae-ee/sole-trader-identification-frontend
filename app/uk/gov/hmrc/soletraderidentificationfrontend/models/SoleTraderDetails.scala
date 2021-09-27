@@ -30,8 +30,8 @@ case class SoleTraderDetails(fullName: FullName,
                              identifiersMatch: Boolean,
                              businessVerification: BusinessVerificationStatus,
                              registrationStatus: RegistrationStatus,
-                             trn: Option[String],
-                             overseas: Option[Overseas])
+                             optTrn: Option[String],
+                             optOverseas: Option[Overseas])
 
 object SoleTraderDetails {
 

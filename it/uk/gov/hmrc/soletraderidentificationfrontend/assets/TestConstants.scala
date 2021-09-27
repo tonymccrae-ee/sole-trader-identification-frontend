@@ -88,8 +88,8 @@ object TestConstants {
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationPass,
       registrationStatus = Registered(testSafeId),
-      trn = None,
-      overseas = None
+      optTrn = None,
+      optOverseas = None
     )
 
   def testSoleTraderDetailsNoSautr(identifiersMatch: Boolean = false): SoleTraderDetails =
@@ -103,8 +103,8 @@ object TestConstants {
       identifiersMatch = identifiersMatch,
       businessVerification = BusinessVerificationUnchallenged,
       registrationStatus = RegistrationNotCalled,
-      trn = None,
-      overseas = Some(testOverseasTaxIdentifiers)
+      optTrn = None,
+      optOverseas = Some(testOverseasTaxIdentifiers)
     )
 
   val testIndividualDetails: IndividualDetails =
