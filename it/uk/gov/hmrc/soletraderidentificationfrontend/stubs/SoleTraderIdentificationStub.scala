@@ -193,6 +193,15 @@ trait SoleTraderIdentificationStub extends WireMockMethods {
       body = JsString(body)
     )
 
+
+  def stubRetrieveOverseasTaxIdentifiers(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET,
+      uri = s"/sole-trader-identification/journey/$journeyId/overseas"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
   def stubRetrieveAddress(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/sole-trader-identification/journey/$journeyId/address"

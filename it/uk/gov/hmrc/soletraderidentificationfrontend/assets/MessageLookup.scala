@@ -192,6 +192,7 @@ object MessageLookup {
     val noSautr = "The business does not have a UTR"
     val noNino = "I do not have a National Insurance number"
     val saPostcode = "Self Assessment postcode"
+    val overseasTaxIdentifier = "Overseas tax identifier"
 
   }
 

@@ -76,6 +76,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
         stubRetrieveAddress(testJourneyId)(NOT_FOUND)
         stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+        stubRetrieveOverseasTaxIdentifiers(testJourneyId)(NOT_FOUND)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -125,6 +126,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
         stubRetrieveAddress(testJourneyId)(NOT_FOUND)
         stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+        stubRetrieveOverseasTaxIdentifiers(testJourneyId)(NOT_FOUND)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -174,6 +176,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
         stubRetrieveAddress(testJourneyId)(OK, testAddressJson)
         stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
+        stubRetrieveOverseasTaxIdentifiers(testJourneyId)(OK, testOverseasTaxIdentifiersJson)
         get(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")
       }
 
@@ -258,6 +261,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubAuth(OK, successfulAuthResponse())
             stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
             stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
+            stubRetrieveOverseasTaxIdentifiers(testJourneyId)(OK, testOverseasTaxIdentifiersJson)
             stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponse)
             stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
             stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, None))(OK)
@@ -410,6 +414,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNinoNoSautr)
           stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
+          stubRetrieveOverseasTaxIdentifiers(testJourneyId)(OK, testOverseasTaxIdentifiersJson)
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
           stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
           stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
@@ -488,6 +493,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               stubAuth(OK, successfulAuthResponse())
               stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
               stubRetrieveSaPostcode(testJourneyId)(OK, testPostcode)
+              stubRetrieveOverseasTaxIdentifiers(testJourneyId)(OK, testOverseasTaxIdentifiersJson)
               stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponseNino)
               stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
               stubStoreES20Details(testJourneyId, KnownFactsResponse(Some(testSaPostcode), None, Some(testNino)))(OK)
@@ -524,6 +530,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               stubAuth(OK, successfulAuthResponse())
               stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
               stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
+              stubRetrieveOverseasTaxIdentifiers(testJourneyId)(OK, testOverseasTaxIdentifiersJson)
               stubGetEacdKnownFacts(testSautr)(OK, testKnownFactsResponseIsAbroad("N"))
               stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
               stubStoreES20Details(testJourneyId, KnownFactsResponse(None, Some(false), None))(OK)

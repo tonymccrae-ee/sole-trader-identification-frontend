@@ -52,7 +52,8 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
             .map(_.getOrElse(throw new InternalServerException(s"Individual details not found for journeyId: $journeyId")))
           optAddress <- soleTraderIdentificationService.retrieveAddress(journeyId)
           optSaPostcode <- soleTraderIdentificationService.retrieveSaPostcode(journeyId)
-          summaryRows = rowBuilder.buildSummaryListRows(journeyId, individualDetails, optAddress, optSaPostcode, journeyConfig.pageConfig.enableSautrCheck)
+          optOverseasTaxId <- soleTraderIdentificationService.retrieveOverseasTaxIdentifiers(journeyId)
+          summaryRows = rowBuilder.buildSummaryListRows(journeyId, individualDetails, optAddress, optSaPostcode, optOverseasTaxId, journeyConfig.pageConfig.enableSautrCheck)
         } yield Ok(view(
           pageConfig = journeyConfig.pageConfig,
           formAction = routes.CheckYourAnswersController.submit(journeyId),
