@@ -23,7 +23,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.ActionItem
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.routes
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{Address, IndividualDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{Address, IndividualDetails, Overseas}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.DateHelper.checkYourAnswersFormat
 
 import javax.inject.{Inject, Singleton}
@@ -35,6 +35,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
                            individualDetails: IndividualDetails,
                            optAddress: Option[Address],
                            optSaPostcode: Option[String],
+                           optOverseasTaxId: Option[Overseas],
                            enableSautrCheck: Boolean
                           )(implicit messages: Messages, config: AppConfig): Seq[SummaryListRow] = {
 
@@ -91,6 +92,19 @@ class CheckYourAnswersRowBuilder @Inject()() {
       None
     }
 
+    val overseasIdentifiersRow = if (individualDetails.optNino.isEmpty) {
+      Some(buildSummaryRow(
+        messages("check-your-answers.tax_identifiers"),
+        optOverseasTaxId match {
+          case Some(overseasTaxId) => Seq(overseasTaxId.taxIdentifier, config.getCountryName(overseasTaxId.country)).mkString("<br>")
+          case None => messages("check-your-answers.no_tax-identifiers")
+        },
+        routes.CaptureOverseasTaxIdentifiersController.show(journeyId)
+      ))
+    } else {
+      None
+    }
+
     val addressRow = optAddress.map {
       address =>
         val formattedAddress = Seq(
@@ -110,7 +124,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
         )
     }
 
-    Seq(firstNameRow, lastNameRow, dateOfBirthRow, ninoRow) ++ addressRow ++ sautrRow ++ saPostcodeRow
+    Seq(firstNameRow, lastNameRow, dateOfBirthRow, ninoRow) ++ addressRow ++ sautrRow ++ saPostcodeRow ++ overseasIdentifiersRow
 
   }
 

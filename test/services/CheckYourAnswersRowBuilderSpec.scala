@@ -149,6 +149,22 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
       )
     )))
   )
+  val formatOverseasTaxIdentifiers: String = Seq(
+    Some(testOverseasIdentifiers.taxIdentifier),
+    Some(mockAppConfig.getCountryName(testOverseasIdentifiers.country))
+  ).flatten.mkString("<br>")
+
+  val testOverseasTaxIdentifiersRow = SummaryListRow(
+    key = Key(content = Text("Overseas tax identifier")),
+    value = Value(content = HtmlContent(formatOverseasTaxIdentifiers)),
+    actions = Some(Actions(items = Seq(
+      ActionItem(
+        href = routes.CaptureOverseasTaxIdentifiersController.show(testJourneyId).url,
+        content = Text("Change"),
+        visuallyHiddenText = Some("Overseas tax identifier")
+      )
+    )))
+  )
 
   val formattedAddress: String = Seq(
     Some(testAddress.line1),
@@ -176,7 +192,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
     "build a summary list sequence" when {
       "the user is on the individual journey" when {
         "there is a nino" in {
-          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoSautr, optAddress = None, optSaPostcode = None, enableSautrCheck = false)
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoSautr, optAddress = None, optSaPostcode = None, optOverseasTaxId = None, enableSautrCheck = false)
 
           result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNinoRow)
         }
@@ -184,27 +200,27 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Mock
 
       "the user is on the sole trader journey" when {
         "there is a nino and sautr but no address provided" in {
-          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetails, optAddress = None, optSaPostcode = None, enableSautrCheck = true)
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetails, optAddress = None, optSaPostcode = None, optOverseasTaxId = None, enableSautrCheck = true)
 
           result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNinoRow, testSautrRow)
         }
 
         "the nino has not been provided but sautr, sa postcode and address have" in {
-          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), optSaPostcode = Some(testSaPostcode), enableSautrCheck = true)
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), optSaPostcode = Some(testSaPostcode), optOverseasTaxId = Some(testOverseasIdentifiers), enableSautrCheck = true)
 
-          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow, testSaPostcodeRow)
+          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow, testSaPostcodeRow, testOverseasTaxIdentifiersRow)
         }
 
         "the nino and sa postcode have not been provided but sautr, and address have" in {
-          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), optSaPostcode = None, enableSautrCheck = true)
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNino, Some(testAddress), optSaPostcode = None, optOverseasTaxId = Some(testOverseasIdentifiers), enableSautrCheck = true)
 
-          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow, testNoSaPostcodeRow)
+          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testSautrRow, testNoSaPostcodeRow, testOverseasTaxIdentifiersRow)
         }
 
         "the nino and sautr have not been provided but an address has" in {
-          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNinoNoSautr, Some(testAddress), optSaPostcode = None, enableSautrCheck = true)
+          val result = TestService.buildSummaryListRows(testJourneyId, testIndividualDetailsNoNinoNoSautr, Some(testAddress), optSaPostcode = None, optOverseasTaxId = Some(testOverseasIdentifiers), enableSautrCheck = true)
 
-          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testNoSautrRow)
+          result mustBe Seq(testFirstNameRow, testLastNameRow, testDateOfBirthRow, testNoNinoRow, testAddressRow, testNoSautrRow, testOverseasTaxIdentifiersRow)
         }
       }
     }

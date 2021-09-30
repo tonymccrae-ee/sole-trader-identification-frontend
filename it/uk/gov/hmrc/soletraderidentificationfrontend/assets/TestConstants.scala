@@ -313,5 +313,10 @@ object TestConstants {
     "countryCode" -> "GB"
   )
 
+  val testOverseasTaxIdentifiersJson: JsObject = Json.obj(
+    "taxIdentifier" -> "134124532",
+    "country" -> "AL"
+  )
+
 
 }

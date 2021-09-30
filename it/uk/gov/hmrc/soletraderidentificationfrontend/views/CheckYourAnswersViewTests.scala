@@ -238,8 +238,8 @@ trait CheckYourAnswersViewTests {
     "have a summary list which" should {
       lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
 
-      "have 7 rows" in {
-        summaryListRows.size mustBe 7
+      "have 8 rows" in {
+        summaryListRows.size mustBe 8
       }
 
       "have a first name row" in {
@@ -303,6 +303,15 @@ trait CheckYourAnswersViewTests {
         saPostcodeRow.getSummaryListAnswer mustBe testSaPostcode
         saPostcodeRow.getSummaryListChangeLink mustBe routes.CaptureSaPostcodeController.show(journeyId).url
         saPostcodeRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.saPostcode}"
+      }
+
+      "have an Overseas tax identifers row" in {
+        val taxIdentifierRow = summaryListRows(7)
+
+        taxIdentifierRow.getSummaryListQuestion mustBe messages.overseasTaxIdentifier
+        taxIdentifierRow.getSummaryListAnswer mustBe s"${testOverseasTaxIdentifiers.taxIdentifier} Albania"
+        taxIdentifierRow.getSummaryListChangeLink mustBe routes.CaptureOverseasTaxIdentifiersController.show(journeyId).url
+        taxIdentifierRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.overseasTaxIdentifier}"
       }
 
       "have a continue and confirm button" in {
