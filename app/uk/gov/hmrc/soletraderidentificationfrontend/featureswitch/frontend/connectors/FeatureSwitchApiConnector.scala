@@ -18,6 +18,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.frontend.conn
 
 import play.api.http.Status._
 import play.api.libs.json.{JsError, JsSuccess, Reads}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting
 
