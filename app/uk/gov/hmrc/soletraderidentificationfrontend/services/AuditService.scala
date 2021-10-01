@@ -133,7 +133,9 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
 
           val overseasIdentifiersBlock =
             optSoleTraderRecord.optOverseas match {
-              case Some(overseas) => Json.obj("overseas" -> overseas)
+              case Some(overseas) => Json.obj(
+                "overseasTaxIdentifier" -> overseas.taxIdentifier,
+                "overseasTaxIdentifierCountry" -> overseas.country)
               case _ => Json.obj()
             }
 

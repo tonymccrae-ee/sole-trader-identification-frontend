@@ -241,7 +241,8 @@ object TestConstants {
     "TempNI" -> testTrn,
     "ES20Response" -> testKnownFactsResponseUK,
     "SAPostcode" -> testSaPostcode,
-    "overseas" -> testOverseasIdentifiers
+    "overseasTaxIdentifier" -> testOverseasIdentifiers.taxIdentifier,
+    "overseasTaxIdentifierCountry" -> testOverseasIdentifiers.country
   )
 
   def testSoleTraderAuditEventJsonNoNinoOverseas(identifiersMatch: Boolean = false): JsObject = Json.obj(
@@ -257,7 +258,8 @@ object TestConstants {
     "TempNI" -> testTrn,
     "ES20Response" -> testKnownFactsResponseOverseas,
     "SAPostcode" -> testSaPostcode,
-    "overseas" -> testOverseasIdentifiers
+    "overseasTaxIdentifier" -> testOverseasIdentifiers.taxIdentifier,
+    "overseasTaxIdentifierCountry" -> testOverseasIdentifiers.country
   )
 
   def testSoleTraderFailureAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(
@@ -272,7 +274,6 @@ object TestConstants {
     "VerificationStatus" -> BusinessVerificationUnchallenged,
     "RegisterApiStatus" -> RegistrationNotCalled
   )
-
 
   val testIndividualFailureAuditEventJson: JsObject = Json.obj(
     "firstName" -> testFirstName,
