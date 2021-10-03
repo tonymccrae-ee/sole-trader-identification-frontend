@@ -73,6 +73,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
             for {
               _ <- soleTraderIdentificationService.storeNino(journeyId, nino)
               _ <- soleTraderIdentificationService.removeAddress(journeyId)
+              _ <- soleTraderIdentificationService.removeOverseasTaxIdentifiers(journeyId)
               journeyConfig <- journeyService.getJourneyConfig(journeyId)
             } yield journeyConfig match {
               case JourneyConfig(_, PageConfig(_, _, _, false)) => Redirect(routes.CheckYourAnswersController.show(journeyId))
