@@ -92,7 +92,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
       None
     }
 
-    val overseasIdentifiersRow = if (individualDetails.optNino.isEmpty) {
+    val overseasIdentifiersRow = if (individualDetails.optNino.isEmpty && enableSautrCheck) {
       Some(buildSummaryRow(
         messages("check-your-answers.tax_identifiers"),
         optOverseasTaxId match {

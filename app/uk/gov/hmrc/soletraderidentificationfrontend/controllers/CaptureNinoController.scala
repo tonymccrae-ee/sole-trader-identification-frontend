@@ -87,10 +87,15 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
   def noNino(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        soleTraderIdentificationService.removeNino(journeyId).map {
-          _ => Redirect(routes.CaptureAddressController.show(journeyId))
+        journeyService.getJourneyConfig(journeyId).flatMap {
+          journeyConfig =>
+            soleTraderIdentificationService.removeNino(journeyId).map {
+              if (journeyConfig.pageConfig.enableSautrCheck)
+                _ => Redirect(routes.CaptureAddressController.show(journeyId))
+              else
+                _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+            }
         }
       }
   }
-
 }

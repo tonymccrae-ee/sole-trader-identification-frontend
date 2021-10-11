@@ -177,6 +177,22 @@ class SubmissionServiceSpec
         }
       }
     }
+    "the user has no nino on the Individual Journey" should {
+      "return JourneyCompleted" when {
+        "no nino is provided" in {
+          enable(EnableNoNinoJourney)
+          mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(false)))
+          mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNinoNoSautr)))
+          mockMatchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNinoNoSautr)(Future.successful(Right(true)))
+          mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
+          mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+          val result = await(TestService.submit(testJourneyId))
+
+          result mustBe JourneyCompleted(testContinueUrl)
+        }
+      }
+    }
   }
 }
 
