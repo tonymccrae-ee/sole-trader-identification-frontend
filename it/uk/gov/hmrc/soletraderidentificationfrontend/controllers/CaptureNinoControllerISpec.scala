@@ -247,6 +247,28 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
-  }
 
+    "redirect to check your answers page" when {
+      "there is no nino on the individual journey" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        stubRemoveNino(testJourneyId)(NO_CONTENT)
+
+        val result = get(s"/identify-your-sole-trader-business/$testJourneyId/no-nino")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+        )
+      }
+    }
+  }
 }

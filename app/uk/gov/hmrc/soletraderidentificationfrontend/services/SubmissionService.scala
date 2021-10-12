@@ -56,6 +56,12 @@ class SubmissionService @Inject()(journeyService: JourneyService,
                 }
             }
           }
+        case Right(_) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) && !journeyConfig.pageConfig.enableSautrCheck => for {
+          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+        } yield {
+          JourneyCompleted(journeyConfig.continueUrl)
+        }
         case Right(_) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) => for {
           _ <- createTrnService.createTrn(journeyId)
           _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)

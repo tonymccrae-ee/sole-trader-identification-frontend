@@ -323,4 +323,86 @@ trait CheckYourAnswersViewTests {
       doc.getLink("get-help").text mustBe Base.getHelp
     }
   }
+
+  def testCheckYourAnswersNoNinoIndividualFlowView(result: => WSResponse, journeyId: String): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+
+    "have a sign out link in the header" in {
+      doc.getSignOutText mustBe Header.signOut
+    }
+
+    "have sign out link redirecting to signOutUrl from journey config" in {
+      doc.getSignOutLink mustBe testSignOutUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    }
+
+    "have the correct title" in {
+      doc.title mustBe messages.title
+    }
+
+    "have the correct heading" in {
+      doc.getH1Elements.text mustBe messages.heading
+    }
+
+    "have a summary list which" should {
+      lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
+
+      "have 5 rows" in {
+        summaryListRows.size mustBe 5
+      }
+
+      "have a first name row" in {
+        val firstNameRow = summaryListRows.head
+
+        firstNameRow.getSummaryListQuestion mustBe messages.firstName
+        firstNameRow.getSummaryListAnswer mustBe testFirstName
+        firstNameRow.getSummaryListChangeLink mustBe routes.CaptureFullNameController.show(journeyId).url
+        firstNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.firstName}"
+      }
+
+      "have a last name row" in {
+        val lastNameRow = summaryListRows(1)
+
+        lastNameRow.getSummaryListQuestion mustBe messages.lastName
+        lastNameRow.getSummaryListAnswer mustBe testLastName
+        lastNameRow.getSummaryListChangeLink mustBe routes.CaptureFullNameController.show(journeyId).url
+        lastNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.lastName}"
+      }
+
+      "have a date of birth row" in {
+        val dateOfBirthRow = summaryListRows(2)
+
+        dateOfBirthRow.getSummaryListQuestion mustBe messages.dob
+        dateOfBirthRow.getSummaryListAnswer mustBe testDateOfBirth.format(checkYourAnswersFormat)
+        dateOfBirthRow.getSummaryListChangeLink mustBe routes.CaptureDateOfBirthController.show(journeyId).url
+        dateOfBirthRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.dob}"
+      }
+
+      "have a nino row" in {
+        val ninoRow = summaryListRows(3)
+
+        ninoRow.getSummaryListQuestion mustBe messages.nino
+        ninoRow.getSummaryListAnswer mustBe messages.noNino
+        ninoRow.getSummaryListChangeLink mustBe routes.CaptureNinoController.show(journeyId).url
+        ninoRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.nino}"
+      }
+
+      "have a continue and confirm button" in {
+        doc.getSubmitButton.text mustBe Base.confirmAndContinue
+      }
+    }
+
+    "have a link to contact frontend" in {
+      doc.getLink("get-help").text mustBe Base.getHelp
+    }
+  }
 }
