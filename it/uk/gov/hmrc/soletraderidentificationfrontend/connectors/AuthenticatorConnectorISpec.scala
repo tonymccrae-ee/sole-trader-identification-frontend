@@ -49,6 +49,21 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
           res mustBe Right(testIndividualDetails)
         }
 
+        "the stub authenticator feature switch is disabled and a lower case first name is provided" in {
+          stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseFirstName))
+
+          res mustBe Right(testIndividualDetails)
+        }
+        "the stub authenticator feature switch is disabled and a lower case last name is provided" in {
+          stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseLastName))
+
+          res mustBe Right(testIndividualDetails)
+        }
+
         "the stub authenticator feature switch is enabled" in {
           enable(AuthenticatorStub)
           stubMatchStub(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
@@ -62,6 +77,22 @@ class AuthenticatorConnectorISpec extends ComponentSpecHelper with Authenticator
           stubMatchStub(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
 
           val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseNino))
+
+          res mustBe Right(testIndividualDetails)
+        }
+        "the stub authenticator feature switch is enabled and a lower case first name is provided" in {
+          enable(AuthenticatorStub)
+          stubMatchStub(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseFirstName))
+
+          res mustBe Right(testIndividualDetails)
+        }
+        "the stub authenticator feature switch is enabled and a lower case last name is provided" in {
+          enable(AuthenticatorStub)
+          stubMatchStub(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+
+          val res = await(testConnector.matchSoleTraderDetails(testIndividualDetailsLowerCaseLastName))
 
           res mustBe Right(testIndividualDetails)
         }

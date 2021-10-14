@@ -122,4 +122,28 @@ trait CaptureFullNameViewTests {
     }
   }
 
+  def testCaptureFullNameErrorMessageInvalidFirstName(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "correctly display the error summary" in {
+      doc.getErrorSummaryTitle.text mustBe Base.Error.title
+      doc.getErrorSummaryBody.text mustBe messages.Error.invalidFirstNameEntered
+    }
+    "correctly display the field error" in {
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidFirstNameEntered
+    }
+  }
+
+  def testCaptureFullNameErrorMessageInvalidLastName(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "correctly display the error summary" in {
+      doc.getErrorSummaryTitle.text mustBe Base.Error.title
+      doc.getErrorSummaryBody.text mustBe messages.Error.invalidLastNameEntered
+    }
+    "correctly display the field error" in {
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidLastNameEntered
+    }
+  }
+
 }
