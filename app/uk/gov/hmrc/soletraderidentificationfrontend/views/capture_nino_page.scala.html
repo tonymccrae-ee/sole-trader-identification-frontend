@@ -32,7 +32,7 @@
         inputText: inputText,
         errorSummary: errorSummary)
 
-@(journeyId: String, pageConfig: PageConfig, formAction: Call, form: Form[String], NoNinoEnabled: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(journeyId: String, pageConfig: PageConfig, formAction: Call, form: Form[String], noNinoJourneyEnabled: Boolean)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, title = title(messages("enter-nino.title"), form)) {
 
@@ -49,9 +49,11 @@
             classes = "govuk-input--width-20"
         )
 
+        @if(noNinoJourneyEnabled) {
             <p class="govuk-body">
                 <a class="govuk-link" id="no-nino" href="@routes.CaptureNinoController.noNino(journeyId)">@messages("enter-nino.no.nino")</a>
             </p>
+        }
 
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),

@@ -200,8 +200,6 @@ class CaptureNinoControllerISpec extends ComponentSpecHelper
 
       testCaptureNinoErrorMessages(result)
     }
-
-
   }
 
   "GET /no-nino" should {

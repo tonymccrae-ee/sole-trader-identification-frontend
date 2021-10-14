@@ -48,7 +48,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CaptureNinoController.submit(journeyId),
               form = CaptureNinoForm.form,
-              NoNinoEnabled = isEnabled(EnableNoNinoJourney)
+              noNinoJourneyEnabled = isEnabled(EnableNoNinoJourney)
             ))
         }
       }
@@ -66,7 +66,7 @@ class CaptureNinoController @Inject()(mcc: MessagesControllerComponents,
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CaptureNinoController.submit(journeyId),
                   form = formWithErrors,
-                  NoNinoEnabled = isEnabled(EnableNoNinoJourney)
+                  noNinoJourneyEnabled = isEnabled(EnableNoNinoJourney)
                 ))
             },
           nino =>
