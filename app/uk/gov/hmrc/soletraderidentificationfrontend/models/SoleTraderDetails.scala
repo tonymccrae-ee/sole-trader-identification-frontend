@@ -28,8 +28,8 @@ case class SoleTraderDetails(fullName: FullName,
                              optSaPostcode: Option[String],
                              optSautr: Option[String],
                              identifiersMatch: Boolean,
-                             businessVerification: BusinessVerificationStatus,
-                             registrationStatus: RegistrationStatus,
+                             businessVerification: Option[BusinessVerificationStatus],
+                             registrationStatus: Option[RegistrationStatus],
                              optTrn: Option[String],
                              optOverseas: Option[Overseas])
 
@@ -55,8 +55,8 @@ object SoleTraderDetails {
       (JsPath \ SaPostcodeKey).readNullable[String] and
       (JsPath \ SautrKey).readNullable[String] and
       (JsPath \ IdentifiersMatchKey).read[Boolean] and
-      (JsPath \ BusinessVerificationKey).read[BusinessVerificationStatus] and
-      (JsPath \ RegistrationKey).read[RegistrationStatus] and
+      (JsPath \ BusinessVerificationKey).readNullable[BusinessVerificationStatus] and
+      (JsPath \ RegistrationKey).readNullable[RegistrationStatus] and
       (JsPath \ TrnKey).readNullable[String] and
       (JsPath \ OverseasIdentifiersKey).readNullable[Overseas]
     ) (SoleTraderDetails.apply _)
@@ -69,8 +69,8 @@ object SoleTraderDetails {
       (JsPath \ SaPostcodeKey).writeNullable[String] and
       (JsPath \ SautrKey).writeNullable[String] and
       (JsPath \ IdentifiersMatchKey).write[Boolean] and
-      (JsPath \ BusinessVerificationKey).write[BusinessVerificationStatus] and
-      (JsPath \ RegistrationKey).write[RegistrationStatus] and
+      (JsPath \ BusinessVerificationKey).writeNullable[BusinessVerificationStatus] and
+      (JsPath \ RegistrationKey).writeNullable[RegistrationStatus] and
       (JsPath \ TrnKey).writeNullable[String] and
       (JsPath \ OverseasIdentifiersKey).writeNullable[Overseas]
     ) (unlift(SoleTraderDetails.unapply))

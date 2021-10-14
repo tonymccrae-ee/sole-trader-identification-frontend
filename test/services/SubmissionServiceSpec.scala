@@ -184,8 +184,6 @@ class SubmissionServiceSpec
           mockGetJourneyConfig(testJourneyId)(Future.successful(testJourneyConfig(false)))
           mockRetrieveIndividualDetails(testJourneyId)(Future.successful(Some(testIndividualDetailsNoNinoNoSautr)))
           mockMatchSoleTraderDetailsNoNino(testJourneyId, testIndividualDetailsNoNinoNoSautr)(Future.successful(Right(true)))
-          mockStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(Future.successful(SuccessfullyStored))
-          mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           val result = await(TestService.submit(testJourneyId))
 

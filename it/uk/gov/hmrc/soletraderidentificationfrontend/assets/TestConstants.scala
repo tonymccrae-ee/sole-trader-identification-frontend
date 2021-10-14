@@ -82,12 +82,12 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = Some(testAddress),
+      address = None,
       optSaPostcode = Some(testSaPostcode),
       optSautr = Some(testSautr),
       identifiersMatch = identifiersMatch,
-      businessVerification = BusinessVerificationPass,
-      registrationStatus = Registered(testSafeId),
+      businessVerification = Some(BusinessVerificationPass),
+      registrationStatus = Some(Registered(testSafeId)),
       optTrn = None,
       optOverseas = None
     )
@@ -97,14 +97,29 @@ object TestConstants {
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
-      address = Some(testAddress),
+      address = None,
       optSaPostcode = None,
       optSautr = None,
       identifiersMatch = identifiersMatch,
-      businessVerification = BusinessVerificationUnchallenged,
-      registrationStatus = RegistrationNotCalled,
+      businessVerification = Some(BusinessVerificationUnchallenged),
+      registrationStatus = Some(RegistrationNotCalled),
       optTrn = None,
       optOverseas = Some(testOverseasTaxIdentifiers)
+    )
+
+  val testSoleTraderDetailsIndividualJourney: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = Some(testNino),
+      address = None,
+      optSaPostcode = None,
+      optSautr = None,
+      identifiersMatch = false,
+      businessVerification = None,
+      registrationStatus = None,
+      optTrn = None,
+      optOverseas = None
     )
 
   val testIndividualDetails: IndividualDetails =
@@ -150,7 +165,6 @@ object TestConstants {
     ),
       "dateOfBirth" -> testDateOfBirth,
       "nino" -> testNino,
-      "address" -> testAddress,
       "saPostcode" -> testSaPostcode,
       "sautr" -> testSautr,
       "identifiersMatch" -> identifiersMatch,
@@ -196,6 +210,17 @@ object TestConstants {
         "registrationStatus" -> "REGISTERED",
         "registeredBusinessPartnerId" -> testSafeId
       )
+    )
+  }
+
+  val testSoleTraderDetailsJsonIndividual: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "nino" -> testNino,
+      "dateOfBirth" -> testDateOfBirth,
+      "identifiersMatch" -> false
     )
   }
 

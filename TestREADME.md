@@ -130,20 +130,34 @@ Status:
 | ```OK(200)```                           |  ```JourneyId exists```
 | ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist```
 
-Example response body:
+Example response body for the Sole Trader Journey:
 
 ```
 {
-   "fullName": {
-      "firstName":"John",
-      "lastName":"Smith"
-    },
-   "dateOfBirth": 1978-01-05,
-   "nino": "AA111111A",
-   "sautr": "1234567890",
-   "businessVerification": {
-      "verificationStatus":"PASS"
-    }
+    "firstName": "John",
+    "lastName": "Smith",
+    "dateOfBirth": 1978-01-05,
+    "nino": "AA111111A",
+    "sautr": "1234567890",
+    "identifiersMatch": true,
+    "businessVerification": {
+        "verificationStatus":"PASS"
+      },
+    "registration": {
+        "registrationStatus":"REGISTERED",
+        "registeredBusinessPartnerId":"X00000123456789"
+      }
+}
+```
+
+Example response body for the Individual Flow:
+```
+{
+    "firstName": "John",
+    "lastName": "Smith",
+    "dateOfBirth": 1978-01-05,
+    "nino": "AA111111A",
+    "identifiersMatch": true
 }
 ```
 

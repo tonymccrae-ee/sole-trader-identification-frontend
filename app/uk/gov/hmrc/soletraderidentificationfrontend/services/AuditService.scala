@@ -37,6 +37,7 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
         optIdentifiersMatch match {
           case Some(true) =>
             soleTraderIdentificationService.retrieveAuthenticatorDetails(journeyId)
+          case Some(_) if optNino.isEmpty => Future.successful(None)
           case _ =>
             soleTraderIdentificationService.retrieveAuthenticatorFailureResponse(journeyId)
         }
@@ -59,6 +60,14 @@ class AuditService @Inject()(auditConnector: AuditConnector, soleTraderIdentific
             "dateOfBirth" -> dateOfBirth,
             "identifiersMatch" -> identifiersMatch,
             "authenticatorResponse" -> authenticatorFailureResponse
+          )
+        case (Some(fullName), Some(dateOfBirth), Some(nino), Some(identifiersMatch), None) =>
+          Json.obj(
+            "firstName" -> fullName.firstName,
+            "lastName" -> fullName.lastName,
+            "nino" -> nino,
+            "dateOfBirth" -> dateOfBirth,
+            "identifiersMatch" -> identifiersMatch
           )
         case _ =>
           throw new InternalServerException(s"Not enough information to audit individual journey for Journey ID $journeyId")
