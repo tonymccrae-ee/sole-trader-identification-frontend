@@ -53,8 +53,8 @@ object TestConstants {
       optSaPostcode = Some(testSaPostcode),
       optSautr = Some(testSautr),
       identifiersMatch = true,
-      businessVerification = BusinessVerificationPass,
-      registrationStatus = Registered(testSafeId),
+      businessVerification = Some(BusinessVerificationPass),
+      registrationStatus = Some(Registered(testSafeId)),
       optTrn = None,
       optOverseas = None
     )
@@ -68,8 +68,8 @@ object TestConstants {
       optSaPostcode = None,
       optSautr = Some(testSautr),
       identifiersMatch = false,
-      businessVerification = BusinessVerificationUnchallenged,
-      registrationStatus = RegistrationNotCalled,
+      businessVerification = Some(BusinessVerificationUnchallenged),
+      registrationStatus = Some(RegistrationNotCalled),
       optTrn = None,
       optOverseas = None
     )
@@ -83,8 +83,8 @@ object TestConstants {
       optSaPostcode = None,
       optSautr = Some(testSautr),
       identifiersMatch = true,
-      businessVerification = BusinessVerificationPass,
-      registrationStatus = Registered(testSafeId),
+      businessVerification = Some(BusinessVerificationPass),
+      registrationStatus = Some(Registered(testSafeId)),
       optTrn = None,
       optOverseas = None
     )
@@ -98,8 +98,8 @@ object TestConstants {
       optSaPostcode = None,
       optSautr = None,
       identifiersMatch = true,
-      businessVerification = BusinessVerificationUnchallenged,
-      registrationStatus = RegistrationNotCalled,
+      businessVerification = Some(BusinessVerificationUnchallenged),
+      registrationStatus = Some(RegistrationNotCalled),
       optTrn = None,
       optOverseas = None
     )
@@ -113,8 +113,8 @@ object TestConstants {
       optSaPostcode = Some(testSaPostcode),
       optSautr = Some(testSautr),
       identifiersMatch = true,
-      businessVerification = BusinessVerificationUnchallenged,
-      registrationStatus = RegistrationNotCalled,
+      businessVerification = Some(BusinessVerificationUnchallenged),
+      registrationStatus = Some(RegistrationNotCalled),
       optTrn = Some(testTrn),
       optOverseas = Some(testOverseasIdentifiers)
     )
@@ -128,8 +128,8 @@ object TestConstants {
       optSaPostcode = Some(testSaPostcode),
       optSautr = Some(testSautr),
       identifiersMatch = true,
-      businessVerification = BusinessVerificationUnchallenged,
-      registrationStatus = RegistrationNotCalled,
+      businessVerification = Some(BusinessVerificationUnchallenged),
+      registrationStatus = Some(RegistrationNotCalled),
       optTrn = Some(testTrn),
       optOverseas = Some(testOverseasIdentifiers)
     )

@@ -356,8 +356,8 @@ trait CheckYourAnswersViewTests {
     "have a summary list which" should {
       lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
 
-      "have 5 rows" in {
-        summaryListRows.size mustBe 5
+      "have 4 rows" in {
+        summaryListRows.size mustBe 4
       }
 
       "have a first name row" in {

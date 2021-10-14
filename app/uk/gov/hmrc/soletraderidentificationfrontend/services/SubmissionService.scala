@@ -40,7 +40,8 @@ class SubmissionService @Inject()(journeyService: JourneyService,
         throw new InternalServerException(s"Details could not be retrieved from the database for $journeyId")
       )
       matchingResult <-
-        if (individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney)) soleTraderMatchingService.matchSoleTraderDetailsNoNino(journeyId, individualDetails)
+        if (individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney))
+          soleTraderMatchingService.matchSoleTraderDetailsNoNino(journeyId, individualDetails)
         else soleTraderMatchingService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig)
       response <- matchingResult match {
         case Right(true) if individualDetails.optSautr.nonEmpty =>
@@ -56,12 +57,8 @@ class SubmissionService @Inject()(journeyService: JourneyService,
                 }
             }
           }
-        case Right(_) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) && !journeyConfig.pageConfig.enableSautrCheck => for {
-          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-        } yield {
-          JourneyCompleted(journeyConfig.continueUrl)
-        }
+        case Right(_) if !journeyConfig.pageConfig.enableSautrCheck =>
+          Future.successful(JourneyCompleted(journeyConfig.continueUrl))
         case Right(_) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) => for {
           _ <- createTrnService.createTrn(journeyId)
           _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
@@ -75,12 +72,6 @@ class SubmissionService @Inject()(journeyService: JourneyService,
         } yield {
           JourneyCompleted(journeyConfig.continueUrl)
         }
-        case Left(failureReason) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) =>
-          for {
-            _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-            _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-          } yield
-            SoleTraderDetailsMismatch(failureReason)
         case Left(failureReason) =>
           for {
             _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
