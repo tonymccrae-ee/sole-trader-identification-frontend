@@ -65,6 +65,10 @@ trait CaptureNinoViewTests {
       doc.getElementById("nino-hint").text mustBe messages.form_field_1
     }
 
+    "not have a link to skip nino question" in {
+      doc.getElementsContainingText(messages.no_nino).toArray mustBe empty
+    }
+
     "have a save and continue button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
@@ -111,7 +115,7 @@ trait CaptureNinoViewTests {
       doc.getElementById("nino-hint").text mustBe messages.form_field_1
     }
 
-    "have a correct link to skip" in {
+    "have a correct link to skip nino question" in {
       doc.getElementById("no-nino").text() mustBe messages.no_nino
     }
 
