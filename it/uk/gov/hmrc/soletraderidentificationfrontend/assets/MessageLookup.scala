@@ -52,8 +52,8 @@ object MessageLookup {
     object Error {
       val noFirstNameEntered = "Enter your first name"
       val noLastNameEntered = "Enter your last name"
-      val invalidFirstNameEntered = "First name must be 99 characters or fewer."
-      val invalidLastNameEntered = "Last name must be 99 characters or fewer."
+      val invalidFirstNameEntered = "First name must be 99 characters or fewer"
+      val invalidLastNameEntered = "Last name must be 99 characters or fewer"
     }
 
   }

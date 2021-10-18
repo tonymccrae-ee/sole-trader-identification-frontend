@@ -29,7 +29,9 @@ import javax.inject.Inject
 
 class CaptureFullNameForm @Inject() extends Mappings {
 
-  def validName(text: String): Boolean = text.nonEmpty && text.length < 100
+  def validName(text: String): Boolean = text.matches(nameRegex)
+
+  val nameRegex: String = "^(?=.{1,99}$)([A-Z]([-'. ]{0,1}[A-Za-z ]+)*[A-Za-z]?)$"
 
   private val firstNameNotEntered: Constraint[String] = Constraint("first_name.not_entered")(
     firstName => validate(
@@ -40,10 +42,11 @@ class CaptureFullNameForm @Inject() extends Mappings {
 
   private val firstNameInvalid: Constraint[String] = Constraint("first_name.invalid")(
     firstName => validateNot(
-      constraint = validName(firstName.trim),
+      constraint = validName(firstName.capitalize.trim),
       errMsg = "error.invalid_first_name"
     )
   )
+
 
   private val lastNameNotEntered: Constraint[String] = Constraint("last_name.not_entered")(
     lastName => validate(
@@ -54,10 +57,11 @@ class CaptureFullNameForm @Inject() extends Mappings {
 
   private val lastNameInvalid: Constraint[String] = Constraint("last_name.invalid")(
     lastName => validateNot(
-      constraint = validName(lastName.trim),
+      constraint = validName(lastName.capitalize.trim),
       errMsg = "error.invalid_last_name"
     )
   )
+
 
   def apply(): Form[FullName] = {
     Form(

@@ -189,5 +189,51 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       }
       testCaptureFullNameErrorMessageNoFirstNameAndLastName(result)
     }
+
+    "the first name is invalid" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> "00000",
+          "last-name" -> testLastName
+        )
+      }
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+      testCaptureFullNameErrorMessageInvalidFirstName(result)
+    }
+
+    "the last name is invalid" should {
+      lazy val result = {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          internalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          enableSautrCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse())
+        post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
+          "first-name" -> testFirstName,
+          "last-name" -> "00000"
+        )
+      }
+      "return a bad request" in {
+        result.status mustBe BAD_REQUEST
+      }
+      testCaptureFullNameErrorMessageInvalidLastName(result)
+    }
   }
 }
