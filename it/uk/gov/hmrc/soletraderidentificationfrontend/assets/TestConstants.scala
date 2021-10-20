@@ -115,6 +115,21 @@ object TestConstants {
       address = None,
       optSaPostcode = None,
       optSautr = None,
+      identifiersMatch = true,
+      businessVerification = None,
+      registrationStatus = None,
+      optTrn = None,
+      optOverseas = None
+    )
+
+  val testSoleTraderDetailsIndividualJourneyNoNino: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = None,
+      address = None,
+      optSaPostcode = None,
+      optSautr = None,
       identifiersMatch = false,
       businessVerification = None,
       registrationStatus = None,
@@ -219,6 +234,16 @@ object TestConstants {
       "lastName" -> testLastName
     ),
       "nino" -> testNino,
+      "dateOfBirth" -> testDateOfBirth,
+      "identifiersMatch" -> true
+    )
+  }
+
+  val testSoleTraderDetailsJsonIndividualNoNino: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
       "dateOfBirth" -> testDateOfBirth,
       "identifiersMatch" -> false
     )
