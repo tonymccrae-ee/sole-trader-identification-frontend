@@ -162,7 +162,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
         result.json mustBe Json.toJsObject(testSoleTraderDetails())
       }
 
-      "the journeyId exists for an individual journey" in {
+      "the journeyId exists for an individual with a nino" in {
         stubAuth(OK, successfulAuthResponse())
         insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
         stubRetrieveSoleTraderDetails(testJourneyId)(
@@ -174,6 +174,20 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
         result.status mustBe OK
         result.json mustBe Json.toJsObject(testSoleTraderDetailsIndividualJourney)
+      }
+
+      "the journeyId exists for an individual with no nino" in {
+        stubAuth(OK, successfulAuthResponse())
+        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
+        stubRetrieveSoleTraderDetails(testJourneyId)(
+          status = OK,
+          body = testSoleTraderDetailsJsonIndividualNoNino
+        )
+
+        lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+        result.json mustBe Json.toJsObject(testSoleTraderDetailsIndividualJourneyNoNino)
       }
     }
 

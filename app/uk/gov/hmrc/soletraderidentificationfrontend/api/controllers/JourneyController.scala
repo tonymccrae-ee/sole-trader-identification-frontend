@@ -99,7 +99,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         } yield journeyData match {
           case Some(SoleTraderDetails(_, _, _, _, _, _, _, Some(_), Some(_), _, _)) if journeyConfig.pageConfig.enableSautrCheck =>
             Ok(Json.toJson(journeyData))
-          case Some(SoleTraderDetails(_, _, _, _, _, None, false, None, None, None, None)) =>
+          case Some(SoleTraderDetails(_, _, _, _, _, None, _, None, None, None, None))  if !journeyConfig.pageConfig.enableSautrCheck =>
             Ok(Json.toJson(journeyData))
           case None =>
             NotFound
