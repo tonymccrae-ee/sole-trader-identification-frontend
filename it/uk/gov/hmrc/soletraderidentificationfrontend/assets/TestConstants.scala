@@ -40,14 +40,15 @@ object TestConstants {
   val testGroupId: String = UUID.randomUUID().toString
   val testInternalId: String = UUID.randomUUID().toString
   val testTrn: String = "99A99999"
-  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
+  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA1 1AA"), "GB")
+  val testAddressWrongPostcodeFormat: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
   val testNonUKAddress: Address = Address("testLine1", "testLine2", Some("testTown"), None, None, None, "PT")
   val testAddress1: String = "line1"
   val testAddress2: String = "line2"
   val testAddress3: String = "line3"
   val testAddress4: String = "line4"
   val testAddress5: String = "line5"
-  val testPostcode: String = "AA11AA"
+  val testPostcode: String = "AA1 1AA"
   val testCountry: String = "GB"
   val testCountryName: String = "United Kingdom"
   val testSaPostcode: String = "AA00 0AA"
@@ -376,7 +377,7 @@ object TestConstants {
     "line3" -> "line3",
     "line4" -> "line4",
     "line5" -> "line5",
-    "postcode" -> "AA11AA",
+    "postcode" -> "AA1 1AA",
     "countryCode" -> "GB"
   )
 

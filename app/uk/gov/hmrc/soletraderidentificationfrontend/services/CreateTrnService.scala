@@ -27,6 +27,7 @@ class CreateTrnService @Inject()(soleTraderIdentificationService: SoleTraderIden
                                  createTrnConnector: CreateTrnConnector
                                 )(implicit ec: ExecutionContext) {
 
+
   def createTrn(journeyId: String)(implicit headerCarrier: HeaderCarrier): Future[String] = {
     for {
       optDateOfBirth <- soleTraderIdentificationService.retrieveDateOfBirth(journeyId)
@@ -34,7 +35,7 @@ class CreateTrnService @Inject()(soleTraderIdentificationService: SoleTraderIden
       optAddress <- soleTraderIdentificationService.retrieveAddress(journeyId)
       trn <- (optDateOfBirth, optName, optAddress) match {
         case (Some(dateOfBirth), Some(name), Some(address)) =>
-          createTrnConnector.createTrn(dateOfBirth, name, address)
+          createTrnConnector.createTrn(dateOfBirth, name, address.withSanitisedPostcode)
         case _ => throw new InternalServerException(s"Missing required data to create TRN for journeyId: $journeyId")
       }
       _ <- soleTraderIdentificationService.storeTrn(journeyId, trn)

@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.connectors
 import play.api.libs.json.Json
 import play.api.test.Helpers.{CREATED, INTERNAL_SERVER_ERROR, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testAddress, testDateOfBirth, testFullName, testNonUKAddress, testTrn}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testAddress, testAddressWrongPostcodeFormat, testDateOfBirth, testFullName, testNonUKAddress, testTrn}
 import uk.gov.hmrc.soletraderidentificationfrontend.stubs.CreateTrnStub
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 
@@ -42,6 +42,13 @@ class CreateTrnConnectorISpec extends ComponentSpecHelper with CreateTrnStub {
         stubCreateTrn(testDateOfBirth, testFullName, testNonUKAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
 
         val result = await(createTrnConnector.createTrn(testDateOfBirth, testFullName, testNonUKAddress))
+
+        result mustBe testTrn
+      }
+      "the user gives a postcode with the wrong format" in {
+        stubCreateTrn(testDateOfBirth, testFullName, testAddressWrongPostcodeFormat)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+
+        val result = await(createTrnConnector.createTrn(testDateOfBirth, testFullName, testAddressWrongPostcodeFormat))
 
         result mustBe testTrn
       }

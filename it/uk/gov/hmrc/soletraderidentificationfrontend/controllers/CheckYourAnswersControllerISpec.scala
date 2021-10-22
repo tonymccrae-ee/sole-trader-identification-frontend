@@ -487,6 +487,46 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
           verifyAudit()
         }
+
+        "the nino is provided and the user enters a wrong postcode format" in {
+          enable(EnableNoNinoJourney)
+          enable(KnownFactsStub)
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            internalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            enableSautrCheck = true
+          ))
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNinoNoSautr)
+          stubRetrieveSaPostcode(testJourneyId)(OK, testSaPostcode)
+          stubRetrieveOverseasTaxIdentifiers(testJourneyId)(OK, testOverseasTaxIdentifiersJson)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+          stubRetrieveDob(testJourneyId)(OK, Json.toJson(testDateOfBirth))
+          stubRetrieveFullName(testJourneyId)(OK, Json.toJson(testFullName))
+          stubRetrieveAddress(testJourneyId)(OK, Json.toJson(testAddressWrongPostcodeFormat))
+          stubCreateTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> testTrn))
+          stubStoreTrn(testJourneyId, testTrn)(OK)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+          stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
+          stubAudit()
+          stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(false))
+
+          val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
+
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(testContinueUrl)
+          }
+
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
+          verifyAudit()
+        }
       }
 
       "redirect to cannot confirm business error controller" when {
