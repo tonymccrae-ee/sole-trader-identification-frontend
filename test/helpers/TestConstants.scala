@@ -39,9 +39,10 @@ object TestConstants {
   val testFullName: FullName = FullName(testFirstName, testLastName)
   val testNino: String = "AA111111A"
   val testTrn: String = "99A99999"
-  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
+  val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA1 1AA"), "GB")
+  val testAddressWrongPostcodeFormat: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11AA"), "GB")
   val testOverseasAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), None, "US")
-  val testSaPostcode: String = "AA11AA"
+  val testSaPostcode: String = "AA1 1AA"
   val testOverseasIdentifiers: Overseas = Overseas("134124532", "AL")
 
   val testSoleTraderDetails: SoleTraderDetails =
@@ -179,7 +180,7 @@ object TestConstants {
 
   val testKnownFactsResponseUK: KnownFactsResponse =
     KnownFactsResponse(
-      postcode = Some("AA11AA"),
+      postcode = Some("AA1 1AA"),
       isAbroad = Some(false),
       nino = None
     )
@@ -283,7 +284,6 @@ object TestConstants {
     "identifiersMatch" -> false,
     "authenticatorResponse" -> DetailsMismatch.toString
   )
-
 
 
 }

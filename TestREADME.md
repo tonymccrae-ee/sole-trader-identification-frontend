@@ -265,7 +265,7 @@ Response body:
      }],
      "verifiers": [{
          "key": "Postcode",
-         "value": "AA11AA"
+         "value": "AA1 1AA"
      }]
  }]
 }
