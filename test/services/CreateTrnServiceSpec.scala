@@ -64,6 +64,20 @@ class CreateTrnServiceSpec extends AnyWordSpec with Matchers with MockSoleTrader
       verifyStoreTrn(testJourneyId, testTrn)
       verifyCreateTrn(testDateOfBirth, testFullName, testAddress)
     }
+    "return SuccessfulCreation with full name lowercase" in {
+      mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))
+      mockRetrieveFullName(testJourneyId)(Future.successful(Some(testFullNameLowecase)))
+      mockRetrieveAddress(testJourneyId)(Future.successful(Some(testAddress)))
+      mockStoreTrn(testJourneyId, testTrn)(Future.successful(SuccessfullyStored))
+      mockCreateTrn(testDateOfBirth, testFullName, testAddress)(Future.successful(testTrn))
+
+      val result = await(TestService.createTrn(testJourneyId))
+
+      result mustBe testTrn
+
+      verifyStoreTrn(testJourneyId, testTrn)
+      verifyCreateTrn(testDateOfBirth, testFullName, testAddress)
+    }
     "throw an exception" when {
       "there is not enough data to create a TRN" in {
         mockRetrieveDateOfBirth(testJourneyId)(Future.successful(Some(testDateOfBirth)))

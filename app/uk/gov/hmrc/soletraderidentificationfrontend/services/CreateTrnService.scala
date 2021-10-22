@@ -35,7 +35,9 @@ class CreateTrnService @Inject()(soleTraderIdentificationService: SoleTraderIden
       optAddress <- soleTraderIdentificationService.retrieveAddress(journeyId)
       trn <- (optDateOfBirth, optName, optAddress) match {
         case (Some(dateOfBirth), Some(name), Some(address)) =>
-          createTrnConnector.createTrn(dateOfBirth, name, address.withSanitisedPostcode)
+          createTrnConnector.createTrn(dateOfBirth,
+            name.copy(firstName = name.firstName.capitalize, lastName = name.lastName.capitalize),
+            address.withSanitisedPostcode)
         case _ => throw new InternalServerException(s"Missing required data to create TRN for journeyId: $journeyId")
       }
       _ <- soleTraderIdentificationService.storeTrn(journeyId, trn)
