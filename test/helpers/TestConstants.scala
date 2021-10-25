@@ -37,6 +37,7 @@ object TestConstants {
   val testFirstName: String = "John"
   val testLastName: String = "Smith"
   val testFullName: FullName = FullName(testFirstName, testLastName)
+  val testFullNameLowecase: FullName = FullName("john", "smith")
   val testNino: String = "AA111111A"
   val testTrn: String = "99A99999"
   val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA1 1AA"), "GB")

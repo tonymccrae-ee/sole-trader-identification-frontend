@@ -29,6 +29,7 @@ object TestConstants {
   val testFirstName: String = "John"
   val testLastName: String = "Smith"
   val testFullName: FullName = FullName(testFirstName, testLastName)
+  val testFullNameLowerCase: FullName = FullName("john", "smith")
   val testNino: String = "AA111111A"
   val testSautr: String = "1234567890"
   val testContinueUrl = "/test-continue-url"
