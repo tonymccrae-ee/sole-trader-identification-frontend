@@ -26,6 +26,7 @@ object MessageLookup {
     val getHelp = "Is this page not working properly?"
     val yes = "Yes"
     val no = "No"
+    val back = "Back"
 
     object Error {
       val title = "There is a problem"

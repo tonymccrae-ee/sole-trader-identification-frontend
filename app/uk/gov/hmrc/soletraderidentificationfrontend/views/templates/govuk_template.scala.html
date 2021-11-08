@@ -13,6 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *@
+
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.{Header, HmrcHeader}
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardFooter, HmrcTrackingConsentSnippet}
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
@@ -21,11 +22,11 @@
 
 @this(govukLayout: GovukLayout,
         hmrcHeader: HmrcHeader,
-        appConfig: AppConfig,
         hmrcStandardFooter: HmrcStandardFooter,
         footer: govukFooter,
         phaseBanner: phaseBanner,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet)
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+        govukBackLink: GovukBackLink)
 
 @(pageConfig: PageConfig, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
@@ -49,6 +50,7 @@
 
 @beforeContentBlock = {
     @phaseBanner("beta", pageConfig)
+    @govukBackLink(BackLink(href = "#", content = Text(messages("base.back")), attributes = Map("id" -> "back-link")))
 }
 
 @content = {
@@ -66,8 +68,9 @@
 @scripts = {
     <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
     <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script>window.GOVUKFrontend.initAll();
-    window.HMRCFrontend.initAll()</script>
+    <script>window.GOVUKFrontend.initAll();</script>
+    <script>window.HMRCFrontend.initAll();</script>
+    <script src='@controllers.routes.Assets.versioned("javascript/backLink.js")'></script>
 }
 
 @govukLayout(
@@ -75,7 +78,6 @@
     headBlock = Some(head),
     beforeContentBlock = Some(beforeContentBlock),
     headerBlock = Some(headerBlock),
-    footerItems = Seq.empty,
     footerBlock = Some(hmrcStandardFooter()),
     scriptsBlock = Some(scripts)
 )(content)

@@ -37,7 +37,6 @@ trait CheckYourAnswersViewTests {
     lazy val doc: Document = Jsoup.parse(result.body)
     lazy val config = app.injector.instanceOf[AppConfig]
 
-
     "have a sign out link in the header" in {
       doc.getSignOutText mustBe Header.signOut
     }
@@ -48,10 +47,11 @@ trait CheckYourAnswersViewTests {
 
     "have the correct beta banner" in {
       doc.getBanner.text mustBe BetaBanner.title
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
-    "have a banner link that redirects to beta feedback" in {
-      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    "have a back link" in {
+      doc.getBackLinkText mustBe Base.back
     }
 
     "have the correct title" in {
