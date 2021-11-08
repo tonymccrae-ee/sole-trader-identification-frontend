@@ -43,10 +43,11 @@ trait CaptureOverseasTaxIdentifiersViewTests {
 
     "have the correct beta banner" in {
       doc.getBanner.text mustBe BetaBanner.title
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
-    "have a banner link that redirects to beta feedback" in {
-      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    "have a back link" in {
+      doc.getBackLinkText mustBe Base.back
     }
 
     "have the correct title" in {

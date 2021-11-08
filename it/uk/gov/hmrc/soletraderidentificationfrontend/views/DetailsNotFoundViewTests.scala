@@ -3,7 +3,7 @@ package uk.gov.hmrc.soletraderidentificationfrontend.views
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{BetaBanner, DetailsNotFound => messages}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, DetailsNotFound => messages}
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testSignOutUrl
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
@@ -26,10 +26,11 @@ trait DetailsNotFoundViewTests {
 
     "have the correct beta banner" in {
       doc.getBanner.text mustBe BetaBanner.title
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
-    "have a banner link that redirects to beta feedback" in {
-      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    "have a back link" in {
+      doc.getBackLinkText mustBe Base.back
     }
 
     "have the correct heading" in {
@@ -51,7 +52,5 @@ trait DetailsNotFoundViewTests {
     "have the correct link to try again" in {
       doc.getLink(id = "TryAgain").text mustBe messages.link_2
     }
-
-
   }
 }
