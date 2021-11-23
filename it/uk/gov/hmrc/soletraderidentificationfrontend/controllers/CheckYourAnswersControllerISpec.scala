@@ -42,17 +42,18 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   with BusinessVerificationStub
   with WiremockHelper
   with CreateTrnStub
-  with KnownFactsStub {
+  with KnownFactsStub
+  with RegisterStub {
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(config ++ extraConfig)
+    .build
 
   def extraConfig = Map(
     "auditing.enabled" -> "true",
     "auditing.consumer.baseUri.host" -> mockHost,
     "auditing.consumer.baseUri.port" -> mockPort
   )
-
-  override lazy val app: Application = new GuiceApplicationBuilder()
-    .configure(config ++ extraConfig)
-    .build
 
   override def beforeEach(): Unit = {
     await(journeyConfigRepository.drop)
@@ -989,5 +990,75 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     }
 
   }
+
+  "businessVerificationCheck false scenario: POST /check-your-answers-business" should {
+    "redirect to journey config continue url" when {
+      "the provided details match what is held in the database" when {
+        "the user has a sautr and a nino" in {
+
+          val journeyConfig = theDefaultJourneyConfig.copy(businessVerificationCheck = false)
+
+          await(insertJourneyConfig(journeyConfig))
+
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveIndividualDetails(journeyConfig.journeyId)(OK, testIndividualDetailsJson)
+          stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
+          stubStoreAuthenticatorDetails(journeyConfig.journeyId, testIndividualDetails)(OK)
+          stubStoreIdentifiersMatch(journeyConfig.journeyId, identifiersMatch = true)(OK)
+
+          stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
+
+          stubStoreRegistrationStatus(journeyConfig.journeyId, Registered(testSafeId))(OK)
+          stubAudit()
+
+          val result = post(checkYourAnswerUrlForJourneyId(journeyConfig.journeyId))()
+
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(journeyConfig.continueUrl + s"?journeyId=${journeyConfig.journeyId}")
+          }
+
+          verifyRegister(testNino, testSautr)
+          verifyAudit()
+        }
+      }
+    }
+
+    "redirect to cannot confirm business error controller" when {
+      "the provided details do not match what is held in the database" when {
+        "the user has a nino" in {
+
+          val journeyConfig = theDefaultJourneyConfig.copy(businessVerificationCheck = false)
+
+          await(insertJourneyConfig(journeyConfig))
+
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveIndividualDetails(journeyConfig.journeyId)(OK, testIndividualDetailsJson)
+          stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
+          stubStoreAuthenticatorFailureResponse(journeyConfig.journeyId, DetailsMismatch)(OK)
+          stubStoreIdentifiersMatch(journeyConfig.journeyId, identifiersMatch = false)(OK)
+          stubStoreRegistrationStatus(journeyConfig.journeyId, RegistrationNotCalled)(OK)
+          stubAudit()
+
+          val result = post(checkYourAnswerUrlForJourneyId(journeyConfig.journeyId))()
+
+          result must have {
+            httpStatus(SEE_OTHER)
+            redirectUri(routes.CannotConfirmBusinessErrorController.show(journeyConfig.journeyId).url)
+          }
+
+          verifyStoreAuthenticatorFailureResponse(journeyConfig.journeyId, DetailsMismatch)
+          verifyStoreRegistrationStatus(journeyConfig.journeyId, RegistrationNotCalled)
+          verifyStoreIdentifiersMatch(journeyConfig.journeyId, identifiersMatch = false)
+
+          verifyAudit()
+
+        }
+
+      }
+    }
+  }
+
+  private def checkYourAnswerUrlForJourneyId(journeyId: String): String = s"/identify-your-sole-trader-business/$journeyId/check-your-answers-business"
 
 }

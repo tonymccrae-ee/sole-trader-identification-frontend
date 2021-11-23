@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package connectors.mocks
+package services.mocks
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, verify, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,15 +31,19 @@ trait MockCreateTrnService extends MockitoSugar with BeforeAndAfterEach {
 
   val mockCreateTrnService: CreateTrnService = mock[CreateTrnService]
 
-  override protected def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(mockCreateTrnService)
-  }
-
   def mockCreateTrn(journeyId: String)(response: Future[String]): OngoingStubbing[_] =
     when(
       mockCreateTrnService.createTrn(ArgumentMatchers.eq(journeyId)
       )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
+
+  def verifyCreateTrn(journeyId: String): Unit =
+    verify(mockCreateTrnService)
+      .createTrn(ArgumentMatchers.eq(journeyId))(ArgumentMatchers.any[HeaderCarrier])
+
+  override protected def beforeEach(): Unit = {
+    super.beforeEach()
+    reset(mockCreateTrnService)
+  }
 
 }

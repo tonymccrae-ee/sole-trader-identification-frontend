@@ -18,68 +18,173 @@ package uk.gov.hmrc.soletraderidentificationfrontend.services
 
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationJourneyCreated
-import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{EnableNoNinoJourney, FeatureSwitching}
+import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{FeatureSwitching, EnableNoNinoJourney => EnableOptionalNinoJourney}
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class SubmissionService @Inject()(journeyService: JourneyService,
-                                  soleTraderMatchingService: SoleTraderMatchingService,
+class SubmissionService @Inject()(soleTraderMatchingService: SoleTraderMatchingService,
                                   soleTraderIdentificationService: SoleTraderIdentificationService,
                                   businessVerificationService: BusinessVerificationService,
-                                  createTrnService: CreateTrnService) extends FeatureSwitching {
+                                  createTrnService: CreateTrnService,
+                                  registrationOrchestrationService: RegistrationOrchestrationService) extends FeatureSwitching {
 
-  def submit(journeyId: String)(implicit hc: HeaderCarrier,
-                                ec: ExecutionContext): Future[SubmissionResponse] =
+  type MatchingResult = Either[SoleTraderDetailsMatching.SoleTraderDetailsMatchFailure, Boolean]
+
+  def submit(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier,
+                                                              ec: ExecutionContext): Future[SubmissionResponse] =
     for {
-      journeyConfig <- journeyService.getJourneyConfig(journeyId)
-      optIndividualDetails <- soleTraderIdentificationService.retrieveIndividualDetails(journeyId)
-      individualDetails = optIndividualDetails.getOrElse(
-        throw new InternalServerException(s"Details could not be retrieved from the database for $journeyId")
+      individualDetails <- soleTraderIdentificationService
+        .retrieveIndividualDetails(journeyId)
+        .map(_.getOrElse(noDataServerException(journeyId)))
+
+      _ <- checkThatNinoPreconditionsAreMet(individualDetails.optNino)
+
+      matchingResult <- calculateMatchingResult(journeyId, journeyConfig, individualDetails)
+
+      response <- calculateSubmissionResponse(
+        journeyId,
+        calculateBusinessScenario(journeyConfig),
+        matchingResult,
+        journeyConfig,
+        individualDetails
       )
-      matchingResult <-
-        if (individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney))
-          soleTraderMatchingService.matchSoleTraderDetailsNoNino(journeyId, individualDetails)
-        else soleTraderMatchingService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig)
-      response <- matchingResult match {
-        case Right(true) if individualDetails.optSautr.nonEmpty =>
-          individualDetails.optSautr match {
-            case Some(sautr) => businessVerificationService.createBusinessVerificationJourney(journeyId, sautr).flatMap {
-              case Right(BusinessVerificationJourneyCreated(businessVerificationUrl)) =>
-                Future.successful(StartBusinessVerification(businessVerificationUrl))
-              case _ =>
-                for {
-                  _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                } yield {
-                  JourneyCompleted(journeyConfig.continueUrl)
-                }
-            }
-          }
-        case Right(_) if !journeyConfig.pageConfig.enableSautrCheck =>
-          Future.successful(JourneyCompleted(journeyConfig.continueUrl))
-        case Right(_) if individualDetails.optNino.isEmpty && isEnabled(EnableNoNinoJourney) => for {
-          _ <- createTrnService.createTrn(journeyId)
-          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-        } yield {
-          JourneyCompleted(journeyConfig.continueUrl)
-        }
-        case Right(_) => for {
-          _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-          _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-        } yield {
-          JourneyCompleted(journeyConfig.continueUrl)
-        }
-        case Left(failureReason) =>
+    } yield
+      response
+
+  private def noDataServerException(journeyId: String): Nothing =
+    throw new InternalServerException(s"Details could not be retrieved from the database for $journeyId")
+
+  private def calculateBusinessScenario(journeyConfig: JourneyConfig): BusinessScenario =
+    if (!journeyConfig.pageConfig.enableSautrCheck) IndividualJourney
+    else {
+      if (journeyConfig.businessVerificationCheck) SoleTraderJourneyWithBusinessVerification
+      else SoleTraderJourneyWithoutBusinessVerification
+    }
+
+
+  private def calculateSubmissionResponse(journeyId: String,
+                                          businessScenario: BusinessScenario,
+                                          matchingResult: MatchingResult,
+                                          journeyConfig: JourneyConfig,
+                                          individualDetails: IndividualDetails)(implicit hc: HeaderCarrier,
+                                                                                ec: ExecutionContext): Future[SubmissionResponse] = businessScenario match {
+    case SoleTraderJourneyWithoutBusinessVerification =>
+      handleSoleTraderJourneySkippingBVCheck(journeyId, matchingResult, journeyConfig.continueUrl, individualDetails.optSautr, individualDetails.optNino)
+    case SoleTraderJourneyWithBusinessVerification =>
+      handleSoleTraderJourneyWithBVCheck(journeyId, matchingResult, journeyConfig, individualDetails)
+    case IndividualJourney =>
+      handleIndividualJourney(journeyId, matchingResult, journeyConfig.continueUrl)
+  }
+
+  private def handleSoleTraderJourneySkippingBVCheck(journeyId: String,
+                                                     matchingResult: MatchingResult,
+                                                     continueUrl: String,
+                                                     optSaUtr: Option[String],
+                                                     optNino: Option[String]
+                                                    )
+                                                    (implicit hc: HeaderCarrier,
+                                                     ec: ExecutionContext): Future[SubmissionResponse] = matchingResult match {
+    case Right(true) if optSaUtr.isDefined =>
+      registrationOrchestrationService
+        .registerWithoutBusinessVerification(journeyId, optNino, optSaUtr.getOrElse(throwASaUtrNotDefinedException))
+        .map(_ => JourneyCompleted(continueUrl + s"?journeyId=$journeyId"))
+
+    case Right(true | false) if optNino.isEmpty =>
+      for {
+        _ <- createTrnService.createTrn(journeyId)
+        _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+      } yield
+        JourneyCompleted(continueUrl)
+
+    case Right(true | false) =>
+      soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+        .map(_ => JourneyCompleted(continueUrl))
+
+    case Left(failure) =>
+      soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+        .map(_ => SoleTraderDetailsMismatch(failure))
+
+  }
+
+  private def handleSoleTraderJourneyWithBVCheck(journeyId: String,
+                                                 matchingResult: MatchingResult,
+                                                 journeyConfig: JourneyConfig,
+                                                 individualDetails: IndividualDetails)
+                                                (implicit hc: HeaderCarrier,
+                                                 ec: ExecutionContext): Future[SubmissionResponse] = matchingResult match {
+    case Right(true) if individualDetails.optSautr.nonEmpty =>
+      businessVerificationService.createBusinessVerificationJourney(journeyId, individualDetails.optSautr.getOrElse(throwASaUtrNotDefinedException)).flatMap {
+        case Right(BusinessVerificationJourneyCreated(businessVerificationUrl)) =>
+          Future.successful(StartBusinessVerification(businessVerificationUrl))
+        case _ =>
           for {
-            _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
             _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
           } yield
-            SoleTraderDetailsMismatch(failureReason)
+            JourneyCompleted(journeyConfig.continueUrl)
       }
-    } yield {
-      response
-    }
+
+    case Right(_) if individualDetails.optNino.isEmpty => for {
+      _ <- createTrnService.createTrn(journeyId)
+      _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+      _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+    } yield
+      JourneyCompleted(journeyConfig.continueUrl)
+
+    case Right(_) => for {
+      _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+      _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+    } yield
+      JourneyCompleted(journeyConfig.continueUrl)
+
+    case Left(failureReason) =>
+      for {
+        _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+        _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+      } yield
+        SoleTraderDetailsMismatch(failureReason)
+  }
+
+  private def throwASaUtrNotDefinedException: Nothing =
+    throw new IllegalStateException("Error: SA UTR is not defined")
+
+  private def handleIndividualJourney(journeyId: String,
+                                      matchingResult: MatchingResult,
+                                      continueUrl: String)
+                                     (implicit hc: HeaderCarrier,
+                                      ec: ExecutionContext): Future[SubmissionResponse] = matchingResult match {
+    case Right(true | false) =>
+      Future.successful(JourneyCompleted(continueUrl))
+
+    case Left(failureReason) =>
+      for {
+        _ <- soleTraderIdentificationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+        _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+      } yield
+        SoleTraderDetailsMismatch(failureReason)
+  }
+
+  private def calculateMatchingResult(journeyId: String, journeyConfig: JourneyConfig, individualDetails: IndividualDetails)
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MatchingResult] =
+    if (individualDetails.optNino.isEmpty)
+      soleTraderMatchingService.matchSoleTraderDetailsNoNino(journeyId, individualDetails)
+    else
+      soleTraderMatchingService.matchSoleTraderDetails(journeyId, individualDetails, journeyConfig)
+
+  private def checkThatNinoPreconditionsAreMet(optNino: Option[String]): Future[Unit] =
+    if (optNino.isEmpty && !isEnabled(EnableOptionalNinoJourney))
+      Future.failed(throw new IllegalStateException(s"This cannot be because Nino is empty and EnableOptionalNinoJourney is false"))
+    else
+      Future.successful(())
+
+  private sealed trait BusinessScenario
+
+  private case object SoleTraderJourneyWithoutBusinessVerification extends BusinessScenario
+
+  private case object SoleTraderJourneyWithBusinessVerification extends BusinessScenario
+
+  private case object IndividualJourney extends BusinessScenario
+
 }

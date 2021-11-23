@@ -34,18 +34,8 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
     registrationStatus <- soleTraderIdentificationService.retrieveBusinessVerificationStatus(journeyId).flatMap {
       case Some(BusinessVerificationPass) | Some(SaEnrolled) => for {
         optNino <- soleTraderIdentificationService.retrieveNino(journeyId)
-        optSautr <- soleTraderIdentificationService.retrieveSautr(journeyId)
-        registrationStatus <-
-          (optNino, optSautr) match {
-            case (Some(nino), Some(sautr)) =>
-              registrationConnector.registerWithNino(nino, sautr)
-            case (None, Some(sautr)) =>
-              trnService.createTrn(journeyId) flatMap {
-                trn => registrationConnector.registerWithTrn(trn, sautr)
-              }
-            case _ =>
-              throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
-          }
+        sautr <- soleTraderIdentificationService.retrieveSautr(journeyId).map(_.getOrElse(noDataServerException(journeyId)))
+        registrationStatus <- register(journeyId, optNino, sautr)
       } yield registrationStatus
       case Some(_) =>
         Future.successful(RegistrationNotCalled)
@@ -58,4 +48,25 @@ class RegistrationOrchestrationService @Inject()(soleTraderIdentificationService
     registrationStatus
   }
 
+  def registerWithoutBusinessVerification(journeyId: String, optNino: Option[String], saUtr: String)
+                                         (implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
+    registrationStatus <- register(journeyId, optNino, saUtr)
+    _ <- soleTraderIdentificationService.storeRegistrationStatus(journeyId, registrationStatus)
+  } yield {
+    auditService.auditSoleTraderJourney(journeyId)
+    registrationStatus
+  }
+
+  private def register(journeyId: String, optNino: Option[String], saUtr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] =
+    (optNino, saUtr) match {
+      case (Some(nino), sautr) =>
+        registrationConnector.registerWithNino(nino, sautr)
+      case (None, sautr) =>
+        trnService.createTrn(journeyId) flatMap {
+          trn => registrationConnector.registerWithTrn(trn, sautr)
+        }
+    }
+
+  private def noDataServerException(journeyId: String): Nothing =
+    throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
 }

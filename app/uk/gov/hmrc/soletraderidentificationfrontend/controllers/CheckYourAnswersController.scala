@@ -67,7 +67,7 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
       authorised() {
         journeyService.getJourneyConfig(journeyId).flatMap {
           journeyConfig =>
-            submissionService.submit(journeyId).map {
+            submissionService.submit(journeyId, journeyConfig).map {
               case StartBusinessVerification(businessVerificationUrl) =>
                 Redirect(businessVerificationUrl)
               case JourneyCompleted(continueUrl) =>

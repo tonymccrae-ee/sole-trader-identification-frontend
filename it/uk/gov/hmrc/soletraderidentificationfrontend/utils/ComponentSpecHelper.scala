@@ -26,6 +26,7 @@ import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{FeatureSwitching, FeatureSwitchingModule}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
@@ -76,7 +77,6 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
   lazy val featureSwitches: Seq[FeatureSwitch] = app.injector.instanceOf[FeatureSwitchingModule].switches
-
 
   override def beforeAll(): Unit = {
     startWiremock()
@@ -138,4 +138,16 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     journeyConfigRepository.insertJourneyConfig(
       journeyId, internalId, JourneyConfig(continueUrl, businessVerificationCheck, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck))
     )
+
+  def insertJourneyConfig(journeyConfigData: JourneyConfigData): Future[WriteResult] =
+    insertJourneyConfig(journeyConfigData.journeyId,
+      journeyConfigData.internalId,
+      journeyConfigData.continueUrl,
+      journeyConfigData.businessVerificationCheck,
+      journeyConfigData.optServiceName,
+      journeyConfigData.deskProServiceId,
+      journeyConfigData.signOutUrl,
+      journeyConfigData.enableSautrCheck
+    )
+
 }

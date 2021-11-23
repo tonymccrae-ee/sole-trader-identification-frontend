@@ -186,6 +186,19 @@ object TestConstants {
       nino = None
     )
 
+  val testSoleTraderJourneyConfig: JourneyConfig = testJourneyConfig(enableSautrCheck = true)
+
+  val testIndividualJourneyConfig: JourneyConfig = testJourneyConfig()
+
+  val testIndividualSuccessfulAuditEventJson: JsObject = Json.obj(
+    "firstName" -> testFirstName,
+    "lastName" -> testLastName,
+    "dateOfBirth" -> testDateOfBirth,
+    "nino" -> testNino,
+    "identifiersMatch" -> true,
+    "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr)
+  )
+
   def testJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
     businessVerificationCheck = true,
@@ -195,15 +208,6 @@ object TestConstants {
       signOutUrl = testSignOutUrl,
       enableSautrCheck = enableSautrCheck
     )
-  )
-
-  val testIndividualSuccessfulAuditEventJson: JsObject = Json.obj(
-    "firstName" -> testFirstName,
-    "lastName" -> testLastName,
-    "dateOfBirth" -> testDateOfBirth,
-    "nino" -> testNino,
-    "identifiersMatch" -> true,
-    "authenticatorResponse" -> Json.toJson(testIndividualDetailsNoSautr)
   )
 
   def testSoleTraderAuditEventJson(identifiersMatch: Boolean = false): JsObject = Json.obj(

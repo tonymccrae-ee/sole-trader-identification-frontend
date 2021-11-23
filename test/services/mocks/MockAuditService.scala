@@ -17,7 +17,7 @@
 package services.mocks
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, when}
+import org.mockito.Mockito.{reset, verify, when}
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
@@ -41,4 +41,10 @@ trait MockAuditService extends MockitoSugar with BeforeAndAfterEach {
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier],ArgumentMatchers.any[ExecutionContext])
     ).thenReturn(Future.successful(()))
+
+  def mockVerifyAuditSoleTraderJourney(journeyId: String): Unit =
+    verify(mockAuditService).auditSoleTraderJourney(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier],ArgumentMatchers.any[ExecutionContext])
+
 }
