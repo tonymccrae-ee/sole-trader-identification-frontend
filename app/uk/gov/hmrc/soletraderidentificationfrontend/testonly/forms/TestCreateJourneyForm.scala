@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, text}
+import play.api.data.Forms.{boolean, mapping, text}
 import play.api.data.validation.Constraint
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.MappingUtil.{OTextUtil, optText}
 import uk.gov.hmrc.soletraderidentificationfrontend.forms.utils.ValidationHelper.validate
@@ -26,6 +26,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageC
 object TestCreateJourneyForm {
 
   val continueUrl = "continueUrl"
+  val businessVerificationCheck = "businessVerificationCheck"
   val serviceName = "serviceName"
   val deskProServiceId = "deskProServiceId"
   val alphanumericRegex = "^[A-Z0-9]*$"
@@ -56,13 +57,14 @@ object TestCreateJourneyForm {
   def form(enableSautrCheck: Boolean): Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
+      businessVerificationCheck -> boolean,
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty)
-    )((continueUrl, serviceName, deskProServiceId, signOutUrl) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck))
+    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl) =>
+      JourneyConfig.apply(continueUrl, businessVerificationCheck, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck))
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
+      Some(journeyConfig.continueUrl, journeyConfig.businessVerificationCheck, journeyConfig.pageConfig.optServiceName,
         journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl)
     ))
   }
@@ -70,14 +72,15 @@ object TestCreateJourneyForm {
   def deprecatedForm(): Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
+      businessVerificationCheck -> boolean,
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty),
       enableSautrCheck -> optText.toBoolean
-    )((continueUrl, serviceName, deskProServiceId, signOutUrl, enableSautrCheck) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck))
+    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, enableSautrCheck) =>
+      JourneyConfig.apply(continueUrl, businessVerificationCheck, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck))
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
+      Some(journeyConfig.continueUrl, journeyConfig.businessVerificationCheck, journeyConfig.pageConfig.optServiceName,
         journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl,
         journeyConfig.pageConfig.enableSautrCheck)
     ))

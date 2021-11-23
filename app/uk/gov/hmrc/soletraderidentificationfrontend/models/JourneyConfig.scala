@@ -16,4 +16,4 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-case class JourneyConfig(continueUrl: String, pageConfig: PageConfig)
+case class JourneyConfig(continueUrl: String, businessVerificationCheck: Boolean, pageConfig: PageConfig)

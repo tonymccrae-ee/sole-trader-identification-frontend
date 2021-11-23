@@ -188,6 +188,7 @@ object TestConstants {
 
   def testJourneyConfig(enableSautrCheck: Boolean = false): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
+    businessVerificationCheck = true,
     pageConfig = PageConfig(
       optServiceName = None,
       deskProServiceId = "vrs",

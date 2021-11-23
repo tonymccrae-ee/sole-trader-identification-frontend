@@ -31,6 +31,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
   "POST /api/journey" should {
     val testSoleTraderJourneyConfigJson: JsObject = Json.obj(
       "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "businessVerificationCheck" -> testSoleTraderJourneyConfig.businessVerificationCheck,
       "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
       "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
       "enableSautrCheck" -> testSoleTraderJourneyConfig.pageConfig.enableSautrCheck
@@ -66,6 +67,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
   "POST /api/sole-trader-journey" should {
     val testSoleTraderJourneyConfigJson: JsObject = Json.obj(
       "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "businessVerificationCheck" -> false,
       "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
       "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
     )
@@ -77,7 +79,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
 
-      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfig)
+      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfig.copy(businessVerificationCheck = false))
 
     }
 
@@ -101,6 +103,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
   "POST /api/individual-journey" should {
     val testJourneyConfigJson: JsObject = Json.obj(
       "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "businessVerificationCheck" -> true,
       "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
       "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
     )
@@ -136,7 +139,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
     "return captured data" when {
       "the journeyId exists and the identifiers match" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
+        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = testSoleTraderDetailsJson(identifiersMatch = true)
@@ -150,7 +153,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       "the journeyId exists and the identifiers do not match" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
+        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = testSoleTraderDetailsJson()
@@ -164,7 +167,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       "the journeyId exists for an individual with a nino" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
+        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = testSoleTraderDetailsJsonIndividual
@@ -178,7 +181,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       "the journeyId exists for an individual with no nino" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
+        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = testSoleTraderDetailsJsonIndividualNoNino
@@ -194,7 +197,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
     "return not found" when {
       "the journey Id does not exist" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
+        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
         stubRetrieveSoleTraderDetails(testJourneyId)(status = NOT_FOUND)
 
         lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
@@ -236,7 +239,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
           }
 
           stubAuth(OK, successfulAuthResponse())
-          insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
+          insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
           stubRetrieveSoleTraderDetails(testJourneyId)(
             status = OK,
             body = testSoleTraderDetailsJson
@@ -266,7 +269,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
           }
 
           stubAuth(OK, successfulAuthResponse())
-          insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
+          insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
           stubRetrieveSoleTraderDetails(testJourneyId)(
             status = OK,
             body = testSoleTraderDetailsJson

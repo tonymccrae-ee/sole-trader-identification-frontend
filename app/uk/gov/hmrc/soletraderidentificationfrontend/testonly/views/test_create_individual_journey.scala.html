@@ -16,13 +16,14 @@
 
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
-@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers.inputText
+@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers.{inputHidden, inputText}
 @import uk.gov.hmrc.soletraderidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
     govukFieldset: GovukFieldset,
     govukButton: GovukButton,
     inputText: inputText,
+    inputHidden: inputHidden,
     formWithCSRF: FormWithCSRF
 )
 
@@ -82,6 +83,12 @@
             isPageHeading = false,
             hasFieldTitle = true,
             classes = "govuk-input--width-20"
+        )
+
+        @inputHidden(
+            id = "businessVerificationCheck",
+            name = "businessVerificationCheck",
+            value = form("businessVerificationCheck").value.getOrElse("true")
         )
 
         @govukButton(Button(
