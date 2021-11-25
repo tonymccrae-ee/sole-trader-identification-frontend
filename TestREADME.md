@@ -55,6 +55,11 @@ This is a test entry point which simulates a service by triggering the initial P
 
    - Shown in the HMRC header - typically a link to a feedback questionnaire
    - This is currently autofilled but can be changed
+   
+5. Business verification checkbox
+
+   - Used for skipping further verification checks carried out currently by Business Verification (SI)
+   - This is currently autofilled but can be changed
 
 ### GET /test-only/create-individual-journey
 
