@@ -26,9 +26,13 @@ optServiceName will default to `Entity Validation Service` if the field is not p
 
 All other fields must be provided.
 
+The businessVerificationCheck field allows the calling service to bypass the verification and 
+continue to register where a successful match is found. By default "businessVerificationCheck" will be true.
+
 ```
 {
     "continueUrl" : "/test",
+    "businessVerificationCheck" : true ,
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
     "signOutUrl" : "/sign-out"
@@ -122,9 +126,13 @@ an SAUTR that will be verified. By default "enableSautrCheck" will be false.
 
 All other fields must be provided.
 
+The businessVerificationCheck field allows the calling service to bypass the verification and
+continue to register where a successful match is found. By default "businessVerificationCheck" will be true.
+
 ```
 {
     "continueUrl" : "/test",
+    "businessVerificationCheck" : true ,
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
     "signOutUrl" : "/sign-out",
