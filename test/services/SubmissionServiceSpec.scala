@@ -61,7 +61,7 @@ class SubmissionServiceSpec
 
         val result = await(TestService.submit(testJourneyId, journeyConfigWithoutBV))
 
-        result mustBe JourneyCompleted(journeyConfigWithoutBV.continueUrl + s"?journeyId=$testJourneyId")
+        result mustBe JourneyCompleted(journeyConfigWithoutBV.continueUrl)
 
       }
     }

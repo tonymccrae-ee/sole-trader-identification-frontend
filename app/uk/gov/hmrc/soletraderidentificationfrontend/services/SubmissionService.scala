@@ -90,7 +90,7 @@ class SubmissionService @Inject()(soleTraderMatchingService: SoleTraderMatchingS
     case Right(true) if optSaUtr.isDefined =>
       registrationOrchestrationService
         .registerWithoutBusinessVerification(journeyId, optNino, optSaUtr.getOrElse(throwASaUtrNotDefinedException))
-        .map(_ => JourneyCompleted(continueUrl + s"?journeyId=$journeyId"))
+        .map(_ => JourneyCompleted(continueUrl))
 
     case Right(true | false) if optNino.isEmpty =>
       for {

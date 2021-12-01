@@ -1015,7 +1015,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(journeyConfig.continueUrl + s"?journeyId=${journeyConfig.journeyId}")
+            redirectUri(journeyConfig.continueUrl)
           }
 
           verifyRegister(testNino, testSautr)
