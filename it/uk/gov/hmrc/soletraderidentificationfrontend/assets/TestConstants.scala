@@ -58,6 +58,17 @@ object TestConstants {
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 
+  val theDefaultJourneyConfig: JourneyConfigData = JourneyConfigData(
+    journeyId = testJourneyId,
+    internalId = testInternalId,
+    continueUrl = testContinueUrl,
+    businessVerificationCheck = true,
+    optServiceName = None,
+    deskProServiceId = testDeskProServiceId,
+    signOutUrl = testSignOutUrl,
+    enableSautrCheck = true
+  )
+
   val testSoleTraderJourneyConfig: JourneyConfig =
     JourneyConfig(
       continueUrl = testContinueUrl,
@@ -389,5 +400,13 @@ object TestConstants {
     "country" -> "AL"
   )
 
+  final case class JourneyConfigData(journeyId: String,
+                                     internalId: String,
+                                     continueUrl: String,
+                                     businessVerificationCheck: Boolean,
+                                     optServiceName: Option[String],
+                                     deskProServiceId: String,
+                                     signOutUrl: String,
+                                     enableSautrCheck: Boolean)
 
 }

@@ -16,12 +16,12 @@
 
 package services
 
-import connectors.mocks.{MockCreateTrnService, MockRegistrationConnector}
+import connectors.mocks.MockRegistrationConnector
 import helpers.TestConstants._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
-import services.mocks.{MockAuditService, MockSoleTraderIdentificationService}
+import services.mocks.{MockAuditService, MockCreateTrnService, MockSoleTraderIdentificationService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentificationfrontend.httpParsers.SoleTraderIdentificationStorageHttpParser.SuccessfullyStored
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
@@ -229,6 +229,56 @@ class RegistrationOrchestrationServiceSpec extends AnyWordSpec
         }
       }
     }
+  }
+
+  "register without business verification" when {
+
+    "the user has a nino" should {
+      "register and then store the registration response" in {
+        mockRegister(testNino, testSautr)(Future.successful(Registered(testSafeId)))
+        mockStoreRegistrationResponse(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
+
+        await(TestService.registerWithoutBusinessVerification(testJourneyId, Some(testNino), testSautr)) mustBe {
+          Registered(testSafeId)
+        }
+
+        verifyRegistration(testNino, testSautr)
+        verifyStoreRegistrationResponse(testJourneyId, Registered(testSafeId))
+        mockVerifyAuditSoleTraderJourney(testJourneyId)
+      }
+
+    }
+
+    "the user does not have a nino" should {
+      "create a trn, register with it and then store the registration response" in {
+        mockCreateTrn(testJourneyId)(Future.successful(testTrn))
+        mockRegisterWithTrn(testTrn, testSautr)(Future.successful(Registered(testSafeId)))
+        mockStoreRegistrationResponse(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
+
+        await(TestService.registerWithoutBusinessVerification(testJourneyId, optNino = None, saUtr = testSautr)) mustBe {
+          Registered(testSafeId)
+        }
+
+        verifyRegistrationWithTrn(testTrn, testSautr)
+        verifyStoreRegistrationResponse(testJourneyId, Registered(testSafeId))
+        mockVerifyAuditSoleTraderJourney(testJourneyId)
+      }
+
+      "return RegistrationFailed if fails to register with Trn" in {
+        mockCreateTrn(testJourneyId)(Future.successful(testTrn))
+        mockRegisterWithTrn(testTrn, testSautr)(Future.successful(RegistrationFailed))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
+
+        await(TestService.registerWithoutBusinessVerification(testJourneyId, optNino = None, saUtr = testSautr)) mustBe {
+          RegistrationFailed
+        }
+
+        verifyRegistrationWithTrn(testTrn, testSautr)
+        verifyStoreRegistrationResponse(testJourneyId, RegistrationFailed)
+        mockVerifyAuditSoleTraderJourney(testJourneyId)
+      }
+    }
+
   }
 
 }
