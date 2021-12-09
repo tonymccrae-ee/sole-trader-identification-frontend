@@ -40,6 +40,17 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
       }
     }
 
+    "capitalise the NINO" when {
+      "it has been entered in lower case" in {
+        val testLowerCaseNino = "aa111111a"
+        stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
+
+        val result = await(registrationConnector.registerWithNino(testLowerCaseNino, testSautr))
+
+        result mustBe Registered(testSafeId)
+      }
+    }
+
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
         stubRegister(testNino, testSautr)(INTERNAL_SERVER_ERROR, RegistrationFailed)

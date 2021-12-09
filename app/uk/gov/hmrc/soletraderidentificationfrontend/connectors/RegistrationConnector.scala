@@ -35,7 +35,7 @@ class RegistrationConnector @Inject()(httpClient: HttpClient,
 
     val jsonBody = Json.obj(
       "soleTrader" -> Json.obj(
-        "nino" -> nino,
+        "nino" -> nino.toUpperCase,
         "sautr" -> sautr
       )
     )
