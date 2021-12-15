@@ -47,23 +47,23 @@ class SoleTraderIdentificationConnectorISpec extends ComponentSpecHelper with So
       "there are SoleTraderDetails stored against the journeyId and identifiers match" in {
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = testSoleTraderDetailsJson(identifiersMatch = true)
+          body = testSoleTraderDetailsJson
         )
 
         val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails(testJourneyId))
 
-        result mustBe Some(testSoleTraderDetails(identifiersMatch = true))
+        result mustBe Some(testSoleTraderDetails)
       }
 
       "there are SoleTraderDetails stored against the journeyId and identifiers do not match" in {
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = testSoleTraderDetailsJson()
+          body = testSoleTraderDetailsJson
         )
 
         val result = await(soleTraderIdentificationConnector.retrieveSoleTraderDetails(testJourneyId))
 
-        result mustBe Some(testSoleTraderDetails())
+        result mustBe Some(testSoleTraderDetails)
       }
     }
     "return None" when {
