@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => controllerRoutes}
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig, SoleTraderDetails}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.services.{JourneyService, SoleTraderIdentificationService}
 
 import javax.inject.{Inject, Singleton}
@@ -95,22 +95,12 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
   def retrieveJourneyData(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
       authorised() {
-        for {
-          journeyConfig <- journeyService.getJourneyConfig(journeyId)
-          journeyData <- soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId)
-        } yield journeyData match {
-          case Some(SoleTraderDetails(_, _, _, _, _, _, _, Some(_), Some(_), _, _)) if journeyConfig.pageConfig.enableSautrCheck =>
-            Ok(Json.toJson(journeyData))
-          case Some(SoleTraderDetails(_, _, _, _, _, None, _, None, None, None, None))  if !journeyConfig.pageConfig.enableSautrCheck =>
-            Ok(Json.toJson(journeyData))
-          case None =>
-            NotFound
-          case _ =>
-            throw new InternalServerException("[Retrieve Journey Data API] Data is in an unexpected state for journeyId: " + journeyId)
+        soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).map {
+          case Some(journeyData) => Ok(Json.toJson(journeyData))
+          case None => NotFound
         }
       }
   }
-
 }
 
 object JourneyController {

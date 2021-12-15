@@ -139,35 +139,33 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
     "return captured data" when {
       "the journeyId exists and the identifiers match" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = testSoleTraderDetailsJson(identifiersMatch = true)
+          body = testSoleTraderDetailsJson
         )
 
         lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
 
         result.status mustBe OK
-        result.json mustBe Json.toJsObject(testSoleTraderDetails(identifiersMatch = true))
+        result.json mustBe Json.toJsObject(testSoleTraderDetails)
       }
 
       "the journeyId exists and the identifiers do not match" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
-          body = testSoleTraderDetailsJson()
+          body = testSoleTraderDetailsJsonMisMatch
         )
 
         lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
 
         result.status mustBe OK
-        result.json mustBe Json.toJsObject(testSoleTraderDetails())
+
+        result.json mustBe Json.toJsObject(testSoleTraderDetailsMismatch)
       }
 
       "the journeyId exists for an individual with a nino" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = testSoleTraderDetailsJsonIndividual
@@ -181,7 +179,6 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       "the journeyId exists for an individual with no nino" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
         stubRetrieveSoleTraderDetails(testJourneyId)(
           status = OK,
           body = testSoleTraderDetailsJsonIndividualNoNino
@@ -192,12 +189,41 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
         result.status mustBe OK
         result.json mustBe Json.toJsObject(testSoleTraderDetailsIndividualJourneyNoNino)
       }
+
+      "the journeyId exists but no business verification status is stored" in {
+        val testSoleTraderDetailsJson: JsObject = {
+          Json.obj("fullName" -> Json.obj(
+            "firstName" -> testFirstName,
+            "lastName" -> testLastName
+          ),
+            "dateOfBirth" -> testDateOfBirth,
+            "nino" -> testNino,
+            "saPostcode" -> testSaPostcode,
+            "sautr" -> testSautr,
+            "identifiersMatch" -> true,
+            "registration" -> Json.obj(
+              "registrationStatus" -> "REGISTERED",
+              "registeredBusinessPartnerId" -> testSafeId
+            )
+          )
+        }
+
+        stubAuth(OK, successfulAuthResponse())
+        stubRetrieveSoleTraderDetails(testJourneyId)(
+          status = OK,
+          body = testSoleTraderDetailsJson
+        )
+
+        lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+        result.json mustBe Json.toJsObject(testSoleTraderDetailsNoBV)
+      }
     }
 
     "return not found" when {
       "the journey Id does not exist" in {
         stubAuth(OK, successfulAuthResponse())
-        insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
         stubRetrieveSoleTraderDetails(testJourneyId)(status = NOT_FOUND)
 
         lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
@@ -219,66 +245,6 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
             "&origin=sole-trader-identification-frontend"
           )
         )
-      }
-    }
-
-    "throw an internal server exception" when {
-      "the data is in an unexpected state" when {
-        "the BV and Registration fields are missing on the Sole Trader Journey" in {
-          val testSoleTraderDetailsJson: JsObject = {
-            Json.obj("fullName" -> Json.obj(
-              "firstName" -> testFirstName,
-              "lastName" -> testLastName
-            ),
-              "dateOfBirth" -> testDateOfBirth,
-              "nino" -> testNino,
-              "saPostcode" -> testSaPostcode,
-              "sautr" -> testSautr,
-              "identifiersMatch" -> true
-            )
-          }
-
-          stubAuth(OK, successfulAuthResponse())
-          insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = true)
-          stubRetrieveSoleTraderDetails(testJourneyId)(
-            status = OK,
-            body = testSoleTraderDetailsJson
-          )
-
-          lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
-
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-        "the BV and Registration fields are found on the Individual Journey" in {
-          val testSoleTraderDetailsJson: JsObject = {
-            Json.obj("fullName" -> Json.obj(
-              "firstName" -> testFirstName,
-              "lastName" -> testLastName
-            ),
-              "dateOfBirth" -> testDateOfBirth,
-              "nino" -> testNino,
-              "saPostcode" -> testSaPostcode,
-              "identifiersMatch" -> true,
-              "businessVerification" -> Json.obj(
-                "verificationStatus" -> "UNCHALLENGED"
-              ),
-              "registration" -> Json.obj(
-                "registrationStatus" -> "REGISTRATION_NOT_CALLED"
-              )
-            )
-          }
-
-          stubAuth(OK, successfulAuthResponse())
-          insertJourneyConfig(testJourneyId, testInternalId, testContinueUrl, true, None, testDeskProServiceId, testSignOutUrl, enableSautrCheck = false)
-          stubRetrieveSoleTraderDetails(testJourneyId)(
-            status = OK,
-            body = testSoleTraderDetailsJson
-          )
-
-          lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
-
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
       }
     }
   }

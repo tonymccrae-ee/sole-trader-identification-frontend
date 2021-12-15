@@ -92,7 +92,7 @@ object TestConstants {
       )
     )
 
-  def testSoleTraderDetails(identifiersMatch: Boolean = false): SoleTraderDetails =
+  val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
       fullName = testFullName,
       dateOfBirth = testDateOfBirth,
@@ -100,8 +100,38 @@ object TestConstants {
       address = None,
       optSaPostcode = Some(testSaPostcode),
       optSautr = Some(testSautr),
-      identifiersMatch = identifiersMatch,
+      identifiersMatch = true,
       businessVerification = Some(BusinessVerificationPass),
+      registrationStatus = Some(Registered(testSafeId)),
+      optTrn = None,
+      optOverseas = None
+    )
+
+  val testSoleTraderDetailsMismatch: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = Some(testNino),
+      address = None,
+      optSaPostcode = Some(testSaPostcode),
+      optSautr = Some(testSautr),
+      identifiersMatch = false,
+      businessVerification = Some(BusinessVerificationUnchallenged),
+      registrationStatus = Some(RegistrationNotCalled),
+      optTrn = None,
+      optOverseas = None
+    )
+
+  val testSoleTraderDetailsNoBV: SoleTraderDetails =
+    SoleTraderDetails(
+      fullName = testFullName,
+      dateOfBirth = testDateOfBirth,
+      optNino = Some(testNino),
+      address = None,
+      optSaPostcode = Some(testSaPostcode),
+      optSautr = Some(testSautr),
+      identifiersMatch = true,
+      businessVerification = None,
       registrationStatus = Some(Registered(testSafeId)),
       optTrn = None,
       optOverseas = None
@@ -205,7 +235,7 @@ object TestConstants {
       optSautr = Some(testSautr)
     )
 
-  def testSoleTraderDetailsJson(identifiersMatch: Boolean = false): JsObject = {
+  val testSoleTraderDetailsJson: JsObject = {
     Json.obj("fullName" -> Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName
@@ -214,13 +244,32 @@ object TestConstants {
       "nino" -> testNino,
       "saPostcode" -> testSaPostcode,
       "sautr" -> testSautr,
-      "identifiersMatch" -> identifiersMatch,
+      "identifiersMatch" -> true,
       "businessVerification" -> Json.obj(
         "verificationStatus" -> "PASS"
       ),
       "registration" -> Json.obj(
         "registrationStatus" -> "REGISTERED",
         "registeredBusinessPartnerId" -> testSafeId
+      )
+    )
+  }
+
+  val testSoleTraderDetailsJsonMisMatch: JsObject = {
+    Json.obj("fullName" -> Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName
+    ),
+      "dateOfBirth" -> testDateOfBirth,
+      "nino" -> testNino,
+      "saPostcode" -> testSaPostcode,
+      "sautr" -> testSautr,
+      "identifiersMatch" -> false,
+      "businessVerification" -> Json.obj(
+        "verificationStatus" -> "UNCHALLENGED"
+      ),
+      "registration" -> Json.obj(
+        "registrationStatus" -> "REGISTRATION_NOT_CALLED"
       )
     )
   }
