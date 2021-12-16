@@ -164,17 +164,42 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
         result.json mustBe Json.toJsObject(testSoleTraderDetailsMismatch)
       }
 
-      "the journeyId exists for an individual with a nino" in {
-        stubAuth(OK, successfulAuthResponse())
-        stubRetrieveSoleTraderDetails(testJourneyId)(
-          status = OK,
-          body = testSoleTraderDetailsJsonIndividual
-        )
+      "the journeyId exists for an individual with a nino" when {
+        "the Nino is uppercase" in {
+          stubAuth(OK, successfulAuthResponse())
+          stubRetrieveSoleTraderDetails(testJourneyId)(
+            status = OK,
+            body = testSoleTraderDetailsJsonIndividual
+          )
 
-        lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
+          lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
 
-        result.status mustBe OK
-        result.json mustBe Json.toJsObject(testSoleTraderDetailsIndividualJourney)
+          result.status mustBe OK
+          result.json mustBe Json.toJsObject(testSoleTraderDetailsIndividualJourney)
+        }
+        "the Nino is lowercase" in {
+          stubAuth(OK, successfulAuthResponse())
+          val testSoleTraderDetailsJsonIndividual: JsObject = {
+            Json.obj("fullName" -> Json.obj(
+              "firstName" -> testFirstName,
+              "lastName" -> testLastName
+            ),
+              "nino" -> "aa111111a",
+              "dateOfBirth" -> testDateOfBirth,
+              "identifiersMatch" -> true
+            )
+          }
+
+          stubRetrieveSoleTraderDetails(testJourneyId)(
+            status = OK,
+            body = testSoleTraderDetailsJsonIndividual
+          )
+
+          lazy val result = get(s"/sole-trader-identification/api/journey/$testJourneyId")
+
+          result.status mustBe OK
+          result.json mustBe Json.toJsObject(testSoleTraderDetailsIndividualJourney)
+        }
       }
 
       "the journeyId exists for an individual with no nino" in {

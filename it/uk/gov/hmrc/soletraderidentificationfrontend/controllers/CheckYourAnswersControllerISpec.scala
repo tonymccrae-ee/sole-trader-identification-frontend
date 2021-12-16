@@ -996,22 +996,22 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "the provided details match what is held in the database" when {
         "the user has a sautr and a nino" in {
 
-          val journeyConfig = theDefaultJourneyConfig.copy(businessVerificationCheck = false)
+          val journeyConfig = testSoleTraderJourneyConfig.copy(businessVerificationCheck = false)
 
-          await(insertJourneyConfig(journeyConfig))
+          await(insertJourneyConfig(testJourneyId, testInternalId, journeyConfig))
 
           stubAuth(OK, successfulAuthResponse())
-          stubRetrieveIndividualDetails(journeyConfig.journeyId)(OK, testIndividualDetailsJson)
+          stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
           stubMatch(testIndividualDetails)(OK, successfulMatchJson(testIndividualDetails))
-          stubStoreAuthenticatorDetails(journeyConfig.journeyId, testIndividualDetails)(OK)
-          stubStoreIdentifiersMatch(journeyConfig.journeyId, identifiersMatch = true)(OK)
+          stubStoreAuthenticatorDetails(testJourneyId, testIndividualDetails)(OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(OK)
 
           stubRegister(testNino, testSautr)(OK, Registered(testSafeId))
 
-          stubStoreRegistrationStatus(journeyConfig.journeyId, Registered(testSafeId))(OK)
+          stubStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(OK)
           stubAudit()
 
-          val result = post(checkYourAnswerUrlForJourneyId(journeyConfig.journeyId))()
+          val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
           result must have {
             httpStatus(SEE_OTHER)
@@ -1028,28 +1028,28 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "the provided details do not match what is held in the database" when {
         "the user has a nino" in {
 
-          val journeyConfig = theDefaultJourneyConfig.copy(businessVerificationCheck = false)
+          val journeyConfig = testSoleTraderJourneyConfig.copy(businessVerificationCheck = false)
 
-          await(insertJourneyConfig(journeyConfig))
+          await(insertJourneyConfig(testJourneyId, testInternalId, journeyConfig))
 
           stubAuth(OK, successfulAuthResponse())
-          stubRetrieveIndividualDetails(journeyConfig.journeyId)(OK, testIndividualDetailsJson)
+          stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
           stubMatch(testIndividualDetails)(UNAUTHORIZED, mismatchErrorJson)
-          stubStoreAuthenticatorFailureResponse(journeyConfig.journeyId, DetailsMismatch)(OK)
-          stubStoreIdentifiersMatch(journeyConfig.journeyId, identifiersMatch = false)(OK)
-          stubStoreRegistrationStatus(journeyConfig.journeyId, RegistrationNotCalled)(OK)
+          stubStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)(OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(OK)
+          stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
           stubAudit()
 
-          val result = post(checkYourAnswerUrlForJourneyId(journeyConfig.journeyId))()
+          val result = post(s"/identify-your-sole-trader-business/$testJourneyId/check-your-answers-business")()
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(routes.CannotConfirmBusinessErrorController.show(journeyConfig.journeyId).url)
+            redirectUri(routes.CannotConfirmBusinessErrorController.show(testJourneyId).url)
           }
 
-          verifyStoreAuthenticatorFailureResponse(journeyConfig.journeyId, DetailsMismatch)
-          verifyStoreRegistrationStatus(journeyConfig.journeyId, RegistrationNotCalled)
-          verifyStoreIdentifiersMatch(journeyConfig.journeyId, identifiersMatch = false)
+          verifyStoreAuthenticatorFailureResponse(testJourneyId, DetailsMismatch)
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
 
           verifyAudit()
 
@@ -1058,7 +1058,5 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
     }
   }
-
-  private def checkYourAnswerUrlForJourneyId(journeyId: String): String = s"/identify-your-sole-trader-business/$journeyId/check-your-answers-business"
 
 }

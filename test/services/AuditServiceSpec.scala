@@ -83,7 +83,7 @@ class AuditServiceSpec extends AnyWordSpec with Matchers with MockAuditConnector
     "send an event" when {
       "the entity is a Sole Trader and identifiers match" when {
         "there is an sautr" in {
-          mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetailsNinoAndUtr)))
+          mockRetrieveSoleTraderDetails(testJourneyId)(Future.successful(Some(testSoleTraderDetails)))
           mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
           mockRetrieveAuthenticatorDetails(testJourneyId)(Future.successful(Some(testIndividualDetails)))
           mockRetrieveES20Response(testJourneyId)(Future.successful(None))

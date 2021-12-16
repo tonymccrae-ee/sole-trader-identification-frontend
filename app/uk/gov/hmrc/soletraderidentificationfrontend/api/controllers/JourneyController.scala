@@ -96,7 +96,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
     implicit req =>
       authorised() {
         soleTraderIdentificationService.retrieveSoleTraderDetails(journeyId).map {
-          case Some(journeyData) => Ok(Json.toJson(journeyData))
+          case Some(journeyData) => Ok(Json.toJson(journeyData.copy(optNino = journeyData.optNino.map(_.toUpperCase))))
           case None => NotFound
         }
       }
