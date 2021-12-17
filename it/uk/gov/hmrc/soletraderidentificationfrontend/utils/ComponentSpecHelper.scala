@@ -26,7 +26,6 @@ import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.config.{FeatureSwitching, FeatureSwitchingModule}
 import uk.gov.hmrc.soletraderidentificationfrontend.featureswitch.core.models.FeatureSwitch
 import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
@@ -139,15 +138,9 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
       journeyId, internalId, JourneyConfig(continueUrl, businessVerificationCheck, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck))
     )
 
-  def insertJourneyConfig(journeyConfigData: JourneyConfigData): Future[WriteResult] =
-    insertJourneyConfig(journeyConfigData.journeyId,
-      journeyConfigData.internalId,
-      journeyConfigData.continueUrl,
-      journeyConfigData.businessVerificationCheck,
-      journeyConfigData.optServiceName,
-      journeyConfigData.deskProServiceId,
-      journeyConfigData.signOutUrl,
-      journeyConfigData.enableSautrCheck
-    )
+  def insertJourneyConfig(journeyId: String,
+                          internalId: String,
+                          journeyConfig: JourneyConfig): Future[WriteResult] =
+    journeyConfigRepository.insertJourneyConfig(journeyId, internalId, journeyConfig)
 
 }

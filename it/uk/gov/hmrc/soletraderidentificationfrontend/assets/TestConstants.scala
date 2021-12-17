@@ -58,17 +58,6 @@ object TestConstants {
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
 
-  val theDefaultJourneyConfig: JourneyConfigData = JourneyConfigData(
-    journeyId = testJourneyId,
-    internalId = testInternalId,
-    continueUrl = testContinueUrl,
-    businessVerificationCheck = true,
-    optServiceName = None,
-    deskProServiceId = testDeskProServiceId,
-    signOutUrl = testSignOutUrl,
-    enableSautrCheck = true
-  )
-
   val testSoleTraderJourneyConfig: JourneyConfig =
     JourneyConfig(
       continueUrl = testContinueUrl,
@@ -122,35 +111,7 @@ object TestConstants {
       optOverseas = None
     )
 
-  val testSoleTraderDetailsNoBV: SoleTraderDetails =
-    SoleTraderDetails(
-      fullName = testFullName,
-      dateOfBirth = testDateOfBirth,
-      optNino = Some(testNino),
-      address = None,
-      optSaPostcode = Some(testSaPostcode),
-      optSautr = Some(testSautr),
-      identifiersMatch = true,
-      businessVerification = None,
-      registrationStatus = Some(Registered(testSafeId)),
-      optTrn = None,
-      optOverseas = None
-    )
-
-  def testSoleTraderDetailsNoSautr(identifiersMatch: Boolean = false): SoleTraderDetails =
-    SoleTraderDetails(
-      fullName = testFullName,
-      dateOfBirth = testDateOfBirth,
-      optNino = Some(testNino),
-      address = None,
-      optSaPostcode = None,
-      optSautr = None,
-      identifiersMatch = identifiersMatch,
-      businessVerification = Some(BusinessVerificationUnchallenged),
-      registrationStatus = Some(RegistrationNotCalled),
-      optTrn = None,
-      optOverseas = Some(testOverseasTaxIdentifiers)
-    )
+  val testSoleTraderDetailsNoBV: SoleTraderDetails = testSoleTraderDetails.copy(businessVerification = None)
 
   val testSoleTraderDetailsIndividualJourney: SoleTraderDetails =
     SoleTraderDetails(
@@ -200,40 +161,11 @@ object TestConstants {
       optSautr = Some(testSautr)
     )
 
-  val testIndividualDetailsLowerCaseFirstName: IndividualDetails =
-    IndividualDetails(
-      firstName = "john",
-      lastName = testLastName,
-      dateOfBirth = testDateOfBirth,
-      optNino = Some(testNino),
-      optSautr = Some(testSautr)
-    )
-  val testIndividualDetailsLowerCaseLastName: IndividualDetails =
-    IndividualDetails(
-      firstName = testFirstName,
-      lastName = "smith",
-      dateOfBirth = testDateOfBirth,
-      optNino = Some(testNino),
-      optSautr = Some(testSautr)
-    )
+  val testIndividualDetailsLowerCaseFirstName: IndividualDetails = testIndividualDetails.copy(firstName = "john")
 
-  val testIndividualDetailsNoSautr: IndividualDetails =
-    IndividualDetails(
-      firstName = testFirstName,
-      lastName = testLastName,
-      dateOfBirth = testDateOfBirth,
-      optNino = Some(testNino),
-      optSautr = None
-    )
+  val testIndividualDetailsLowerCaseLastName: IndividualDetails = testIndividualDetails.copy(lastName = "smith")
 
-  val testIndividualDetailsNoNino: IndividualDetails =
-    IndividualDetails(
-      firstName = testFirstName,
-      lastName = testLastName,
-      dateOfBirth = testDateOfBirth,
-      optNino = None,
-      optSautr = Some(testSautr)
-    )
+  val testIndividualDetailsNoSautr: IndividualDetails = testIndividualDetails.copy(optSautr = None)
 
   val testSoleTraderDetailsJson: JsObject = {
     Json.obj("fullName" -> Json.obj(
@@ -270,41 +202,6 @@ object TestConstants {
       ),
       "registration" -> Json.obj(
         "registrationStatus" -> "REGISTRATION_NOT_CALLED"
-      )
-    )
-  }
-
-  def testSoleTraderDetailsJsonNoSautr(identifiersMatch: Boolean = false): JsObject =
-    Json.obj("fullName" -> Json.obj(
-      "firstName" -> testFirstName,
-      "lastName" -> testLastName
-    ),
-      "dateOfBirth" -> testDateOfBirth,
-      "nino" -> testNino,
-      "identifiersMatch" -> identifiersMatch,
-      "businessVerification" -> Json.obj(
-        "verificationStatus" -> "UNCHALLENGED"
-      ),
-      "registration" -> Json.obj(
-        "registrationStatus" -> "REGISTRATION_NOT_CALLED"
-      )
-    )
-
-  def testSoleTraderDetailsJsonNoNino(identifiersMatch: Boolean = false): JsObject = {
-    Json.obj("fullName" -> Json.obj(
-      "firstName" -> testFirstName,
-      "lastName" -> testLastName
-    ),
-      "dateOfBirth" -> testDateOfBirth,
-      "address" -> testAddress,
-      "sautr" -> testSautr,
-      "identifiersMatch" -> identifiersMatch,
-      "businessVerification" -> Json.obj(
-        "verificationStatus" -> "PASS"
-      ),
-      "registration" -> Json.obj(
-        "registrationStatus" -> "REGISTERED",
-        "registeredBusinessPartnerId" -> testSafeId
       )
     )
   }
@@ -448,14 +345,5 @@ object TestConstants {
     "taxIdentifier" -> "134124532",
     "country" -> "AL"
   )
-
-  final case class JourneyConfigData(journeyId: String,
-                                     internalId: String,
-                                     continueUrl: String,
-                                     businessVerificationCheck: Boolean,
-                                     optServiceName: Option[String],
-                                     deskProServiceId: String,
-                                     signOutUrl: String,
-                                     enableSautrCheck: Boolean)
 
 }

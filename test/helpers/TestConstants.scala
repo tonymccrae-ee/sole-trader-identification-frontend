@@ -52,7 +52,7 @@ object TestConstants {
       dateOfBirth = testDateOfBirth,
       optNino = Some(testNino),
       address = None,
-      optSaPostcode = Some(testSaPostcode),
+      optSaPostcode = None,
       optSautr = Some(testSautr),
       identifiersMatch = true,
       businessVerification = Some(BusinessVerificationPass),
@@ -72,21 +72,6 @@ object TestConstants {
       identifiersMatch = false,
       businessVerification = Some(BusinessVerificationUnchallenged),
       registrationStatus = Some(RegistrationNotCalled),
-      optTrn = None,
-      optOverseas = None
-    )
-
-  val testSoleTraderDetailsNinoAndUtr: SoleTraderDetails =
-    SoleTraderDetails(
-      fullName = testFullName,
-      dateOfBirth = testDateOfBirth,
-      optNino = Some(testNino),
-      address = None,
-      optSaPostcode = None,
-      optSautr = Some(testSautr),
-      identifiersMatch = true,
-      businessVerification = Some(BusinessVerificationPass),
-      registrationStatus = Some(Registered(testSafeId)),
       optTrn = None,
       optOverseas = None
     )
@@ -121,20 +106,7 @@ object TestConstants {
       optOverseas = Some(testOverseasIdentifiers)
     )
 
-  val testSoleTraderDetailsNoNinoAndOverseas: SoleTraderDetails =
-    SoleTraderDetails(
-      fullName = testFullName,
-      dateOfBirth = testDateOfBirth,
-      optNino = None,
-      address = Some(testOverseasAddress),
-      optSaPostcode = Some(testSaPostcode),
-      optSautr = Some(testSautr),
-      identifiersMatch = true,
-      businessVerification = Some(BusinessVerificationUnchallenged),
-      registrationStatus = Some(RegistrationNotCalled),
-      optTrn = Some(testTrn),
-      optOverseas = Some(testOverseasIdentifiers)
-    )
+  val testSoleTraderDetailsNoNinoAndOverseas: SoleTraderDetails = testSoleTraderDetailsNoNinoButUtr.copy(address = Some(testOverseasAddress))
 
   val testIndividualDetails: IndividualDetails =
     IndividualDetails(

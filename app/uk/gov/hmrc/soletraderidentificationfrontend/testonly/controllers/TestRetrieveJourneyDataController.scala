@@ -36,7 +36,7 @@ class TestRetrieveJourneyDataController @Inject()(messagesControllerComponents: 
       authorised() {
         soleTraderIdentificationConnector.retrieveSoleTraderDetails(journeyId).map {
           case Some(journeyData) =>
-            Ok(Json.toJsObject(journeyData))
+            Ok(Json.toJson(journeyData.copy(optNino = journeyData.optNino.map(_.toUpperCase))))
           case None =>
             NotFound
         }
