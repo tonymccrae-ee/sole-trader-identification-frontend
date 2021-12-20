@@ -41,7 +41,8 @@ class TestCreateSoleTraderJourneyController @Inject()(messagesControllerComponen
     optServiceName = None,
     deskProServiceId = "vrs",
     signOutUrl = appConfig.vatRegFeedbackUrl,
-    enableSautrCheck = true
+    enableSautrCheck = true,
+    accessibilityUrl = "/"
   )
 
   private val defaultJourneyConfig = JourneyConfig(

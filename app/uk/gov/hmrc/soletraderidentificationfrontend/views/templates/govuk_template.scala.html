@@ -14,23 +14,23 @@
 * limitations under the License.
 *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.{Header, HmrcHeader}
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardFooter, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcTrackingConsentSnippet, HmrcLayout, HmrcTimeoutDialogHelper}
 @import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.soletraderidentificationfrontend.models.PageConfig
-@import uk.gov.hmrc.soletraderidentificationfrontend.views.html.helpers.phaseBanner
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
+@import views.html.helper.CSPNonce
 
-@this(govukLayout: GovukLayout,
-        hmrcHeader: HmrcHeader,
-        hmrcStandardFooter: HmrcStandardFooter,
-        footer: govukFooter,
-        phaseBanner: phaseBanner,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
-        govukBackLink: GovukBackLink)
+@this(
+    hmrcLayout: HmrcLayout,
+    hmrcHeader: HmrcHeader,
+    appConfig: AppConfig,
+    hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+    standardBetaBanner: StandardBetaBanner,
+    hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper
+)
 
 @(pageConfig: PageConfig, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-
-@hmrcTrackingConsentSnippet()
 
 @head = {
     <!--[if lte IE 8]>
@@ -39,18 +39,8 @@
     <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
         <!--<![endif]-->
     <link href='@controllers.routes.Assets.versioned("accessible-autocomplete-2.0.2.min.css")' media="screen" rel="stylesheet" type="text/css" />
-}
 
-@headerBlock = {
-    @hmrcHeader(Header(
-        serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
-        signOutHref = Some(pageConfig.signOutUrl)
-    ))
-}
-
-@beforeContentBlock = {
-    @phaseBanner("beta", pageConfig)
-    @govukBackLink(BackLink(href = "#", content = Text(messages("base.back")), attributes = Map("id" -> "back-link")))
+    @hmrcTimeoutDialogHelper(signOutUrl = pageConfig.signOutUrl)
 }
 
 @content = {
@@ -65,19 +55,21 @@
     </div>
 }
 
+
 @scripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script>window.GOVUKFrontend.initAll();</script>
-    <script>window.HMRCFrontend.initAll();</script>
     <script src='@controllers.routes.Assets.versioned("javascript/backLink.js")'></script>
 }
 
-@govukLayout(
+@hmrcLayout(
     pageTitle = Some(title),
-    headBlock = Some(head),
-    beforeContentBlock = Some(beforeContentBlock),
-    headerBlock = Some(headerBlock),
-    footerBlock = Some(hmrcStandardFooter()),
-    scriptsBlock = Some(scripts)
+    isWelshTranslationAvailable = false,
+    signOutUrl = Some(pageConfig.signOutUrl),
+    additionalHeadBlock = Some(head),
+    accessibilityStatementUrl = Some(pageConfig.accessibilityUrl),
+    nonce = CSPNonce.get,
+    phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl(pageConfig.deskProServiceId))),
+    serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+    backLinkUrl = Some("#"),
+    additionalScriptsBlock = Some(scripts)
 )(content)
+

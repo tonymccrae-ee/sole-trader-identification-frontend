@@ -57,6 +57,7 @@ object TestConstants {
 
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
+  val testAccessibilityUrl: String = "/accessibility"
 
   val testSoleTraderJourneyConfig: JourneyConfig =
     JourneyConfig(
@@ -66,18 +67,21 @@ object TestConstants {
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        enableSautrCheck = true
+        enableSautrCheck = true,
+        accessibilityUrl = testAccessibilityUrl
       )
     )
 
   val testIndividualJourneyConfig: JourneyConfig =
     JourneyConfig(
       continueUrl = testContinueUrl,
-      businessVerificationCheck = true,
+      businessVerificationCheck = false,
       pageConfig = PageConfig(
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        enableSautrCheck = false,
+        accessibilityUrl = testAccessibilityUrl
       )
     )
 

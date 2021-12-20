@@ -126,21 +126,4 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   private def buildClient(path: String): WSRequest =
     ws.url(s"http://localhost:$port$path").withFollowRedirects(false)
 
-  def insertJourneyConfig(journeyId: String,
-                          internalId: String,
-                          continueUrl: String,
-                          businessVerificationCheck: Boolean,
-                          optServiceName: Option[String],
-                          deskProServiceId: String,
-                          signOutUrl: String,
-                          enableSautrCheck: Boolean): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(
-      journeyId, internalId, JourneyConfig(continueUrl, businessVerificationCheck, PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck))
-    )
-
-  def insertJourneyConfig(journeyId: String,
-                          internalId: String,
-                          journeyConfig: JourneyConfig): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(journeyId, internalId, journeyConfig)
-
 }

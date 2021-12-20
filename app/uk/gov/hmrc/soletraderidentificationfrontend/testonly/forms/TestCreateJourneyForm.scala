@@ -32,6 +32,7 @@ object TestCreateJourneyForm {
   val alphanumericRegex = "^[A-Z0-9]*$"
   val signOutUrl = "signOutUrl"
   val enableSautrCheck = "enableSautrCheck"
+  val accessibilityUrl = "accessibilityUrl"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
     companyNumber => validate(
@@ -54,18 +55,42 @@ object TestCreateJourneyForm {
     )
   )
 
+  def accessibilityUrlEmpty: Constraint[String] = Constraint("accessibility_url.not_entered")(
+    signOutUrl => validate(
+      constraint = signOutUrl.isEmpty,
+      errMsg = "Accessibility Url is not entered"
+    )
+  )
+
   def form(enableSautrCheck: Boolean): Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
       businessVerificationCheck -> boolean,
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
-      signOutUrl -> text.verifying(signOutUrlEmpty)
-    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl) =>
-      JourneyConfig.apply(continueUrl, businessVerificationCheck, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck))
+      signOutUrl -> text.verifying(signOutUrlEmpty),
+      accessibilityUrl -> text.verifying(signOutUrlEmpty)
+    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, accessibilityUrl) =>
+      JourneyConfig.apply(
+        continueUrl,
+        businessVerificationCheck,
+        PageConfig(
+          serviceName,
+          deskProServiceId,
+          signOutUrl,
+          enableSautrCheck,
+          accessibilityUrl
+        )
+      )
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.businessVerificationCheck, journeyConfig.pageConfig.optServiceName,
-        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl)
+      Some(
+        journeyConfig.continueUrl,
+        journeyConfig.businessVerificationCheck,
+        journeyConfig.pageConfig.optServiceName,
+        journeyConfig.pageConfig.deskProServiceId,
+        journeyConfig.pageConfig.signOutUrl,
+        journeyConfig.pageConfig.accessibilityUrl
+      )
     ))
   }
 
@@ -76,13 +101,30 @@ object TestCreateJourneyForm {
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty),
-      enableSautrCheck -> optText.toBoolean
-    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, enableSautrCheck) =>
-      JourneyConfig.apply(continueUrl, businessVerificationCheck, PageConfig(serviceName, deskProServiceId, signOutUrl, enableSautrCheck))
+      enableSautrCheck -> optText.toBoolean,
+      accessibilityUrl -> text.verifying(signOutUrlEmpty)
+    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, enableSautrCheck, accessibilityUrl) =>
+      JourneyConfig.apply(
+        continueUrl,
+        businessVerificationCheck,
+        PageConfig(
+          serviceName,
+          deskProServiceId,
+          signOutUrl,
+          enableSautrCheck,
+          accessibilityUrl
+        )
+      )
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.businessVerificationCheck, journeyConfig.pageConfig.optServiceName,
-        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl,
-        journeyConfig.pageConfig.enableSautrCheck)
+      Some(
+        journeyConfig.continueUrl,
+        journeyConfig.businessVerificationCheck,
+        journeyConfig.pageConfig.optServiceName,
+        journeyConfig.pageConfig.deskProServiceId,
+        journeyConfig.pageConfig.signOutUrl,
+        journeyConfig.pageConfig.enableSautrCheck,
+        journeyConfig.pageConfig.accessibilityUrl
+      )
     ))
   }
 

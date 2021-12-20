@@ -63,15 +63,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   "GET /check-your-answers-business" when {
     "the applicant has a nino and an sautr" should {
       lazy val result: WSResponse = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
@@ -114,15 +109,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "the applicant does not have a sautr" should {
       lazy val result: WSResponse = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
@@ -165,15 +155,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "the applicant does not have a nino but has an address" should {
       lazy val result: WSResponse = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
@@ -216,15 +201,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "the applicant doesn't have a nino on the individual flow" should {
       lazy val result: WSResponse = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubAudit()
@@ -271,15 +251,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to business verification url" when {
         "the provided details match what is held in the database" when {
           "the user has a sautr and a nino" in {
-            await(insertJourneyConfig(
+            await(journeyConfigRepository.insertJourneyConfig(
               journeyId = testJourneyId,
-              internalId = testInternalId,
-              continueUrl = testContinueUrl,
-              businessVerificationCheck = true,
-              optServiceName = None,
-              deskProServiceId = testDeskProServiceId,
-              signOutUrl = testSignOutUrl,
-              enableSautrCheck = true
+              authInternalId = testInternalId,
+              journeyConfig = testSoleTraderJourneyConfig
             ))
             stubAuth(OK, successfulAuthResponse())
             stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -304,15 +279,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           }
           "the user does not have a nino" in {
             enable(EnableNoNinoJourney)
-            await(insertJourneyConfig(
+            await(journeyConfigRepository.insertJourneyConfig(
               journeyId = testJourneyId,
-              internalId = testInternalId,
-              continueUrl = testContinueUrl,
-              businessVerificationCheck = true,
-              optServiceName = None,
-              deskProServiceId = testDeskProServiceId,
-              signOutUrl = testSignOutUrl,
-              enableSautrCheck = true
+              authInternalId = testInternalId,
+              journeyConfig = testSoleTraderJourneyConfig
             ))
             stubAuth(OK, successfulAuthResponse())
             stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
@@ -343,15 +313,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
       "redirect to continue url" when {
         "the sautr is not provided but the details match what is held in the database" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
@@ -381,15 +346,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
 
         "business verification does not have enough information to identify the user" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -420,15 +380,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
 
         "the user has been locked out of business verification" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -461,15 +416,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         "the sautr and nino are not provided" in {
           enable(EnableNoNinoJourney)
           enable(KnownFactsStub)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNinoNoSautr)
@@ -502,15 +452,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         "the nino is provided and the user enters a wrong postcode format" in {
           enable(EnableNoNinoJourney)
           enable(KnownFactsStub)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNinoNoSautr)
@@ -542,15 +487,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         "the user enter their full name in lowercase" in {
           enable(EnableNoNinoJourney)
           enable(KnownFactsStub)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNinoNoSautr)
@@ -584,15 +524,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to cannot confirm business error controller" when {
         "the provided details do not match what is held in the database" when {
           "the user has a nino" in {
-            await(insertJourneyConfig(
+            await(journeyConfigRepository.insertJourneyConfig(
               journeyId = testJourneyId,
-              internalId = testInternalId,
-              continueUrl = testContinueUrl,
-              businessVerificationCheck = true,
-              optServiceName = None,
-              deskProServiceId = testDeskProServiceId,
-              signOutUrl = testSignOutUrl,
-              enableSautrCheck = true
+              authInternalId = testInternalId,
+              journeyConfig = testSoleTraderJourneyConfig
             ))
             stubAuth(OK, successfulAuthResponse())
             stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -623,15 +558,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           "the user does not have a nino" when {
             "the SA postcode does not match postcode returned from ES20" in {
               enable(EnableNoNinoJourney)
-              await(insertJourneyConfig(
+              await(journeyConfigRepository.insertJourneyConfig(
                 journeyId = testJourneyId,
-                internalId = testInternalId,
-                continueUrl = testContinueUrl,
-                businessVerificationCheck = true,
-                optServiceName = None,
-                deskProServiceId = testDeskProServiceId,
-                signOutUrl = testSignOutUrl,
-                enableSautrCheck = true
+                authInternalId = testInternalId,
+                journeyConfig = testSoleTraderJourneyConfig
               ))
               stubAuth(OK, successfulAuthResponse())
               stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
@@ -661,15 +591,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             }
             "the user does not provide a SA postcode and ES20 returns N for isAbroad flag" in {
               enable(EnableNoNinoJourney)
-              await(insertJourneyConfig(
+              await(journeyConfigRepository.insertJourneyConfig(
                 journeyId = testJourneyId,
-                internalId = testInternalId,
-                continueUrl = testContinueUrl,
-                businessVerificationCheck = true,
-                optServiceName = None,
-                deskProServiceId = testDeskProServiceId,
-                signOutUrl = testSignOutUrl,
-                enableSautrCheck = true
+                authInternalId = testInternalId,
+                journeyConfig = testSoleTraderJourneyConfig
               ))
               stubAuth(OK, successfulAuthResponse())
               stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNino)
@@ -701,15 +626,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
 
         "the provided details are for a deceased citizen" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -741,15 +661,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
       "redirect to details not found controller" when {
         "the provided details do not exist in the database" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -784,15 +699,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to continue url" when {
         "the provided details match what is held in the database" in {
           enable(EnableNoNinoJourney)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
@@ -822,15 +732,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
         "the user does not have a nino" in {
           enable(EnableNoNinoJourney)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoNinoNoSautr)
@@ -860,15 +765,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
       "redirect to cannot confirm business error controller" when {
         "the provided details do not match what is held in the database" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
@@ -902,15 +802,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
 
         "the provided details are for a deceased citizen" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
@@ -946,15 +841,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
       "redirect to details not found controller" when {
         "the provided details do not exist in the database" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJsonNoSautr)
@@ -995,10 +885,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     "redirect to journey config continue url" when {
       "the provided details match what is held in the database" when {
         "the user has a sautr and a nino" in {
-
-          val journeyConfig = testSoleTraderJourneyConfig.copy(businessVerificationCheck = false)
-
-          await(insertJourneyConfig(testJourneyId, testInternalId, journeyConfig))
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig.copy(businessVerificationCheck = false)
+          ))
 
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)
@@ -1015,7 +906,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result must have {
             httpStatus(SEE_OTHER)
-            redirectUri(journeyConfig.continueUrl)
+            redirectUri(testContinueUrl)
           }
 
           verifyRegister(testNino, testSautr)
@@ -1027,10 +918,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     "redirect to cannot confirm business error controller" when {
       "the provided details do not match what is held in the database" when {
         "the user has a nino" in {
-
-          val journeyConfig = testSoleTraderJourneyConfig.copy(businessVerificationCheck = false)
-
-          await(insertJourneyConfig(testJourneyId, testInternalId, journeyConfig))
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig.copy(businessVerificationCheck = false)
+          ))
 
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveIndividualDetails(testJourneyId)(OK, testIndividualDetailsJson)

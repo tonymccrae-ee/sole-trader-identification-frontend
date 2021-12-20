@@ -59,15 +59,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
     s"the $BusinessVerificationStub feature switch is enabled" should {
       "redirect to the continue url" when {
         "the user has a nino" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           enable(BusinessVerificationStub)
           stubAuth(OK, successfulAuthResponse())
@@ -100,15 +95,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           verifyAudit()
         }
         "the user does not have a nino" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
           enable(BusinessVerificationStub)
           stubAuth(OK, successfulAuthResponse())
@@ -151,15 +141,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
         enable(BusinessVerificationStub)
         stubAuth(OK, successfulAuthResponse())
         stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         stubAudit()
 
@@ -174,15 +159,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
     s"the $BusinessVerificationStub feature switch is disabled" should {
       "redirect to the continue url" when {
         "the user has a nino" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse())
@@ -216,15 +196,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           verifyAudit()
         }
         "the user does not have a nino" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = true
+            authInternalId = testInternalId,
+            journeyConfig = testSoleTraderJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse())
@@ -270,15 +245,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
         stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
         stubAudit()
 
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
 
         lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result")

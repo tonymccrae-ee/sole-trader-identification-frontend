@@ -51,7 +51,18 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         optServiceName <- (json \ optServiceNameKey).validateOpt[String]
         deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
         signOutUrl <- (json \ signOutUrlKey).validate[String]
-      } yield JourneyConfig(continueUrl, businessVerificationCheck.getOrElse(true), PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck))
+        accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
+      } yield JourneyConfig(
+        continueUrl,
+        businessVerificationCheck.getOrElse(true),
+        PageConfig(
+          optServiceName,
+          deskProServiceId,
+          signOutUrl,
+          enableSautrCheck,
+          accessibilityUrl
+        )
+      )
   }) {
     implicit req =>
       authorised().retrieve(internalId) {
@@ -76,7 +87,18 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         enableSautrCheck <- (json \ enableSautrCheckKey).validateOpt[Boolean]
-      } yield JourneyConfig(continueUrl, businessVerificationCheck.getOrElse(true), PageConfig(optServiceName, deskProServiceId, signOutUrl, enableSautrCheck.getOrElse(false)))
+        accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
+      } yield JourneyConfig(
+        continueUrl,
+        businessVerificationCheck.getOrElse(true),
+        PageConfig(
+          optServiceName,
+          deskProServiceId,
+          signOutUrl,
+          enableSautrCheck.getOrElse(false),
+          accessibilityUrl
+        )
+      )
   }) {
     implicit req =>
       authorised().retrieve(internalId) {
@@ -110,4 +132,5 @@ object JourneyController {
   val deskProServiceIdKey = "deskProServiceId"
   val signOutUrlKey = "signOutUrl"
   val enableSautrCheckKey = "enableSautrCheck"
+  val accessibilityUrlKey = "accessibilityUrl"
 }

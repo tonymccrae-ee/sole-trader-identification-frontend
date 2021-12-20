@@ -30,15 +30,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
 
   "GET /overseas-identifier" should {
     lazy val result = {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        businessVerificationCheck = true,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
+        authInternalId = testInternalId,
+        journeyConfig = testIndividualJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier")
@@ -71,15 +66,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
   "POST /overseas-identifier" when {
     "the tax identifiers are correctly formatted" should {
       "redirect to Check Your Answers" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreOverseasTaxIdentifiers(testJourneyId, testOverseasTaxIdentifiers)(OK)
@@ -96,15 +86,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
     }
     "no tax identifier or country is submitted" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
@@ -121,15 +106,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
 
     "an invalid tax identifier is submitted" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
@@ -146,15 +126,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
 
     "a tax identifier that is too long is submitted" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/overseas-identifier"
@@ -173,15 +148,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
   "GET /no-overseas-identifier" should {
     "redirect to CYA page" when {
       "the overseas identifiers are successfully removed" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveOverseasTaxIdentifiers(testJourneyId)(NO_CONTENT)
@@ -197,15 +167,10 @@ class CaptureOverseasTaxIdentifiersControllerISpec extends ComponentSpecHelper
 
     "throw an exception" when {
       "the backend returns a failure" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveOverseasTaxIdentifiers(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
