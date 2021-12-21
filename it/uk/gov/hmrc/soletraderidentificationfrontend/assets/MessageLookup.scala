@@ -40,7 +40,7 @@ object MessageLookup {
   }
 
   object BetaBanner {
-    val title = "This is a new service - your feedback (opens in new tab) will help us to improve it."
+    val title = "This is a new service – your feedback will help us to improve it."
   }
 
   object CaptureFullName {
@@ -106,6 +106,7 @@ object MessageLookup {
       val non_uk_postcode = "Enter a postcode, like AA1 1AA"
       val no_entry_country = "Select a country"
     }
+
   }
 
   object CaptureSautr {
@@ -134,6 +135,7 @@ object MessageLookup {
       val invalid_sa_postcode = "Enter a UK postcode"
       val no_entry_sa_postcode = "Enter a postcode"
     }
+
   }
 
   object CaptureOverseasTaxIdentifiers {
@@ -179,6 +181,7 @@ object MessageLookup {
     object Error {
       val no_selection = "Select yes if you want to continue registering with the details you provided"
     }
+
   }
 
   object CheckYourAnswers {

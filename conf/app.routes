@@ -38,5 +38,4 @@ GET         /:journeyId/try-again                        uk.gov.hmrc.soletraderi
 
 GET         /:journeyId/business-verification-result     uk.gov.hmrc.soletraderidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
 
-->          /govuk-frontend                              govuk.Routes
 ->          /hmrc-frontend                               hmrcfrontend.Routes

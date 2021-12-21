@@ -31,15 +31,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
 
   "GET /address" should {
     lazy val result = {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        businessVerificationCheck = true,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = true
+        authInternalId = testInternalId,
+        journeyConfig = testSoleTraderJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/address")
@@ -72,15 +67,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
   "POST /address" when {
     "the form is correctly formatted" should {
       "redirect to the Capture Sautr page and store the data in the backend" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
 
         enable(EnableNoNinoJourney)
@@ -106,15 +96,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
     }
     "the form is missing the first line of the address" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         enable(EnableNoNinoJourney)
         stubAuth(OK, successfulAuthResponse())
@@ -136,15 +121,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
     }
     "the form is missing the second line of the address" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         enable(EnableNoNinoJourney)
         stubAuth(OK, successfulAuthResponse())
@@ -166,15 +146,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
     }
     "there is an invalid character in the address form" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         enable(EnableNoNinoJourney)
         stubAuth(OK, successfulAuthResponse())
@@ -196,15 +171,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
     }
     "the form has a line that is too long" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         enable(EnableNoNinoJourney)
         stubAuth(OK, successfulAuthResponse())
@@ -226,15 +196,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
     }
     "the form has invalid characters in the postcode" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         enable(EnableNoNinoJourney)
         stubAuth(OK, successfulAuthResponse())
@@ -256,15 +221,10 @@ class CaptureAddressControllerISpec extends ComponentSpecHelper
     }
     "the form has no country selected" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = true,
+          authInternalId = testInternalId,
+          journeyConfig = testSoleTraderJourneyConfig
         ))
         enable(EnableNoNinoJourney)
         stubAuth(OK, successfulAuthResponse())

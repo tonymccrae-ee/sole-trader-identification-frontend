@@ -33,6 +33,7 @@ object TestConstants {
   val testContinueUrl: String = "/test"
   val testBusinessVerificationRedirectUrl: String = "/business-verification-start"
   val testSignOutUrl: String = "/sign-out"
+  val testAccessibilityUrl: String = "/accessibility"
   val testDateOfBirth: LocalDate = LocalDate.now().minusYears(17)
   val testFirstName: String = "John"
   val testLastName: String = "Smith"
@@ -178,7 +179,8 @@ object TestConstants {
       optServiceName = None,
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl,
-      enableSautrCheck = enableSautrCheck
+      enableSautrCheck = enableSautrCheck,
+      accessibilityUrl = testAccessibilityUrl
     )
   )
 

@@ -34,7 +34,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
       "businessVerificationCheck" -> testSoleTraderJourneyConfig.businessVerificationCheck,
       "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
       "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
-      "enableSautrCheck" -> testSoleTraderJourneyConfig.pageConfig.enableSautrCheck
+      "enableSautrCheck" -> testSoleTraderJourneyConfig.pageConfig.enableSautrCheck,
+      "accessibilityUrl" -> testSoleTraderJourneyConfig.pageConfig.accessibilityUrl
     )
     "redirect to Capture Full Name Controller" in {
       stubAuth(OK, successfulAuthResponse())
@@ -69,7 +70,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
       "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
       "businessVerificationCheck" -> false,
       "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
-      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
+      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
+      "accessibilityUrl" -> testSoleTraderJourneyConfig.pageConfig.accessibilityUrl
     )
     "redirect to Capture Full Name Controller" in {
       stubAuth(OK, successfulAuthResponse())
@@ -103,9 +105,10 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
   "POST /api/individual-journey" should {
     val testJourneyConfigJson: JsObject = Json.obj(
       "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
-      "businessVerificationCheck" -> true,
+      "businessVerificationCheck" -> false,
       "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
-      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl
+      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
+      "accessibilityUrl" -> testSoleTraderJourneyConfig.pageConfig.accessibilityUrl
     )
     "redirect to Capture Full Name Controller" in {
       stubAuth(OK, successfulAuthResponse())
@@ -217,10 +220,11 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       "the journeyId exists but no business verification status is stored" in {
         val testSoleTraderDetailsJson: JsObject = {
-          Json.obj("fullName" -> Json.obj(
-            "firstName" -> testFirstName,
-            "lastName" -> testLastName
-          ),
+          Json.obj(
+            "fullName" -> Json.obj(
+              "firstName" -> testFirstName,
+              "lastName" -> testLastName
+            ),
             "dateOfBirth" -> testDateOfBirth,
             "nino" -> testNino,
             "saPostcode" -> testSaPostcode,

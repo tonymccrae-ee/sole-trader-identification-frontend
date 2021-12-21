@@ -15,15 +15,10 @@ class DetailsNotFoundControllerISpec extends ComponentSpecHelper
 
   "GET /details-not-found" should {
     lazy val result = {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        businessVerificationCheck = true,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
+        authInternalId = testInternalId,
+        journeyConfig = testIndividualJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/details-not-found")
@@ -55,15 +50,10 @@ class DetailsNotFoundControllerISpec extends ComponentSpecHelper
   "GET /details-not-found" should {
     "remove all data" when {
       "the user tries again" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveAllData(testJourneyId)(NO_CONTENT)

@@ -18,7 +18,11 @@ package uk.gov.hmrc.soletraderidentificationfrontend.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class PageConfig(optServiceName: Option[String], deskProServiceId: String, signOutUrl: String, enableSautrCheck: Boolean = false)
+case class PageConfig(optServiceName: Option[String],
+                      deskProServiceId: String,
+                      signOutUrl: String,
+                      enableSautrCheck: Boolean,
+                      accessibilityUrl: String)
 
 object PageConfig {
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]

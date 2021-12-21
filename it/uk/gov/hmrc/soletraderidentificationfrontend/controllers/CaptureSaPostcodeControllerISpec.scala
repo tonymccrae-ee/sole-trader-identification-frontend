@@ -30,15 +30,10 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
 
   "GET /self-assessment-postcode" should {
     lazy val result = {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        businessVerificationCheck = true,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
+        authInternalId = testInternalId,
+        journeyConfig = testIndividualJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")
@@ -72,15 +67,10 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
   "POST /self-assessment-postcode" when {
     "the SA Postcode is correctly formatted" should {
       "redirect to Overseas Tax Identifiers page" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreSaPostcode(testJourneyId, testSaPostcode)(status = OK)
@@ -95,15 +85,10 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
     }
     "no SA postcode is submitted" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> "")
@@ -118,15 +103,10 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
 
     "an invalid SA postcode is submitted" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/self-assessment-postcode")("saPostcode" -> "AA!0!!")
@@ -143,15 +123,10 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
   "GET /no-self-assessment-postcode" should {
     "redirect to Overseas Tax Identifiers page" when {
       "the SA postcode is successfully removed" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveSaPostcode(testJourneyId)(NO_CONTENT)
@@ -167,15 +142,10 @@ class CaptureSaPostcodeControllerISpec extends ComponentSpecHelper
 
     "throw an exception" when {
       "the backend returns a failure" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveSaPostcode(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")

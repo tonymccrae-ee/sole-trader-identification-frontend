@@ -34,15 +34,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
   "GET /full-name" should {
     lazy val result = {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        businessVerificationCheck = true,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
+        authInternalId = testInternalId,
+        journeyConfig = testIndividualJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
@@ -75,15 +70,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
   "POST /full-name" when {
     "the whole form is correctly formatted" should {
       "redirect to the Capture Date of Birth page and store the data in the backend" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubStoreFullName(testJourneyId, FullName(testFirstName, testLastName))(status = OK)
@@ -102,15 +92,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the whole form is missing" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -126,15 +111,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the first name is missing" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -150,15 +130,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the last name is missing" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -174,15 +149,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the first name and last name are missing" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -198,15 +168,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the first name is invalid" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
@@ -222,15 +187,10 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
 
     "the last name is invalid" should {
       lazy val result = {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         post(s"/identify-your-sole-trader-business/$testJourneyId/full-name")(

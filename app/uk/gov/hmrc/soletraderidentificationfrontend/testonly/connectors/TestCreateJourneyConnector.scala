@@ -67,6 +67,7 @@ object TestCreateJourneyConnector {
     optServiceNameKey -> journeyConfig.pageConfig.optServiceName,
     deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId,
     signOutUrlKey -> journeyConfig.pageConfig.signOutUrl,
-    enableSautrCheckKey -> journeyConfig.pageConfig.enableSautrCheck
+    enableSautrCheckKey -> journeyConfig.pageConfig.enableSautrCheck,
+    accessibilityUrlKey -> journeyConfig.pageConfig.accessibilityUrl
   )
 }

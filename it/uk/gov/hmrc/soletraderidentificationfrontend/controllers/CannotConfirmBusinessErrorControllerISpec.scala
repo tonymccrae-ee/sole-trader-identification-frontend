@@ -35,15 +35,10 @@ class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
 
   "GET /cannot-confirm-business" should {
     lazy val result = {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
-        internalId = testInternalId,
-        continueUrl = testContinueUrl,
-        businessVerificationCheck = true,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false
+        authInternalId = testInternalId,
+        journeyConfig = testIndividualJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse())
       get(s"/identify-your-sole-trader-business/$testJourneyId/cannot-confirm-business")
@@ -76,15 +71,10 @@ class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
     "the user selects yes" when {
       "the user has previously provided a nino" should {
         "redirect to the contineurl" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveNino(testJourneyId)(OK, testNino)
@@ -100,15 +90,10 @@ class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
       }
       "the user has not provided a nino" should {
         "create a trn redirect to the contineurl" in {
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
-            internalId = testInternalId,
-            continueUrl = testContinueUrl,
-            businessVerificationCheck = true,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            enableSautrCheck = false
+            authInternalId = testInternalId,
+            journeyConfig = testIndividualJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveNino(testJourneyId)(NOT_FOUND)
@@ -131,15 +116,10 @@ class CannotConfirmBusinessErrorControllerISpec extends ComponentSpecHelper
 
     "the user selects no" should {
       "redirect to the capture fullname page" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
-          internalId = testInternalId,
-          continueUrl = testContinueUrl,
-          businessVerificationCheck = true,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          enableSautrCheck = false
+          authInternalId = testInternalId,
+          journeyConfig = testIndividualJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse())
         stubRemoveAllData(testJourneyId)(NO_CONTENT)
