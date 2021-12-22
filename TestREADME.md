@@ -60,6 +60,11 @@ This is a test entry point which simulates a service by triggering the initial P
 
    - Used for skipping further verification checks carried out currently by Business Verification (SI)
    - This is currently autofilled but can be changed
+   
+6. Accessibility Statement URL
+
+   - Shown in the footer - a link to the accessibility statement for the calling service
+   - This is currently autofilled but can be changed
 
 ### GET /test-only/create-individual-journey
 
@@ -83,6 +88,11 @@ This is a test entry point which simulates a service by triggering the initial P
 4. Sign Out Link (Required)
 
    - Shown in the HMRC header - typically a link to a feedback questionnaire
+   - This is currently autofilled but can be changed
+
+5. Accessibility Statement URL
+
+   - Shown in the footer - a link to the accessibility statement for the calling service
    - This is currently autofilled but can be changed
    
 
@@ -116,6 +126,11 @@ This is a test entry point which simulates a service by triggering the initial P
    - Shows the user an extra page where they can enter an SAUTR
    - This is currently defaulted to false unless otherwise specified
    - If this is enabled, refer to Using the Authenticator Stub section below
+
+6. Accessibility Statement URL
+
+   - Shown in the footer - a link to the accessibility statement for the calling service
+   - This is currently autofilled but can be changed
 
 ### GET test-only/retrieve-journey/:journeyId or test-only/retrieve-journey
 

@@ -35,7 +35,8 @@ continue to register where a successful match is found. By default "businessVeri
     "businessVerificationCheck" : true ,
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
-    "signOutUrl" : "/sign-out"
+    "signOutUrl" : "/sign-out",
+    "accessibilityUrl" : "/accessibility-statement/my-service"
 }
 ```
 
@@ -54,7 +55,8 @@ All other fields must be provided.
     "continueUrl" : "/test",
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
-    "signOutUrl" : "/sign-out"
+    "signOutUrl" : "/sign-out",
+    "accessibilityUrl" : "/accessibility-statement/my-service"
 }
 ```
 
