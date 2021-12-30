@@ -22,7 +22,8 @@ case class PageConfig(optServiceName: Option[String],
                       deskProServiceId: String,
                       signOutUrl: String,
                       enableSautrCheck: Boolean,
-                      accessibilityUrl: String)
+                      accessibilityUrl: String,
+                      optFullNamePageLabel: Option[String])
 
 object PageConfig {
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]

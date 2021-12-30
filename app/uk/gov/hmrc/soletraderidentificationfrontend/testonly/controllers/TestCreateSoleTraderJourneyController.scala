@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
+import uk.gov.hmrc.soletraderidentificationfrontend.testonly.Utils
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.views.html.test_create_sole_trader_journey
@@ -36,20 +36,9 @@ class TestCreateSoleTraderJourneyController @Inject()(messagesControllerComponen
                                                      )(implicit ec: ExecutionContext,
                                                        appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
+  private val defaultPageConfig = Utils.defaultPageConfig(appConfig)
 
-  private val defaultPageConfig = PageConfig(
-    optServiceName = None,
-    deskProServiceId = "vrs",
-    signOutUrl = appConfig.vatRegFeedbackUrl,
-    enableSautrCheck = true,
-    accessibilityUrl = "/"
-  )
-
-  private val defaultJourneyConfig = JourneyConfig(
-    continueUrl = s"${appConfig.selfUrl}/identify-your-sole-trader-business/test-only/retrieve-journey",
-    businessVerificationCheck = true,
-    pageConfig = defaultPageConfig
-  )
+  private val defaultJourneyConfig = Utils.defaultJourneyConfig(appConfig, defaultPageConfig)
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
