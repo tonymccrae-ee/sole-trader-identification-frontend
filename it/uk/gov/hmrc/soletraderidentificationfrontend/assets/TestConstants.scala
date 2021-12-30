@@ -59,31 +59,28 @@ object TestConstants {
   val testSignOutUrl: String = "/sign-out"
   val testAccessibilityUrl: String = "/accessibility"
 
-  val testSoleTraderJourneyConfig: JourneyConfig =
-    JourneyConfig(
-      continueUrl = testContinueUrl,
-      businessVerificationCheck = true,
-      pageConfig = PageConfig(
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = true,
-        accessibilityUrl = testAccessibilityUrl
-      )
-    )
+  val testFullNamePageLabel: String = "What is the name of the nominated partner?"
 
-  val testIndividualJourneyConfig: JourneyConfig =
-    JourneyConfig(
+  val testIndividualPageConfig: PageConfig = PageConfig(
+    optServiceName = None,
+    deskProServiceId = testDeskProServiceId,
+    signOutUrl = testSignOutUrl,
+    enableSautrCheck = false,
+    accessibilityUrl = testAccessibilityUrl,
+    optFullNamePageLabel = None
+  )
+
+  val testSoleTraderPageConfig: PageConfig = testIndividualPageConfig.copy(enableSautrCheck = true)
+
+  val testIndividualJourneyConfig: JourneyConfig = JourneyConfig(
       continueUrl = testContinueUrl,
       businessVerificationCheck = false,
-      pageConfig = PageConfig(
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        enableSautrCheck = false,
-        accessibilityUrl = testAccessibilityUrl
-      )
+      pageConfig = testIndividualPageConfig
     )
+
+  val testSoleTraderJourneyConfig: JourneyConfig = testIndividualJourneyConfig
+    .copy(businessVerificationCheck = true)
+    .copy(pageConfig = testSoleTraderPageConfig)
 
   val testSoleTraderDetails: SoleTraderDetails =
     SoleTraderDetails(
@@ -290,27 +287,6 @@ object TestConstants {
       )
     )
   )
-
-  def testKnownFactsResponseIsAbroad(abroad: String = "Y"): JsObject = Json.obj(
-    "service" -> "IR-SA",
-    "enrolments" -> Json.arr(
-      Json.obj(
-        "identifiers" -> Json.arr(
-          Json.obj(
-            "key" -> "UTR",
-            "value" -> testSautr
-          )
-        ),
-        "verifiers" -> Json.arr(
-          Json.obj(
-            "key" -> "IsAbroad",
-            "value" -> abroad
-          )
-        )
-      )
-    )
-  )
-
   val testKnownFactsResponseNino: JsObject = Json.obj(
     "service" -> "IR-SA",
     "enrolments" -> Json.arr(
@@ -334,7 +310,6 @@ object TestConstants {
       )
     )
   )
-
   val testAddressJson: JsObject = Json.obj(
     "line1" -> "line1",
     "line2" -> "line2",
@@ -344,10 +319,29 @@ object TestConstants {
     "postcode" -> "AA1 1AA",
     "countryCode" -> "GB"
   )
-
   val testOverseasTaxIdentifiersJson: JsObject = Json.obj(
     "taxIdentifier" -> "134124532",
     "country" -> "AL"
+  )
+
+  def testKnownFactsResponseIsAbroad(abroad: String = "Y"): JsObject = Json.obj(
+    "service" -> "IR-SA",
+    "enrolments" -> Json.arr(
+      Json.obj(
+        "identifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "UTR",
+            "value" -> testSautr
+          )
+        ),
+        "verifiers" -> Json.arr(
+          Json.obj(
+            "key" -> "IsAbroad",
+            "value" -> abroad
+          )
+        )
+      )
+    )
   )
 
 }

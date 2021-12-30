@@ -66,6 +66,11 @@ This is a test entry point which simulates a service by triggering the initial P
    - Shown in the footer - a link to the accessibility statement for the calling service
    - This is currently autofilled but can be changed
 
+7. Full Name Page Label (Optional)
+
+   - To customise title and H1 of the starting journey page
+   - Currently, this is empty by default, so the default page title and H1 will be used
+
 ### GET /test-only/create-individual-journey
 
 ---
@@ -94,6 +99,11 @@ This is a test entry point which simulates a service by triggering the initial P
 
    - Shown in the footer - a link to the accessibility statement for the calling service
    - This is currently autofilled but can be changed
+
+6. Full Name Page Label (Optional)
+
+   - To customise title and H1 of the starting journey page
+   - Currently, this is empty by default, so the default page title and H1 will be used
    
 
 ### GET /test-only/create-journey
@@ -131,6 +141,11 @@ This is a test entry point which simulates a service by triggering the initial P
 
    - Shown in the footer - a link to the accessibility statement for the calling service
    - This is currently autofilled but can be changed
+   
+7. Full Name Page Label (Optional)
+
+   - To customise title and H1 of the starting journey page
+   - Currently, this is empty by default, so the default page title and H1 will be used
 
 ### GET test-only/retrieve-journey/:journeyId or test-only/retrieve-journey
 

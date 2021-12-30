@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.api.controllers
 
 import play.api.http.Status.CREATED
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsString, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.soletraderidentificationfrontend.controllers.{routes => controllerRoutes}
@@ -46,6 +46,21 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
       (result.json \ "journeyStartUrl").as[String] must include(controllerRoutes.CaptureFullNameController.show(testJourneyId).url)
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testSoleTraderJourneyConfig)
+    }
+
+    "support a json optFullNamePageLabel field" in {
+      stubAuth(OK, successfulAuthResponse())
+      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+      post(
+        uri = "/sole-trader-identification/api/journey",
+        json = testSoleTraderJourneyConfigJson + ("optFullNamePageLabel" -> JsString(testFullNamePageLabel))
+      )
+
+      val expectedSoleTraderJourneyConfig = testSoleTraderJourneyConfig
+        .copy(pageConfig = testSoleTraderPageConfig.copy(optFullNamePageLabel = Some(testFullNamePageLabel)))
+
+      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedSoleTraderJourneyConfig)
     }
 
     "redirect to Sign In page" when {
@@ -85,6 +100,22 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
     }
 
+    "support a json optFullNamePageLabel field" in {
+      stubAuth(OK, successfulAuthResponse())
+      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+      post(
+        uri = "/sole-trader-identification/api/sole-trader-journey",
+        json = testSoleTraderJourneyConfigJson + ("optFullNamePageLabel" -> JsString(testFullNamePageLabel))
+      )
+
+      val expectedSoleTraderJourneyConfig = testSoleTraderJourneyConfig
+        .copy(businessVerificationCheck = false)
+        .copy(pageConfig = testSoleTraderPageConfig.copy(optFullNamePageLabel = Some(testFullNamePageLabel)))
+
+      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedSoleTraderJourneyConfig)
+    }
+
     "redirect to Sign In page" when {
       "the user is UNAUTHORISED" in {
         stubAuthFailure()
@@ -104,11 +135,11 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
   "POST /api/individual-journey" should {
     val testJourneyConfigJson: JsObject = Json.obj(
-      "continueUrl" -> testSoleTraderJourneyConfig.continueUrl,
+      "continueUrl" -> testIndividualJourneyConfig.continueUrl,
       "businessVerificationCheck" -> false,
-      "deskProServiceId" -> testSoleTraderJourneyConfig.pageConfig.deskProServiceId,
-      "signOutUrl" -> testSoleTraderJourneyConfig.pageConfig.signOutUrl,
-      "accessibilityUrl" -> testSoleTraderJourneyConfig.pageConfig.accessibilityUrl
+      "deskProServiceId" -> testIndividualJourneyConfig.pageConfig.deskProServiceId,
+      "signOutUrl" -> testIndividualJourneyConfig.pageConfig.signOutUrl,
+      "accessibilityUrl" -> testIndividualJourneyConfig.pageConfig.accessibilityUrl
     )
     "redirect to Capture Full Name Controller" in {
       stubAuth(OK, successfulAuthResponse())
@@ -120,6 +151,23 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with S
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testIndividualJourneyConfig)
     }
+
+    "support a json optFullNamePageLabel field" in {
+      stubAuth(OK, successfulAuthResponse())
+      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+      post(
+        uri = "/sole-trader-identification/api/individual-journey",
+        json = testJourneyConfigJson + ("optFullNamePageLabel" -> JsString(testFullNamePageLabel))
+      )
+
+      val expectedIndividualJourneyConfig = testIndividualJourneyConfig
+        .copy(businessVerificationCheck = false)
+        .copy(pageConfig = testIndividualPageConfig.copy(optFullNamePageLabel = Some(testFullNamePageLabel)))
+
+      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedIndividualJourneyConfig)
+    }
+
 
     "redirect to Sign In page" when {
       "the user is UNAUTHORISED" in {
