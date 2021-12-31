@@ -16,4 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentificationfrontend.models
 
-case class JourneyConfig(continueUrl: String, businessVerificationCheck: Boolean, pageConfig: PageConfig)
+case class JourneyConfig(continueUrl: String, businessVerificationCheck: Boolean, pageConfig: PageConfig) {
+  def theUserIsTheApplicant(): Boolean = pageConfig.optFullNamePageLabel.isEmpty
+}

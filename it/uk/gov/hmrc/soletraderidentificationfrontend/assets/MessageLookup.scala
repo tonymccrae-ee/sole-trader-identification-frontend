@@ -28,6 +28,9 @@ object MessageLookup {
     val no = "No"
     val back = "Back"
 
+    val technicalDifficultiesTitle = "Sorry, we are experiencing technical difficulties - 500"
+    val technicalDifficultiesHeading = "Sorry, we’re experiencing technical difficulties"
+
     object Error {
       val title = "There is a problem"
       val error = "Error: "
@@ -62,6 +65,8 @@ object MessageLookup {
   object CaptureDateOfBirth {
     val title = "What is your date of birth?"
     val heading = "What is your date of birth?"
+    val titleWithFirstName= "What is John’s date of birth?"
+    val headingWithFirstName= "What is John’s date of birth?"
     val hint = "For example, 27 3 2007"
 
     object Error {

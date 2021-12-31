@@ -62,7 +62,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
         }
 
-        testCaptureFullNameViewWithCustomFullNameLabel(result = viewWithCustomFullNamePageLabel)
+        testViewWithCustomFullNameLabel(result = viewWithCustomFullNamePageLabel)
     }
 
     "redirect to sign in page" when {
@@ -231,7 +231,7 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
           "last-name" -> ""
         )
       }
-      testCaptureFullNameErrorViewWithCustomFullNameLabel(result = viewWithCustomFullNamePageLabel)
+      testErrorViewWithCustomFullNameLabel(result = viewWithCustomFullNamePageLabel)
     }
   }
 }

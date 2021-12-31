@@ -29,6 +29,45 @@ import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.Element
 trait CaptureDateOfBirthViewTests {
   this: ComponentSpecHelper =>
 
+  def testViewWithCustomUserFirstNameElements(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "have a correct custom title" in {
+      doc.title mustBe messages.titleWithFirstName
+    }
+
+    "have a correct custom heading" in {
+      doc.getH1Elements.get(0).text mustBe messages.headingWithFirstName
+    }
+
+  }
+
+  def testErrorViewWithCustomUserFirstNameElements(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "have a correct custom title" in {
+      doc.title mustBe Base.Error.error + messages.titleWithFirstName
+    }
+
+    "have a correct custom heading" in {
+      doc.getH1Elements.get(0).text mustBe messages.headingWithFirstName
+    }
+
+  }
+
+  def testTechnicalDifficultiesErrorView(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "have a correct custom title" in {
+      doc.title mustBe Base.technicalDifficultiesTitle
+    }
+
+    "have a correct custom heading" in {
+      doc.getH1Elements.get(0).text mustBe Base.technicalDifficultiesHeading
+    }
+
+  }
+
   def testCaptureDateOfBirthView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
     lazy val config = app.injector.instanceOf[AppConfig]

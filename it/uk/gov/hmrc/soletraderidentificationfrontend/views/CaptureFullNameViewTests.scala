@@ -28,7 +28,7 @@ import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.Element
 trait CaptureFullNameViewTests {
   this: ComponentSpecHelper =>
 
-  def testCaptureFullNameViewWithCustomFullNameLabel(result: => WSResponse): Unit = {
+  def testViewWithCustomFullNameLabel(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "have a correct custom title" in {
@@ -41,7 +41,7 @@ trait CaptureFullNameViewTests {
 
   }
 
-  def testCaptureFullNameErrorViewWithCustomFullNameLabel(result: => WSResponse): Unit = {
+  def testErrorViewWithCustomFullNameLabel(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "have a correct custom title" in {
