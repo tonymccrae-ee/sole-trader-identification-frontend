@@ -51,11 +51,11 @@ trait CaptureSautrViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      doc.title mustBe messages.titleWithFirstName
     }
 
     "have the correct heading" in {
-      doc.getH1Elements.text mustBe messages.heading
+      doc.getH1Elements.text mustBe messages.headingWithFirstName
     }
 
     "have the correct first line" in {
@@ -89,5 +89,31 @@ trait CaptureSautrViewTests {
     "correctly display the field errors" in {
       doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidSautrEntered
     }
+  }
+
+  def testTitleAndHeadingInTheErrorView(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "have a correct custom title" in {
+      doc.title mustBe Base.Error.error + messages.titleWithFirstName
+    }
+
+    "have a correct custom heading" in {
+      doc.getH1Elements.get(0).text mustBe messages.headingWithFirstName
+    }
+
+  }
+
+  def testTitleAndHeadingGivenNoCustomerFullName(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "have a correct custom title" in {
+      doc.title mustBe Base.technicalDifficultiesTitle
+    }
+
+    "have a correct custom heading" in {
+      doc.getH1Elements.get(0).text mustBe Base.technicalDifficultiesHeading
+    }
+
   }
 }
