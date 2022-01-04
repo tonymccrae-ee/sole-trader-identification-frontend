@@ -41,25 +41,35 @@ class CaptureDateOfBirthController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig =>
-            Ok(view(
-              pageConfig = journeyConfig.pageConfig,
-              formAction = routes.CaptureDateOfBirthController.submit(journeyId),
-              form = captureDateOfBirthForm(timeMachine.now())
-            ))
+        for {
+          journeyConfig <- journeyService.getJourneyConfig(journeyId)
+          firstName <- soleTraderIdentificationService
+            .retrieveFullName(journeyId)
+            .map(optFullName => optFullName.map(_.firstName).getOrElse(throw new IllegalStateException("Full name not found")))
+        } yield {
+          Ok(view(
+            firstName,
+            pageConfig = journeyConfig.pageConfig,
+            formAction = routes.CaptureDateOfBirthController.submit(journeyId),
+            form = captureDateOfBirthForm(timeMachine.now())
+          ))
         }
       }
-  }
+      }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
         captureDateOfBirthForm(timeMachine.now()).bindFromRequest.fold(
           formWithErrors =>
-            journeyService.getJourneyConfig(journeyId).map {
-              journeyConfig =>
+            for {
+              journeyConfig <- journeyService.getJourneyConfig(journeyId)
+              firstName <- soleTraderIdentificationService
+                .retrieveFullName(journeyId)
+                .map(optFullName => optFullName.map(_.firstName).getOrElse(throw new IllegalStateException("Full name not found")))
+            } yield {
                 BadRequest(view(
+                  firstName,
                   pageConfig = journeyConfig.pageConfig,
                   formAction = routes.CaptureDateOfBirthController.submit(journeyId),
                   form = formWithErrors))
