@@ -17,13 +17,12 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.Json
-import uk.gov.hmrc.soletraderidentificationfrontend.models.RegistrationStatus
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
 trait RegisterStub extends WireMockMethods {
 
-  def stubRegister(nino: String, sautr: String)(status: Int, body: RegistrationStatus): StubMapping = {
+  def stubRegister(nino: String, sautr: String)(status: Int, body: JsObject): StubMapping = {
     val jsonBody = Json.obj("soleTrader" ->
       Json.obj(
         "nino" -> nino,
@@ -36,7 +35,7 @@ trait RegisterStub extends WireMockMethods {
       )
   }
 
-  def stubRegisterWithTrn(trn: String, sautr: String)(status: Int, body: RegistrationStatus): StubMapping = {
+  def stubRegisterWithTrn(trn: String, sautr: String)(status: Int, body: JsObject): StubMapping = {
     val jsonBody = Json.obj(
       "trn" -> trn,
       "sautr" -> sautr

@@ -23,7 +23,6 @@ Creates a new journey for a Sole Trader, storing the journeyConfig against the j
 #### Request:
 
 optServiceName will default to `Entity Validation Service` if the field is not provided.
-optFullNamePageLabel if present will allow the calling service to customise title and H1 of the starting journey page.
 
 All other fields must be provided.
 
@@ -37,8 +36,7 @@ continue to register where a successful match is found. By default "businessVeri
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
     "signOutUrl" : "/sign-out",
-    "accessibilityUrl" : "/accessibility-statement/my-service",
-    "optFullNamePageLabel" : "What is the name of the nominated partner?"
+    "accessibilityUrl" : "/accessibility-statement/my-service"
 }
 ```
 
@@ -49,7 +47,6 @@ Creates a new journey for an Individual, storing the journeyConfig against the j
 #### Request:
 
 optServiceName will default to `Entity Validation Service` if the field is not provided.
-optFullNamePageLabel if present will allow the calling service to customise title and H1 of the starting journey page.
 
 All other fields must be provided.
 
@@ -59,8 +56,7 @@ All other fields must be provided.
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
     "signOutUrl" : "/sign-out",
-    "accessibilityUrl" : "/accessibility-statement/my-service",
-    "optFullNamePageLabel" : "What is the name of the nominated partner?"
+    "accessibilityUrl" : "/accessibility-statement/my-service"
 }
 ```
 
@@ -126,7 +122,6 @@ Creates a new journey for a Sole Trader, storing the journeyConfig against the j
 #### Request:
 
 optServiceName will default to `Entity Validation Service` if the field is not provided.
-optFullNamePageLabel if present will allow the calling service to customise title and H1 of the starting journey page.
 
 The enableSautrCheck field allows the calling service to decide whether to ask the user to provide
 an SAUTR that will be verified. By default "enableSautrCheck" will be false.
@@ -143,8 +138,7 @@ continue to register where a successful match is found. By default "businessVeri
     "optServiceName" : "Service Name",
     "deskProServiceId" : "abc",
     "signOutUrl" : "/sign-out",
-    "enableSautrCheck" : "true",
-    "optFullNamePageLabel" : "What is the name of the nominated partner?"
+    "enableSautrCheck" : "true"
 }
 ```
 

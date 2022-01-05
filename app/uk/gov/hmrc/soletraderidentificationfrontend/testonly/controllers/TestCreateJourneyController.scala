@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.testonly.Utils
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.views.html.test_create_journey
@@ -36,15 +36,26 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
                                            )(implicit ec: ExecutionContext,
                                              appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
-  private val defaultPageConfig = Utils.defaultPageConfig(appConfig).copy(enableSautrCheck = false)
 
-  private val defaultJourneyConfig = Utils.defaultJourneyConfig(appConfig, defaultPageConfig)
+  private val defaultPageConfig = PageConfig(
+    optServiceName = None,
+    deskProServiceId = "vrs",
+    signOutUrl = appConfig.vatRegFeedbackUrl,
+    enableSautrCheck = false,
+    accessibilityUrl = "/"
+  )
+
+  private val defaultJourneyConfig = JourneyConfig(
+    continueUrl = s"${appConfig.selfUrl}/identify-your-sole-trader-business/test-only/retrieve-journey",
+    businessVerificationCheck = true,
+    pageConfig = defaultPageConfig
+  )
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, TestCreateJourneyForm.deprecatedForm().fill(defaultJourneyConfig), routes.TestCreateJourneyController.submit()))
+          Ok(view(defaultPageConfig, TestCreateJourneyForm.deprecatedForm().fill(defaultJourneyConfig), routes.TestCreateJourneyController.submit))
         )
       }
   }
@@ -55,7 +66,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
         TestCreateJourneyForm.deprecatedForm().bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateJourneyController.submit()))
+              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateJourneyController.submit))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createJourney(journeyConfig).map {

@@ -20,7 +20,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.soletraderidentificationfrontend.testonly.Utils
+import uk.gov.hmrc.soletraderidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.forms.TestCreateJourneyForm.form
 import uk.gov.hmrc.soletraderidentificationfrontend.testonly.views.html.test_create_individual_journey
@@ -36,9 +36,20 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
                                                      )(implicit ec: ExecutionContext,
                                                        appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
-  private val defaultPageConfig = Utils.defaultPageConfig(appConfig).copy(enableSautrCheck = false)
 
-  private val defaultJourneyConfig = Utils.defaultJourneyConfig(appConfig, defaultPageConfig)
+  private val defaultPageConfig = PageConfig(
+    optServiceName = None,
+    deskProServiceId = "vrs",
+    signOutUrl = appConfig.vatRegFeedbackUrl,
+    enableSautrCheck = false,
+    accessibilityUrl = "/"
+  )
+
+  private val defaultJourneyConfig = JourneyConfig(
+    continueUrl = s"${appConfig.selfUrl}/identify-your-sole-trader-business/test-only/retrieve-journey",
+    businessVerificationCheck = true,
+    pageConfig = defaultPageConfig
+  )
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
@@ -47,7 +58,7 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
           Ok(view(
             defaultPageConfig,
             form(enableSautrCheck = false).fill(defaultJourneyConfig),
-            routes.TestCreateIndividualJourneyController.submit()
+            routes.TestCreateIndividualJourneyController.submit
           ))
         )
       }
@@ -59,7 +70,7 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
         form(enableSautrCheck = false).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateIndividualJourneyController.submit()))
+              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateIndividualJourneyController.submit))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createIndividualJourney(journeyConfig).map {

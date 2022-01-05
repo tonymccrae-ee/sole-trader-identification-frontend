@@ -52,7 +52,6 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
-        optFullNamePageLabel <- (json \ optFullNamePageLabelKey).validateOpt[String]
       } yield JourneyConfig(
         continueUrl,
         businessVerificationCheck.getOrElse(true),
@@ -61,8 +60,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
           deskProServiceId,
           signOutUrl,
           enableSautrCheck,
-          accessibilityUrl,
-          optFullNamePageLabel
+          accessibilityUrl
         )
       )
   }) {
@@ -90,7 +88,6 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         enableSautrCheck <- (json \ enableSautrCheckKey).validateOpt[Boolean]
         accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
-        optFullNamePageLabel <- (json \ optFullNamePageLabelKey).validateOpt[String]
       } yield JourneyConfig(
         continueUrl,
         businessVerificationCheck.getOrElse(true),
@@ -99,8 +96,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
           deskProServiceId,
           signOutUrl,
           enableSautrCheck.getOrElse(false),
-          accessibilityUrl,
-          optFullNamePageLabel
+          accessibilityUrl
         )
       )
   }) {
@@ -137,5 +133,4 @@ object JourneyController {
   val signOutUrlKey = "signOutUrl"
   val enableSautrCheckKey = "enableSautrCheck"
   val accessibilityUrlKey = "accessibilityUrl"
-  val optFullNamePageLabelKey = "optFullNamePageLabel"
 }

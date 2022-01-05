@@ -51,20 +51,6 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
       testCaptureFullNameView(result)
     }
 
-    "return, given a persisted pageConfig with a custom full name page label, a view which" should {
-        lazy val viewWithCustomFullNamePageLabel: WSResponse = {
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testIndividualJourneyConfig.copy(pageConfig = testIndividualPageConfig.copy(optFullNamePageLabel = Some(testFullNamePageLabel)))
-          ))
-          stubAuth(OK, successfulAuthResponse())
-          get(s"/identify-your-sole-trader-business/$testJourneyId/full-name")
-        }
-
-        testCaptureFullNameViewWithCustomFullNameLabel(result = viewWithCustomFullNamePageLabel)
-    }
-
     "redirect to sign in page" when {
       "the user is UNAUTHORISED" in {
         stubAuthFailure()
@@ -216,22 +202,6 @@ class CaptureFullNameControllerISpec extends ComponentSpecHelper
         result.status mustBe BAD_REQUEST
       }
       testCaptureFullNameErrorMessageInvalidLastName(result)
-    }
-
-    "there is a form error and the given persisted pageConfig has a custom full name page label" should {
-      lazy val viewWithCustomFullNamePageLabel = {
-        await(journeyConfigRepository.insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testIndividualJourneyConfig.copy(pageConfig = testIndividualPageConfig.copy(optFullNamePageLabel = Some(testFullNamePageLabel)))
-        ))
-        stubAuth(OK, successfulAuthResponse())
-        post(uri = s"/identify-your-sole-trader-business/$testJourneyId/full-name")(
-          "first-name" -> testFirstName,
-          "last-name" -> ""
-        )
-      }
-      testCaptureFullNameErrorViewWithCustomFullNameLabel(result = viewWithCustomFullNamePageLabel)
     }
   }
 }

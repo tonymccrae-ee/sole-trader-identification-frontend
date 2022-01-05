@@ -18,7 +18,6 @@ package uk.gov.hmrc.soletraderidentificationfrontend.testonly.connectors
 
 import play.api.http.Status._
 import play.api.libs.json.{Json, Writes}
-import play.api.mvc.Call
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.soletraderidentificationfrontend.api.controllers.JourneyController._
@@ -35,19 +34,29 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
                                            appConfig: AppConfig
                                           )(implicit ec: ExecutionContext) {
 
-  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] =
-    postTo(destination = apiRoutes.JourneyController.createJourney(), journeyConfig = journeyConfig)
+  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = appConfig.selfBaseUrl + apiRoutes.JourneyController.createJourney().url
 
-  def createSoleTraderJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] =
-    postTo(destination = apiRoutes.JourneyController.createSoleTraderJourney(), journeyConfig = journeyConfig)
-
-  def createIndividualJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] =
-    postTo(destination = apiRoutes.JourneyController.createIndividualJourney(), journeyConfig = journeyConfig)
-
-  private def postTo(destination: Call, journeyConfig: JourneyConfig)(implicit ec: ExecutionContext, hc: HeaderCarrier): Future[String] =
-    httpClient.POST(url = appConfig.selfBaseUrl + destination.url, body = journeyConfig).map {
+    httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) => (response.json \ "journeyStartUrl").as[String]
     }
+  }
+
+  def createSoleTraderJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = appConfig.selfBaseUrl + apiRoutes.JourneyController.createSoleTraderJourney().url
+
+    httpClient.POST(url, journeyConfig).map {
+      case response@HttpResponse(CREATED, _, _) => (response.json \ "journeyStartUrl").as[String]
+    }
+  }
+
+  def createIndividualJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = appConfig.selfBaseUrl + apiRoutes.JourneyController.createIndividualJourney().url
+
+    httpClient.POST(url, journeyConfig).map {
+      case response@HttpResponse(CREATED, _, _) => (response.json \ "journeyStartUrl").as[String]
+    }
+  }
 
 }
 
@@ -59,7 +68,6 @@ object TestCreateJourneyConnector {
     deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId,
     signOutUrlKey -> journeyConfig.pageConfig.signOutUrl,
     enableSautrCheckKey -> journeyConfig.pageConfig.enableSautrCheck,
-    accessibilityUrlKey -> journeyConfig.pageConfig.accessibilityUrl,
-    optFullNamePageLabelKey -> journeyConfig.pageConfig.optFullNamePageLabel
+    accessibilityUrlKey -> journeyConfig.pageConfig.accessibilityUrl
   )
 }

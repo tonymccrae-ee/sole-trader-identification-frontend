@@ -20,39 +20,13 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.soletraderidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureFullName => messages}
-import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.{testFullNamePageLabel, testSignOutUrl}
+import uk.gov.hmrc.soletraderidentificationfrontend.assets.TestConstants.testSignOutUrl
 import uk.gov.hmrc.soletraderidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.soletraderidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
 trait CaptureFullNameViewTests {
   this: ComponentSpecHelper =>
-
-  def testCaptureFullNameViewWithCustomFullNameLabel(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "have a correct custom title" in {
-      doc.title mustBe testFullNamePageLabel
-    }
-
-    "have a correct custom heading" in {
-      doc.getH1Elements.get(0).text mustBe testFullNamePageLabel
-    }
-
-  }
-
-  def testCaptureFullNameErrorViewWithCustomFullNameLabel(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
-
-    "have a correct custom title" in {
-      doc.title mustBe Base.Error.error + testFullNamePageLabel
-    }
-
-    "have a correct custom heading" in {
-      doc.getH1Elements.get(0).text mustBe testFullNamePageLabel
-    }
-
-  }
 
   def testCaptureFullNameView(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
