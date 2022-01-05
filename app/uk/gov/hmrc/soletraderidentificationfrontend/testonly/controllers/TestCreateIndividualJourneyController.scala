@@ -47,7 +47,7 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
           Ok(view(
             defaultPageConfig,
             form(enableSautrCheck = false).fill(defaultJourneyConfig),
-            routes.TestCreateIndividualJourneyController.submit()
+            routes.TestCreateIndividualJourneyController.submit
           ))
         )
       }
@@ -59,7 +59,7 @@ class TestCreateIndividualJourneyController @Inject()(messagesControllerComponen
         form(enableSautrCheck = false).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateIndividualJourneyController.submit()))
+              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateIndividualJourneyController.submit))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createIndividualJourney(journeyConfig).map {

@@ -44,7 +44,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, TestCreateJourneyForm.deprecatedForm().fill(defaultJourneyConfig), routes.TestCreateJourneyController.submit()))
+          Ok(view(defaultPageConfig, TestCreateJourneyForm.deprecatedForm().fill(defaultJourneyConfig), routes.TestCreateJourneyController.submit))
         )
       }
   }
@@ -55,7 +55,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
         TestCreateJourneyForm.deprecatedForm().bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateJourneyController.submit()))
+              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateJourneyController.submit))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createJourney(journeyConfig).map {

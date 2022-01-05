@@ -68,7 +68,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
           stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
           stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails))
           stubRetrieveNino(testJourneyId)(OK, testNino)
           stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
@@ -80,8 +80,8 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
           stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
           stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, testSuccessfulRegistrationJson)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
@@ -104,7 +104,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
           stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
           stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails))
           stubRetrieveNino(testJourneyId)(NOT_FOUND)
           stubRetrieveSaPostcode(testJourneyId)(NOT_FOUND)
@@ -120,8 +120,8 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
           stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
           stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, testSuccessfulRegistrationJson)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
@@ -168,7 +168,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
           stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
           stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails))
           stubRetrieveNino(testJourneyId)(OK, testNino)
           stubRetrieveAddress(testJourneyId)(NOT_FOUND)
@@ -181,8 +181,8 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
           stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
           stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, testSuccessfulRegistrationJson)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
@@ -205,7 +205,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse())
           stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
           stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
           stubRetrieveSoleTraderDetails(testJourneyId)(OK, Json.toJson(testSoleTraderDetails))
           stubRetrieveNino(testJourneyId)(NOT_FOUND)
           stubRetrieveAddress(testJourneyId)(NOT_FOUND)
@@ -222,8 +222,8 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper
           stubRetrieveIdentifiersMatch(testJourneyId)(OK, JsBoolean(true))
           stubRetrieveES20Result(testJourneyId)(NOT_FOUND)
           stubRetrieveAuthenticatorDetails(testJourneyId)(OK, Json.toJson(testIndividualDetails))
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, Json.toJson(BusinessVerificationPass))
-          stubRetrieveRegistrationStatus(testJourneyId)(OK, Json.toJson(Registered(testSafeId)))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(OK, testBusinessVerificationPassJson)
+          stubRetrieveRegistrationStatus(testJourneyId)(OK, testSuccessfulRegistrationJson)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 

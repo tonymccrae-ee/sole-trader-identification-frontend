@@ -44,7 +44,7 @@ class TestCreateSoleTraderJourneyController @Inject()(messagesControllerComponen
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, TestCreateJourneyForm.form(enableSautrCheck = true).fill(defaultJourneyConfig), routes.TestCreateSoleTraderJourneyController.submit()))
+          Ok(view(defaultPageConfig, TestCreateJourneyForm.form(enableSautrCheck = true).fill(defaultJourneyConfig), routes.TestCreateSoleTraderJourneyController.submit))
         )
       }
   }
@@ -55,7 +55,7 @@ class TestCreateSoleTraderJourneyController @Inject()(messagesControllerComponen
         TestCreateJourneyForm.form(enableSautrCheck = true).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateSoleTraderJourneyController.submit()))
+              BadRequest(view(defaultPageConfig, formWithErrors, routes.TestCreateSoleTraderJourneyController.submit))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createSoleTraderJourney(journeyConfig).map {
