@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@ case class PageConfig(optServiceName: Option[String],
                       deskProServiceId: String,
                       signOutUrl: String,
                       enableSautrCheck: Boolean,
-                      accessibilityUrl: String)
+                      accessibilityUrl: String,
+                      optFullNamePageLabel: Option[String])
 
 object PageConfig {
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]

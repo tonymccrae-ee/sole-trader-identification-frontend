@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ object TestCreateJourneyForm {
   val signOutUrl = "signOutUrl"
   val enableSautrCheck = "enableSautrCheck"
   val accessibilityUrl = "accessibilityUrl"
+  val fullNamePageLabel = "fullNamePageLabel"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
     companyNumber => validate(
@@ -69,8 +70,9 @@ object TestCreateJourneyForm {
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty),
-      accessibilityUrl -> text.verifying(signOutUrlEmpty)
-    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, accessibilityUrl) =>
+      accessibilityUrl -> text.verifying(signOutUrlEmpty),
+      fullNamePageLabel -> optText
+    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, accessibilityUrl,fullNamePageLabel) =>
       JourneyConfig.apply(
         continueUrl,
         businessVerificationCheck,
@@ -79,7 +81,8 @@ object TestCreateJourneyForm {
           deskProServiceId,
           signOutUrl,
           enableSautrCheck,
-          accessibilityUrl
+          accessibilityUrl,
+          fullNamePageLabel
         )
       )
     )(journeyConfig =>
@@ -89,7 +92,8 @@ object TestCreateJourneyForm {
         journeyConfig.pageConfig.optServiceName,
         journeyConfig.pageConfig.deskProServiceId,
         journeyConfig.pageConfig.signOutUrl,
-        journeyConfig.pageConfig.accessibilityUrl
+        journeyConfig.pageConfig.accessibilityUrl,
+        journeyConfig.pageConfig.optFullNamePageLabel,
       )
     ))
   }
@@ -102,8 +106,9 @@ object TestCreateJourneyForm {
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty),
       enableSautrCheck -> optText.toBoolean,
-      accessibilityUrl -> text.verifying(signOutUrlEmpty)
-    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, enableSautrCheck, accessibilityUrl) =>
+      accessibilityUrl -> text.verifying(signOutUrlEmpty),
+      fullNamePageLabel -> optText
+    )((continueUrl, businessVerificationCheck, serviceName, deskProServiceId, signOutUrl, enableSautrCheck, accessibilityUrl, fullNamePageLabel) =>
       JourneyConfig.apply(
         continueUrl,
         businessVerificationCheck,
@@ -112,7 +117,8 @@ object TestCreateJourneyForm {
           deskProServiceId,
           signOutUrl,
           enableSautrCheck,
-          accessibilityUrl
+          accessibilityUrl,
+          fullNamePageLabel
         )
       )
     )(journeyConfig =>
@@ -123,7 +129,8 @@ object TestCreateJourneyForm {
         journeyConfig.pageConfig.deskProServiceId,
         journeyConfig.pageConfig.signOutUrl,
         journeyConfig.pageConfig.enableSautrCheck,
-        journeyConfig.pageConfig.accessibilityUrl
+        journeyConfig.pageConfig.accessibilityUrl,
+        journeyConfig.pageConfig.optFullNamePageLabel,
       )
     ))
   }

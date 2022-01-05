@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
+        optFullNamePageLabel <- (json \ optFullNamePageLabelKey).validateOpt[String]
       } yield JourneyConfig(
         continueUrl,
         businessVerificationCheck.getOrElse(true),
@@ -60,7 +61,8 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
           deskProServiceId,
           signOutUrl,
           enableSautrCheck,
-          accessibilityUrl
+          accessibilityUrl,
+          optFullNamePageLabel
         )
       )
   }) {
@@ -88,6 +90,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         enableSautrCheck <- (json \ enableSautrCheckKey).validateOpt[Boolean]
         accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
+        optFullNamePageLabel <- (json \ optFullNamePageLabelKey).validateOpt[String]
       } yield JourneyConfig(
         continueUrl,
         businessVerificationCheck.getOrElse(true),
@@ -96,7 +99,8 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
           deskProServiceId,
           signOutUrl,
           enableSautrCheck.getOrElse(false),
-          accessibilityUrl
+          accessibilityUrl,
+          optFullNamePageLabel
         )
       )
   }) {
@@ -133,4 +137,5 @@ object JourneyController {
   val signOutUrlKey = "signOutUrl"
   val enableSautrCheckKey = "enableSautrCheck"
   val accessibilityUrlKey = "accessibilityUrl"
+  val optFullNamePageLabelKey = "optFullNamePageLabel"
 }
