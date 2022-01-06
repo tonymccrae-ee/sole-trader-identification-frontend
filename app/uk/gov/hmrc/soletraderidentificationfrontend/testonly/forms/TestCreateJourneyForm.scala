@@ -93,7 +93,7 @@ object TestCreateJourneyForm {
         journeyConfig.pageConfig.deskProServiceId,
         journeyConfig.pageConfig.signOutUrl,
         journeyConfig.pageConfig.accessibilityUrl,
-        journeyConfig.pageConfig.optFullNamePageLabel,
+        journeyConfig.pageConfig.optFullNamePageLabel
       )
     ))
   }
@@ -130,7 +130,7 @@ object TestCreateJourneyForm {
         journeyConfig.pageConfig.signOutUrl,
         journeyConfig.pageConfig.enableSautrCheck,
         journeyConfig.pageConfig.accessibilityUrl,
-        journeyConfig.pageConfig.optFullNamePageLabel,
+        journeyConfig.pageConfig.optFullNamePageLabel
       )
     ))
   }
