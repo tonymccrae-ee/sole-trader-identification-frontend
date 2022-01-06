@@ -17,6 +17,8 @@
 package uk.gov.hmrc.soletraderidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.BusinessVerificationStatus.{BusinessVerificationFailKey, BusinessVerificationPassKey, BusinessVerificationStatusKey, BusinessVerificationUnchallengedKey}
+import uk.gov.hmrc.soletraderidentificationfrontend.models.RegistrationStatus.{RegisteredKey, RegistrationFailedKey, RegistrationNotCalledKey, registeredBusinessPartnerIdKey, registrationStatusKey}
 import uk.gov.hmrc.soletraderidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -55,6 +57,16 @@ object TestConstants {
   val testSaPostcode: String = "AA00 0AA"
   val testOverseasTaxIdentifiers: Overseas = Overseas("134124532", "AL")
 
+  val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
+  val testBusinessVerificationFailJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
+  val testBusinessVerificationUnchallengedJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
+
+  val testSuccessfulRegistrationJson: JsObject = Json.obj(
+    registrationStatusKey -> RegisteredKey,
+    registeredBusinessPartnerIdKey -> testSafeId)
+  val testFailedRegistrationJson: JsObject = Json.obj(registrationStatusKey -> RegistrationFailedKey)
+  val testRegistrationNotCalledJson: JsObject = Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
+
   val testDeskProServiceId: String = "vrs"
   val testSignOutUrl: String = "/sign-out"
   val testAccessibilityUrl: String = "/accessibility"
@@ -73,10 +85,10 @@ object TestConstants {
   val testSoleTraderPageConfig: PageConfig = testIndividualPageConfig.copy(enableSautrCheck = true)
 
   val testIndividualJourneyConfig: JourneyConfig = JourneyConfig(
-      continueUrl = testContinueUrl,
-      businessVerificationCheck = false,
-      pageConfig = testIndividualPageConfig
-    )
+    continueUrl = testContinueUrl,
+    businessVerificationCheck = false,
+    pageConfig = testIndividualPageConfig
+  )
 
   val testSoleTraderJourneyConfig: JourneyConfig = testIndividualJourneyConfig
     .copy(businessVerificationCheck = true)
@@ -178,13 +190,8 @@ object TestConstants {
       "saPostcode" -> testSaPostcode,
       "sautr" -> testSautr,
       "identifiersMatch" -> true,
-      "businessVerification" -> Json.obj(
-        "verificationStatus" -> "PASS"
-      ),
-      "registration" -> Json.obj(
-        "registrationStatus" -> "REGISTERED",
-        "registeredBusinessPartnerId" -> testSafeId
-      )
+      "businessVerification" -> testBusinessVerificationPassJson,
+      "registration" -> testSuccessfulRegistrationJson
     )
   }
 
@@ -198,12 +205,8 @@ object TestConstants {
       "saPostcode" -> testSaPostcode,
       "sautr" -> testSautr,
       "identifiersMatch" -> false,
-      "businessVerification" -> Json.obj(
-        "verificationStatus" -> "UNCHALLENGED"
-      ),
-      "registration" -> Json.obj(
-        "registrationStatus" -> "REGISTRATION_NOT_CALLED"
-      )
+      "businessVerification" -> testBusinessVerificationUnchallengedJson,
+      "registration" -> testRegistrationNotCalledJson
     )
   }
 
