@@ -69,9 +69,9 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
           journeyConfig =>
             submissionService.submit(journeyId, journeyConfig).map {
               case StartBusinessVerification(businessVerificationUrl) =>
-                // businessVerificationUrl provided by business verification is a referenced from the the root
+                // businessVerificationUrl provided by business verification is referenced from the root
                 // ie. /business-verification-frontend/journey/id?origin=vat
-                // Expand to a full frontend url so that it will work on localhosts as well
+                // Expand to a full frontend url so that it will work on localhost as well
                 Redirect(config.businessVerificationFrontendBaseUrl + businessVerificationUrl)
 
               case JourneyCompleted(continueUrl) =>
